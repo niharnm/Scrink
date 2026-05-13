@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 @Observable
+@MainActor
 final class AuthStore {
     var isLoggedIn: Bool = false
     var userEmail: String = ""

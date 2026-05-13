@@ -33,11 +33,9 @@ struct SettingsScreen: View {
                         domainThresholdsSection
                     }
 
-                    // App Log
+                    #if DEBUG
                     appLogSection
 
-                    // Extension Log Button
-                    #if DEBUG
                     extensionLogButton
                     #endif
                 }

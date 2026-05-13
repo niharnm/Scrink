@@ -2,6 +2,7 @@ import SwiftUI
 
 struct CodeVerificationScreen: View {
     let email: String
+    @Environment(\.dismiss) private var dismiss
     @State private var code: String = ""
     @State private var service = MagicSignInService()
     @Environment(AuthStore.self) private var authStore
@@ -17,7 +18,6 @@ struct CodeVerificationScreen: View {
                 Spacer()
                     .frame(height: UIScreen.main.bounds.height / 6)
                 
-                // Title block
                 VStack(alignment: .leading, spacing: BubbleSpacing.xs) {
                     Text("RINKLER")
                         .font(BubbleFonts.titleLarge)
@@ -33,9 +33,7 @@ struct CodeVerificationScreen: View {
                 
                 Spacer()
                 
-                // Code input section
                 VStack(spacing: BubbleSpacing.lg) {
-                    // Email confirmation
                     Text("Code sent to \(email)")
                         .font(BubbleFonts.coolvetica(size: 16))
                         .foregroundStyle(BubbleColors.white60)
@@ -56,10 +54,8 @@ struct CodeVerificationScreen: View {
                             .multilineTextAlignment(.center)
                             .focused($isCodeFocused)
                             .onChange(of: code) { oldValue, newValue in
-                                // Limit to 6 digits and format with spaces
                                 let digits = newValue.filter { $0.isNumber }
                                 if digits.count <= 6 {
-                                    // Format as XXX XXX
                                     if digits.count > 3 {
                                         let first = String(digits.prefix(3))
                                         let second = String(digits.dropFirst(3))
@@ -83,7 +79,6 @@ struct CodeVerificationScreen: View {
                             .padding(.horizontal, BubbleSpacing.buttonHorizontalPadding)
                     }
                     
-                    // Error message
                     if let errorMessage = service.errorMessage {
                         Text(errorMessage)
                             .font(BubbleFonts.coolvetica(size: 14))
@@ -91,7 +86,6 @@ struct CodeVerificationScreen: View {
                             .padding(.horizontal, BubbleSpacing.buttonHorizontalPadding)
                     }
                     
-                    // Verify button
                     Button(action: {
                         Task {
                             do {
@@ -149,8 +143,17 @@ struct CodeVerificationScreen: View {
             }
         }
         .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    BackArrowView(color: .white)
+                }
+                .accessibilityLabel("Change email")
+            }
+        }
         .onAppear {
-            // Auto-focus the code input
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 isCodeFocused = true
             }

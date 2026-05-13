@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct MagicSignInScreen: View {
+    @Environment(\.dismiss) private var dismiss
     @State private var email: String = ""
     @State private var service = MagicSignInService()
     var onCodeSent: (String) -> Void
@@ -13,7 +14,6 @@ struct MagicSignInScreen: View {
                 Spacer()
                     .frame(height: UIScreen.main.bounds.height / 6)
                 
-                // Title block
                 VStack(alignment: .leading, spacing: BubbleSpacing.xs) {
                     Text("RINKLER")
                         .font(BubbleFonts.titleLarge)
@@ -29,7 +29,6 @@ struct MagicSignInScreen: View {
                 
                 Spacer()
                 
-                // Email input section
                 VStack(spacing: BubbleSpacing.lg) {
                     VStack(alignment: .leading, spacing: BubbleSpacing.sm) {
                         Text("Email")
@@ -56,7 +55,6 @@ struct MagicSignInScreen: View {
                             .padding(.horizontal, BubbleSpacing.buttonHorizontalPadding)
                     }
                     
-                    // Error message
                     if let errorMessage = service.errorMessage {
                         Text(errorMessage)
                             .font(BubbleFonts.coolvetica(size: 14))
@@ -64,7 +62,6 @@ struct MagicSignInScreen: View {
                             .padding(.horizontal, BubbleSpacing.buttonHorizontalPadding)
                     }
                     
-                    // Send code button
                     Button(action: {
                         Task {
                             do {
@@ -103,6 +100,16 @@ struct MagicSignInScreen: View {
             }
         }
         .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    BackArrowView(color: .white)
+                }
+                .accessibilityLabel("Back")
+            }
+        }
     }
 }
 

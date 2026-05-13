@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 @Observable
+@MainActor
 class MagicSignInService {
     var email: String = ""
     var code: String = ""
@@ -12,10 +13,10 @@ class MagicSignInService {
     func sendMagicCode(email: String) async throws {
         isLoading = true
         errorMessage = nil
+        defer { isLoading = false }
 
         guard isValidEmail(email) else {
             errorMessage = "Please enter a valid email address"
-            isLoading = false
             throw MagicSignInError.invalidEmail
         }
 
@@ -25,21 +26,18 @@ class MagicSignInService {
             self.isCodeSent = true
         } catch {
             errorMessage = error.localizedDescription
-            isLoading = false
             throw MagicSignInError.networkError
         }
-
-        isLoading = false
     }
 
     func verifyCode(_ code: String, email: String) async throws -> Bool {
         isLoading = true
         errorMessage = nil
+        defer { isLoading = false }
 
         let cleanedCode = code.replacingOccurrences(of: " ", with: "")
         guard cleanedCode.count == 6, cleanedCode.allSatisfy({ $0.isNumber }) else {
             errorMessage = "Please enter a valid 6-digit code"
-            isLoading = false
             throw MagicSignInError.invalidCode
         }
 
@@ -47,11 +45,9 @@ class MagicSignInService {
             _ = try await SupabaseAuthClient.shared.verifyEmailOTP(email: email, token: cleanedCode)
             self.email = email
             self.code = cleanedCode
-            isLoading = false
             return true
         } catch {
             errorMessage = error.localizedDescription
-            isLoading = false
             throw MagicSignInError.invalidCode
         }
     }
