@@ -73,7 +73,7 @@ const EMPTY_DASHBOARD: DashboardData = {
   mostActive: "N/A",
   usageOverTime: [],
   heatmap: [],
-  insight: "No data yet. Once your VPN traffic flows through Bubble, insights will appear here.",
+  insight: "No data yet. Once your VPN traffic flows through Rinkler, insights will appear here.",
   topDomains: [],
   totalBytesIn: 0,
   totalBytesOut: 0,

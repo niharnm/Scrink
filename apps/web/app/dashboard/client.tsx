@@ -186,8 +186,8 @@ export default function DashboardClient({ email }: DashboardClientProps) {
       <div style={contentStyle}>
         <div style={topRowStyle}>
           <div>
-            <div style={greetingStyle}>Your Bubble</div>
-            <div style={subGreetingStyle}>into the clouds.</div>
+            <div style={greetingStyle}>Rinkler overview</div>
+            <div style={subGreetingStyle}>keep the useful parts.</div>
           </div>
           <DateRangeSelector value={range} onChange={setRange} />
         </div>

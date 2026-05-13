@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Bubble",
-  description: "Bubble",
+  title: "Rinkler",
+  description: "Rinkler privacy-first filtering dashboard",
 };
 
 export default function RootLayout({

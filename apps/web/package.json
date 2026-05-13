@@ -11,7 +11,7 @@
     "clean": "rm -rf .next .turbo node_modules"
   },
   "dependencies": {
-    "@bubble/assets": "workspace:*",
+    "@rinkler/assets": "workspace:*",
     "@supabase/ssr": "^0.8",
     "@supabase/supabase-js": "^2",
     "framer-motion": "^12.34.0",

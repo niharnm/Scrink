@@ -1,5 +1,5 @@
 {
-  "name": "@bubble/ios",
+  "name": "@rinkler/ios",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -8,6 +8,6 @@
     "clean": "rm -rf build DerivedData"
   },
   "dependencies": {
-    "@bubble/assets": "workspace:*"
+    "@rinkler/assets": "workspace:*"
   }
 }

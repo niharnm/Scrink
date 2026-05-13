@@ -62,7 +62,7 @@ export async function POST() {
             {
               role: "system",
               content:
-                "You are a digital wellness assistant for Bubble, an app that helps users manage screen time by blocking distracting content. Write a 1-2 sentence friendly, specific insight based on the user's traffic stats. Be encouraging.",
+                "You are a digital wellness assistant for Rinkler, an app that helps users keep useful app features while blocking distracting content. Write a 1-2 sentence specific insight based on the user's traffic stats. Be calm and practical.",
             },
             {
               role: "user",
@@ -118,12 +118,12 @@ function fallbackInsight(
   totalBlocked: number
 ): string {
   if (totalReqs === 0) {
-    return "No traffic recorded yet. Once Bubble starts filtering your traffic, you'll see personalized insights here.";
+    return "No traffic recorded yet. Once Rinkler starts filtering your traffic, you'll see personalized insights here.";
   }
   const topApp = Object.entries(appStats).sort(
     (a, b) => b[1].requests - a[1].requests
   )[0];
   const blockedPct = Math.round((totalBlocked / totalReqs) * 100);
   const timeSaved = Math.round(totalBlocked * 0.5);
-  return `Bubble blocked ${blockedPct}% of distracting content today (~${timeSaved} min saved). ${topApp ? `Your most active app was ${topApp[0]} with ${topApp[1].requests} requests.` : ""} Keep it up!`;
+  return `Rinkler blocked ${blockedPct}% of distracting content today (~${timeSaved} min saved). ${topApp ? `Your most active app was ${topApp[0]} with ${topApp[1].requests} requests.` : ""}`;
 }
