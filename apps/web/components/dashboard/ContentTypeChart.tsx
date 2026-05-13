@@ -93,10 +93,11 @@ export default function ContentTypeChart({
               color: theme.colors.white,
               fontSize: 14,
             }}
-            formatter={(value: number) => [value, "Requests"]}
-            labelFormatter={(label: string) => {
-              const item = data.find((d) => d.name === label);
-              return item?.fullName || label;
+            formatter={(value) => [Number(value ?? 0), "Requests"]}
+            labelFormatter={(label) => {
+              const labelText = typeof label === "string" ? label : String(label ?? "");
+              const item = data.find((d) => d.name === labelText);
+              return item?.fullName || labelText;
             }}
           />
           <Bar

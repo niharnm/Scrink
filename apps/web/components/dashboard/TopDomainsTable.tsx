@@ -55,7 +55,7 @@ export default function TopDomainsTable({ domains }: TopDomainsTableProps) {
     whiteSpace: "nowrap",
   };
 
-  const badgeStyle = (category: string): CSSProperties => ({
+  const badgeStyle: CSSProperties = {
     fontFamily: theme.fonts.body,
     fontSize: 11,
     color: theme.colors.white,
@@ -64,7 +64,7 @@ export default function TopDomainsTable({ domains }: TopDomainsTableProps) {
     borderRadius: 8,
     padding: "2px 8px",
     whiteSpace: "nowrap",
-  });
+  };
 
   const countStyle: CSSProperties = {
     fontFamily: theme.fonts.body,
@@ -93,7 +93,7 @@ export default function TopDomainsTable({ domains }: TopDomainsTableProps) {
           <div key={d.domain} style={rowStyle}>
             <span style={rankStyle}>{i + 1}</span>
             <span style={domainStyle}>{d.domain}</span>
-            <span style={badgeStyle(d.category)}>
+            <span style={badgeStyle}>
               {APP_META[d.category]?.name || d.category}
             </span>
             <span style={countStyle}>{d.count}</span>

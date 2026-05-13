@@ -1,6 +1,7 @@
 "use client";
 
 import { CSSProperties, useState, useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import SkyBackground from "@/components/dashboard/SkyBackground";
 import HeaderBar from "@/components/dashboard/HeaderBar";
@@ -171,7 +172,14 @@ export default function AppDetailClient({ slug }: AppDetailClientProps) {
         <div style={titleRowStyle}>
           <div style={iconWrapperStyle}>
             {detail.icon.startsWith("/") ? (
-              <img src={detail.icon} alt={detail.name} style={iconStyle} />
+              <Image
+                src={detail.icon}
+                alt={detail.name}
+                width={Math.round(theme.iconSizes.appLarge * 0.7)}
+                height={Math.round(theme.iconSizes.appLarge * 0.7)}
+                style={iconStyle}
+                unoptimized
+              />
             ) : (
               <span
                 style={{

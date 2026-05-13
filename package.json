@@ -9,7 +9,12 @@
     "typecheck": "turbo run typecheck",
     "clean": "turbo run clean"
   },
+  "pnpm": {
+    "overrides": {
+      "postcss": "8.5.10"
+    }
+  },
   "devDependencies": {
-    "turbo": "^2"
+    "turbo": "^2.9.12"
   }
 }

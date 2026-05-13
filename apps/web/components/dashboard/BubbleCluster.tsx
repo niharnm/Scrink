@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback, CSSProperties } from "react";
+import Image from "next/image";
 import { theme } from "@/lib/theme";
 
 interface AppData {
@@ -156,7 +157,7 @@ export default function BubbleCluster({ apps, onAppClick }: BubbleClusterProps) 
     };
 
     frameRef.current = requestAnimationFrame(simulate);
-  }, [dragging, apps.length, numOrbiting, radius]);
+  }, [dragging, numOrbiting, radius]);
 
   useEffect(() => {
     startSimulation();
@@ -279,7 +280,14 @@ export default function BubbleCluster({ apps, onAppClick }: BubbleClusterProps) 
             onPointerLeave={() => setHoveredIndex(null)}
           >
             {app.icon.startsWith("/") ? (
-              <img src={app.icon} alt={app.name} style={iconStyle} />
+              <Image
+                src={app.icon}
+                alt={app.name}
+                width={Math.round(pos.size * 0.6)}
+                height={Math.round(pos.size * 0.6)}
+                style={iconStyle}
+                unoptimized
+              />
             ) : (
               <span
                 style={{

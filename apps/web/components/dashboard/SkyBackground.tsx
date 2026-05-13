@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, CSSProperties } from "react";
+import NextImage from "next/image";
 import { theme } from "@/lib/theme";
 
 const CLOUD_COPIES = 6;
@@ -103,12 +104,15 @@ export default function SkyBackground({
       <div style={cloudContainerStyle}>
         <div ref={stripRef} style={cloudStripStyle}>
           {Array.from({ length: CLOUD_COPIES }).map((_, i) => (
-            <img
+            <NextImage
               key={i}
               src="/images/clouds_continous.png"
               alt=""
+              width={8517}
+              height={3639}
               style={cloudImgStyle}
               draggable={false}
+              priority={i === 0}
             />
           ))}
         </div>

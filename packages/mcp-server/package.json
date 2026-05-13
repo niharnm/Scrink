@@ -12,13 +12,13 @@
     "clean": "rm -rf dist .turbo node_modules"
   },
   "dependencies": {
-    "fastmcp": "^3",
-    "@supabase/supabase-js": "^2",
-    "zod": "^3.25"
+    "@supabase/supabase-js": "^2.105.4",
+    "fastmcp": "^3.35.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/node": "^22",
-    "tsx": "^4",
-    "typescript": "^5"
+    "@types/node": "^22.19.19",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   }
 }
