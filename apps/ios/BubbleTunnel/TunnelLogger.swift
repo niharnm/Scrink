@@ -1,9 +1,8 @@
 import Foundation
 import os
 
-/// Writes log lines to both:
-/// 1. Apple's unified logging system (streamable via `log stream` over USB)
-/// 2. A shared file in the app group container (viewable in-app)
+/// Writes tunnel diagnostics. Detailed file logs are debug-only because
+/// connection metadata can reveal private browsing behavior.
 final class TunnelLogger {
 
     static let shared = TunnelLogger()
@@ -40,9 +39,9 @@ final class TunnelLogger {
         let timestamp = Self.dateFormatter.string(from: Date())
         let line = "[\(timestamp)] [\(function)] \(message)\n"
 
-        // Stream to Mac via USB (Console.app / `log stream`)
-        Self.osLog.log("[\(function, privacy: .public)] \(message, privacy: .public)")
+        Self.osLog.log("[\(function, privacy: .public)] \(message, privacy: .private)")
 
+        #if DEBUG
         guard let fileURL = fileURL else { return }
 
         lock.lock()
@@ -64,28 +63,36 @@ final class TunnelLogger {
         } else {
             try? line.data(using: .utf8)?.write(to: fileURL, options: .atomic)
         }
+        #endif
     }
 
     /// Log connection-level data to the "connection" category for filtering
     func logConnection(_ message: String) {
-        Self.connectionLog.log("\(message, privacy: .public)")
-        // Also write to file for in-app viewing
+        Self.connectionLog.log("\(message, privacy: .private)")
+        #if DEBUG
         log(message)
+        #endif
     }
 
     func clear() {
+        #if DEBUG
         guard let fileURL = fileURL else { return }
         lock.lock()
         defer { lock.unlock() }
         try? "".data(using: .utf8)?.write(to: fileURL, options: .atomic)
+        #endif
     }
 
     static func readLog() -> String {
+        #if !DEBUG
+        return "Detailed tunnel logs are disabled in production builds."
+        #else
         guard let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: BubbleConstants.appGroupID) else {
             return "(no app group container)"
         }
         let fileURL = container.appendingPathComponent(BubbleConstants.logFileName)
         return (try? String(contentsOf: fileURL, encoding: .utf8)) ?? "(no logs yet)"
+        #endif
     }
 
     // MARK: - Private

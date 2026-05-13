@@ -1,6 +1,6 @@
 import Foundation
 import Combine
-import NetworkExtension
+@preconcurrency import NetworkExtension
 import SwiftUI
 
 @MainActor
@@ -8,10 +8,10 @@ final class VPNManager: ObservableObject {
     @Published var vpnStatus: NEVPNStatus = .disconnected
     @Published private(set) var statusLog: [String] = []
     @Published var tunnelLog: String = "(no logs yet)"
+    @Published private(set) var isPreparingProfile = false
 
     private var manager: NETunnelProviderManager?
     private var statusObserver: NSObjectProtocol?
-    private var autoConnect = true
 
     deinit {
         if let observer = statusObserver {
@@ -23,7 +23,7 @@ final class VPNManager: ObservableObject {
 
     func setup() {
         appendLog("App launched")
-        loadVPNPreferences()
+        loadVPNPreferences(startAfterLoad: false)
     }
 
     // MARK: - Status Log (bounded)
@@ -39,24 +39,12 @@ final class VPNManager: ObservableObject {
     // MARK: - Tunnel Extension Log
 
     func refreshTunnelLog() {
-        guard let container = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: BubbleConstants.appGroupID
-        ) else {
-            tunnelLog = "ERROR: Can't access app group container"
-            appendLog("ERROR: No app group container")
-            return
-        }
-        let fileURL = container.appendingPathComponent(BubbleConstants.logFileName)
-        if let content = try? String(contentsOf: fileURL, encoding: .utf8), !content.isEmpty {
-            tunnelLog = content
-        } else {
-            tunnelLog = "(no extension logs found at \(fileURL.path))"
-        }
+        tunnelLog = TunnelLogReader.readLog()
     }
 
     // MARK: - VPN Lifecycle
 
-    private func loadVPNPreferences() {
+    private func loadVPNPreferences(startAfterLoad: Bool) {
         appendLog("Loading VPN preferences...")
         NETunnelProviderManager.loadAllFromPreferences { [weak self] managers, error in
             Task { @MainActor [weak self] in
@@ -74,11 +62,14 @@ final class VPNManager: ObservableObject {
                     self.appendLog("Found existing profile. Status: \(self.statusString)")
                     self.appendLog("Bundle ID: \((mgr.protocolConfiguration as? NETunnelProviderProtocol)?.providerBundleIdentifier ?? "nil")")
                     self.observeStatusChanges(for: mgr)
-                    if self.autoConnect && mgr.connection.status != .connected && mgr.connection.status != .connecting {
+                    if startAfterLoad && mgr.connection.status != .connected && mgr.connection.status != .connecting {
                         self.startVPN()
                     }
                 } else {
-                    self.createVPNProfile()
+                    self.appendLog("No VPN profile configured yet")
+                    if startAfterLoad {
+                        self.createVPNProfile(startAfterSave: true)
+                    }
                 }
             }
         }
@@ -93,21 +84,26 @@ final class VPNManager: ObservableObject {
             forName: .NEVPNStatusDidChange,
             object: mgr.connection,
             queue: .main
-        ) { [weak self] _ in
-            guard let self = self else { return }
+        ) { [weak self, weak mgr] _ in
+            guard let mgr = mgr else { return }
             let newStatus = mgr.connection.status
-            self.vpnStatus = newStatus
-            self.appendLog("VPN status -> \(self.statusString)")
+            Task { @MainActor [weak self] in
+                guard let self = self else { return }
+                self.vpnStatus = newStatus
+                self.appendLog("VPN status -> \(Self.statusString(for: newStatus))")
 
-            if newStatus == .connected || newStatus == .disconnected {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-                    self?.refreshTunnelLog()
+                if newStatus == .connected || newStatus == .disconnected {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+                        self?.refreshTunnelLog()
+                    }
                 }
             }
         }
     }
 
-    private func createVPNProfile() {
+    private func createVPNProfile(startAfterSave: Bool) {
+        guard !isPreparingProfile else { return }
+        isPreparingProfile = true
         appendLog("No VPN profile found, creating one...")
         let newManager = NETunnelProviderManager()
         let proto = NETunnelProviderProtocol()
@@ -119,19 +115,20 @@ final class VPNManager: ObservableObject {
         newManager.saveToPreferences { [weak self] error in
             Task { @MainActor [weak self] in
                 guard let self = self else { return }
+                self.isPreparingProfile = false
                 if let error = error {
                     self.appendLog("ERROR saving profile: \(error.localizedDescription)")
                     return
                 }
                 self.appendLog("Profile saved. Reloading...")
-                self.loadVPNPreferences()
+                self.loadVPNPreferences(startAfterLoad: startAfterSave)
             }
         }
     }
 
     func toggleVPN() {
         guard let manager = self.manager else {
-            appendLog("ERROR: Manager not ready")
+            startVPN()
             return
         }
 
@@ -144,7 +141,8 @@ final class VPNManager: ObservableObject {
 
     func startVPN() {
         guard let manager = self.manager else {
-            appendLog("ERROR: Manager not ready")
+            appendLog("Preparing VPN profile...")
+            createVPNProfile(startAfterSave: true)
             return
         }
 

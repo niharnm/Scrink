@@ -37,7 +37,9 @@ struct SettingsScreen: View {
                     appLogSection
 
                     // Extension Log Button
+                    #if DEBUG
                     extensionLogButton
+                    #endif
                 }
                 .padding(.horizontal, BubbleSpacing.lg)
                 .padding(.top, BubbleSpacing.xl)
@@ -84,7 +86,7 @@ struct SettingsScreen: View {
 
     private var vpnToggleButton: some View {
         Button(action: { vpnManager.toggleVPN() }) {
-            Text(vpnManager.vpnStatus == .connected ? "STOP PROTECTION" : "START PROTECTION")
+            Text(vpnButtonTitle)
                 .font(BubbleFonts.pupok(size: 24))
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
@@ -96,6 +98,14 @@ struct SettingsScreen: View {
                         .strokeBorder(Color.white, lineWidth: 1)
                 )
         }
+        .disabled(vpnManager.isPreparingProfile)
+    }
+
+    private var vpnButtonTitle: String {
+        if vpnManager.isPreparingProfile {
+            return "PREPARING..."
+        }
+        return vpnManager.vpnStatus == .connected ? "STOP PROTECTION" : "START PROTECTION"
     }
 
     // MARK: - Block Reels
@@ -167,7 +177,7 @@ struct SettingsScreen: View {
             vpnManager.refreshTunnelLog()
             showExtensionLog = true
         } label: {
-            Text("Show Extension Log")
+            Text("Show Debug Extension Log")
                 .font(BubbleFonts.coolvetica(size: 16))
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)

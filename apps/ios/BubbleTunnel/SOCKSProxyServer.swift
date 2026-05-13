@@ -824,7 +824,7 @@ final class SOCKSProxyServer {
                         if let sni = self.extractSNI(from: data) {
                             tracker.sni = sni
                             self.log.logConnection("TCP #\(tracker.id): SNI=\(sni) IP=\(tracker.host):\(tracker.port)")
-                            TunnelLogger.connectionLog.log("[SNI] \(sni, privacy: .public)")
+                            TunnelLogger.connectionLog.log("[SNI] \(sni, privacy: .private)")
                         }
                     }
                 case .download:
@@ -844,7 +844,7 @@ final class SOCKSProxyServer {
                         // Log untracked domains receiving large downloads (potential failover)
                         if self.filter.streamBlockThreshold(for: sni) == nil && tracker.bytesDown > 100_000 && !tracker.loggedUntracked {
                             tracker.loggedUntracked = true
-                            TunnelLogger.connectionLog.log("[UNTRACKED-LARGE] \(sni, privacy: .public) \(tracker.bytesDown, privacy: .public)B+ (no blocking rule)")
+                            TunnelLogger.connectionLog.log("[UNTRACKED-LARGE] \(sni, privacy: .private) \(tracker.bytesDown, privacy: .public)B+ (no blocking rule)")
                         }
                     }
                 }
