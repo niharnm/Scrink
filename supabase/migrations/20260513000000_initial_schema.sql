@@ -159,6 +159,12 @@ create table if not exists public.cron_runs (
 
 alter table public.cron_runs enable row level security;
 
+create policy "cron_runs_service_only"
+  on public.cron_runs for all
+  to service_role
+  using (true)
+  with check (true);
+
 create or replace function public.rollup_traffic(target_period text)
 returns void
 language sql
@@ -245,12 +251,12 @@ as $$
   delete from public.traffic_summaries where bucket < now() - interval '180 days';
 $$;
 
-revoke execute on function public.rollup_traffic(text) from anon, authenticated;
-revoke execute on function public.rollup_traffic_hourly() from anon, authenticated;
-revoke execute on function public.rollup_traffic_daily() from anon, authenticated;
-revoke execute on function public.recompute_all_rollups() from anon, authenticated;
-revoke execute on function public.cleanup_old_traffic() from anon, authenticated;
-revoke execute on function public.handle_new_user() from anon, authenticated;
+revoke execute on function public.rollup_traffic(text) from public, anon, authenticated;
+revoke execute on function public.rollup_traffic_hourly() from public, anon, authenticated;
+revoke execute on function public.rollup_traffic_daily() from public, anon, authenticated;
+revoke execute on function public.recompute_all_rollups() from public, anon, authenticated;
+revoke execute on function public.cleanup_old_traffic() from public, anon, authenticated;
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
 
 grant execute on function public.rollup_traffic(text) to service_role;
 grant execute on function public.rollup_traffic_hourly() to service_role;
