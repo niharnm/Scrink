@@ -8,6 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		0E6B244A6DE7DF4C8BEE6CB9 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5A0931BEF4F3F4B1BF8741 /* Route.swift */; };
+		102A00000000000000000001 /* RinklerTunnel.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000002 /* RinklerTunnel.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		102A00000000000000000003 /* PacketTunnelProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000004 /* PacketTunnelProvider.swift */; };
+		102A00000000000000000005 /* ReelsBlockFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000006 /* ReelsBlockFilter.swift */; };
+		102A00000000000000000007 /* SOCKSProxyServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000008 /* SOCKSProxyServer.swift */; };
+		102A00000000000000000009 /* TrafficStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A0000000000000000000A /* TrafficStats.swift */; };
+		102A0000000000000000000B /* TunnelLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A0000000000000000000C /* TunnelLogger.swift */; };
+		102A0000000000000000000D /* BubbleConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A0000000000000000000E /* BubbleConstants.swift */; };
+		102A0000000000000000000F /* Tun2SocksKit in Frameworks */ = {isa = PBXBuildFile; productRef = 102A00000000000000000010 /* Tun2SocksKit */; };
+		102A00000000000000000011 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000012 /* NetworkExtension.framework */; };
 		175B55D8F51D048B9FEFF95B /* BlockedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64DB7E7C0A427B4897386603 /* BlockedApp.swift */; };
 		1FDC9A48B273F1E91F3216E3 /* LandingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DECDACBEC0EF265C1407E1A /* LandingPage.swift */; };
 		26827D46EC95D3B01646A294 /* SK Pupok Solid 400.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A3FA39A10AAC758E79448541 /* SK Pupok Solid 400.ttf */; };
@@ -60,7 +69,41 @@
 		F7CE98EF49A4DE02A3635406 /* Coolvetica Rg.otf in Resources */ = {isa = PBXBuildFile; fileRef = E061A1FE54985A17E5E84E2E /* Coolvetica Rg.otf */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		102A00000000000000000013 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B741CA0B5636C16D2FF1843B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 102A00000000000000000014;
+			remoteInfo = RinklerTunnel;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		102A00000000000000000015 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				102A00000000000000000001 /* RinklerTunnel.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		102A00000000000000000002 /* RinklerTunnel.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RinklerTunnel.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		102A00000000000000000004 /* PacketTunnelProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PacketTunnelProvider.swift; sourceTree = "<group>"; };
+		102A00000000000000000006 /* ReelsBlockFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReelsBlockFilter.swift; sourceTree = "<group>"; };
+		102A00000000000000000008 /* SOCKSProxyServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOCKSProxyServer.swift; sourceTree = "<group>"; };
+		102A0000000000000000000A /* TrafficStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficStats.swift; sourceTree = "<group>"; };
+		102A0000000000000000000C /* TunnelLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunnelLogger.swift; sourceTree = "<group>"; };
+		102A0000000000000000000E /* BubbleConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BubbleConstants.swift; sourceTree = "<group>"; };
+		102A00000000000000000012 /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
+		102A00000000000000000016 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		102A00000000000000000017 /* RinklerTunnel.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RinklerTunnel.entitlements; sourceTree = "<group>"; };
 		04B4EC3C0F908E65D671403F /* AppOptionArcs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOptionArcs.swift; sourceTree = "<group>"; };
 		04C4502521522E3E2BE93F73 /* AppCluster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCluster.swift; sourceTree = "<group>"; };
 		106E25D023D63E8571E5D893 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -110,7 +153,7 @@
 		ADF713ED6242175766746424 /* app_options.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = app_options.json; sourceTree = "<group>"; };
 		AEA7879AE04880FB01A49C3C /* HeaderBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderBar.swift; sourceTree = "<group>"; };
 		B033FC1D06B6F626D38BA842 /* Coolvetica Rg It.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Coolvetica Rg It.otf"; sourceTree = "<group>"; };
-		BB94751122DA9ADC81F89EE3 /* Bubble.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Bubble.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB94751122DA9ADC81F89EE3 /* Rinkler.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Rinkler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C8F7AEAFA028F049E6650638 /* instagram.svg */ = {isa = PBXFileReference; path = instagram.svg; sourceTree = "<group>"; };
 		E061A1FE54985A17E5E84E2E /* Coolvetica Rg.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Coolvetica Rg.otf"; sourceTree = "<group>"; };
 		E3EF496D1E6382443B39705A /* SupabaseAuthClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseAuthClient.swift; sourceTree = "<group>"; };
@@ -128,9 +171,41 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		102A00000000000000000018 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				102A00000000000000000011 /* NetworkExtension.framework in Frameworks */,
+				102A0000000000000000000F /* Tun2SocksKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		102A00000000000000000019 /* BubbleTunnel */ = {
+			isa = PBXGroup;
+			children = (
+				102A0000000000000000000E /* BubbleConstants.swift */,
+				102A00000000000000000016 /* Info.plist */,
+				102A00000000000000000004 /* PacketTunnelProvider.swift */,
+				102A00000000000000000006 /* ReelsBlockFilter.swift */,
+				102A00000000000000000017 /* RinklerTunnel.entitlements */,
+				102A00000000000000000008 /* SOCKSProxyServer.swift */,
+				102A0000000000000000000A /* TrafficStats.swift */,
+				102A0000000000000000000C /* TunnelLogger.swift */,
+			);
+			path = BubbleTunnel;
+			sourceTree = "<group>";
+		};
+		102A0000000000000000001A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				102A00000000000000000012 /* NetworkExtension.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		1483554F60FA7FE0E51245E7 /* .claude */ = {
 			isa = PBXGroup;
 			children = (
@@ -166,7 +241,8 @@
 		62B9B96E3C62769CA4B70E8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BB94751122DA9ADC81F89EE3 /* Bubble.app */,
+				BB94751122DA9ADC81F89EE3 /* Rinkler.app */,
+				102A00000000000000000002 /* RinklerTunnel.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -234,6 +310,8 @@
 			isa = PBXGroup;
 			children = (
 				842218BB42D46926DC9271FC /* Bubble */,
+				102A00000000000000000019 /* BubbleTunnel */,
+				102A0000000000000000001A /* Frameworks */,
 				81963D340B5EC930C5D33CC5 /* ios */,
 				62B9B96E3C62769CA4B70E8B /* Products */,
 			);
@@ -286,24 +364,46 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		5F328EFB19593AB5BC7429F3 /* Bubble */ = {
+		5F328EFB19593AB5BC7429F3 /* Rinkler */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0237DBB2D309EB216C11208C /* Build configuration list for PBXNativeTarget "Bubble" */;
+			buildConfigurationList = 0237DBB2D309EB216C11208C /* Build configuration list for PBXNativeTarget "Rinkler" */;
 			buildPhases = (
 				BA386D7A56178599483A405D /* Sources */,
 				7ED6C886919E610BC9322D6C /* Resources */,
 				AB99948DC644C5E05FC587CE /* Frameworks */,
+				102A00000000000000000015 /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				102A0000000000000000001B /* PBXTargetDependency */,
+			);
+			name = Rinkler;
+			packageProductDependencies = (
+			);
+			productName = Rinkler;
+			productReference = BB94751122DA9ADC81F89EE3 /* Rinkler.app */;
+			productType = "com.apple.product-type.application";
+		};
+		102A00000000000000000014 /* RinklerTunnel */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 102A0000000000000000001C /* Build configuration list for PBXNativeTarget "RinklerTunnel" */;
+			buildPhases = (
+				102A0000000000000000001D /* Sources */,
+				102A00000000000000000018 /* Frameworks */,
+				102A0000000000000000001E /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = Bubble;
+			name = RinklerTunnel;
 			packageProductDependencies = (
+				102A00000000000000000010 /* Tun2SocksKit */,
 			);
-			productName = Bubble;
-			productReference = BB94751122DA9ADC81F89EE3 /* Bubble.app */;
-			productType = "com.apple.product-type.application";
+			productName = RinklerTunnel;
+			productReference = 102A00000000000000000002 /* RinklerTunnel.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -315,6 +415,9 @@
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					5F328EFB19593AB5BC7429F3 = {
+						DevelopmentTeam = "";
+					};
+					102A00000000000000000014 = {
 						DevelopmentTeam = "";
 					};
 				};
@@ -330,12 +433,14 @@
 			mainGroup = B327284E55C5CB5F30B80CE8;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				102A0000000000000000001F /* XCRemoteSwiftPackageReference "Tun2SocksKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				5F328EFB19593AB5BC7429F3 /* Bubble */,
+				5F328EFB19593AB5BC7429F3 /* Rinkler */,
+				102A00000000000000000014 /* RinklerTunnel */,
 			);
 		};
 /* End PBXProject section */
@@ -357,6 +462,13 @@
 				8CC77FCD2AFCCE05480781D9 /* icon_rect.png in Resources */,
 				9FB50AF4C11375E57288493D /* instagram.svg in Resources */,
 				A9C259B3E6CF8FA06E8DFED8 /* kalshi.svg in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		102A0000000000000000001E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -409,7 +521,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		102A0000000000000000001D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				102A0000000000000000000D /* BubbleConstants.swift in Sources */,
+				102A00000000000000000003 /* PacketTunnelProvider.swift in Sources */,
+				102A00000000000000000005 /* ReelsBlockFilter.swift in Sources */,
+				102A00000000000000000007 /* SOCKSProxyServer.swift in Sources */,
+				102A00000000000000000009 /* TrafficStats.swift in Sources */,
+				102A0000000000000000000B /* TunnelLogger.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		102A0000000000000000001B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 102A00000000000000000014 /* RinklerTunnel */;
+			targetProxy = 102A00000000000000000013 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		15DA1B8466F8B1F076243B95 /* Release */ = {
@@ -482,6 +615,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.rinkler.app;
+				PRODUCT_NAME = Rinkler;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -565,20 +699,79 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.rinkler.app;
+				PRODUCT_NAME = Rinkler;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
+		102A00000000000000000020 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = BubbleTunnel/RinklerTunnel.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = BubbleTunnel/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.rinkler.app.tunnel;
+				PRODUCT_NAME = RinklerTunnel;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		102A00000000000000000021 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = BubbleTunnel/RinklerTunnel.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = BubbleTunnel/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.rinkler.app.tunnel;
+				PRODUCT_NAME = RinklerTunnel;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0237DBB2D309EB216C11208C /* Build configuration list for PBXNativeTarget "Bubble" */ = {
+		0237DBB2D309EB216C11208C /* Build configuration list for PBXNativeTarget "Rinkler" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				63CC28234D43E822C88DD1ED /* Debug */,
 				18B1AA367C8F0470229AA125 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		102A0000000000000000001C /* Build configuration list for PBXNativeTarget "RinklerTunnel" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				102A00000000000000000020 /* Debug */,
+				102A00000000000000000021 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
@@ -593,6 +786,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		102A0000000000000000001F /* XCRemoteSwiftPackageReference "Tun2SocksKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/EbrahimTahernejad/Tun2SocksKit";
+			requirement = {
+				kind = exactVersion;
+				version = 5.14.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		102A00000000000000000010 /* Tun2SocksKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 102A0000000000000000001F /* XCRemoteSwiftPackageReference "Tun2SocksKit" */;
+			productName = Tun2SocksKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 	};
 	rootObject = B741CA0B5636C16D2FF1843B /* Project object */;
