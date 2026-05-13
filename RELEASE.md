@@ -27,10 +27,11 @@
 ## Current Verification Gaps
 
 - Unsigned iPhoneOS builds pass, but signed device install is blocked until Xcode has a signed-in Apple Developer account and matching provisioning profiles for the app, tunnel, and App Group.
+- The latest signed-build probe failed because no iOS App Development provisioning profiles exist for `com.rinkler.app` or `com.rinkler.app.tunnel`. I did not pass `-allowProvisioningUpdates` because that can create or modify Apple Developer resources.
 - Simulator listing is affected by an Xcode/CoreSimulator mismatch:
   `CoreSimulator is out of date. Current version (1051.50.0) is older than build version (1051.54.0).`
-- The local machine has Node but no `pnpm`, `npm`, or `corepack`, so web build, typecheck, and lockfile regeneration were not run here.
-- GitHub reports dependency alerts on the default branch. Review Dependabot after the next dependency install and lockfile refresh.
+- The local machine still has no installed `pnpm`, `npm`, or `corepack`. Web checks were run with a temporary pnpm 9.15.4 executable under `/tmp`.
+- `pnpm audit --json` currently reports zero known dependency advisories after the lockfile refresh.
 
 ## Supabase Data
 
