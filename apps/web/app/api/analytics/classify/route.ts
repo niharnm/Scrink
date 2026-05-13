@@ -3,9 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { APP_META } from "@/lib/app-meta";
 
-const BATCH_SIZE = 50;
-
-const validCategories = Object.keys(APP_META).filter((k) => k !== "other");
+const validCategories = new Set(Object.keys(APP_META));
 
 export async function POST() {
   const supabase = await createClient();
@@ -16,104 +14,43 @@ export async function POST() {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
+  const userId = claimsData.claims.sub as string;
+
   const admin = createServiceClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  // Get distinct "other" hosts with counts
-  const { data: hostRows, error: hostErr } = await admin.rpc("execute_sql", {
-    query: `SELECT host, count(*)::int as cnt FROM traffic_events WHERE app_category = 'other' GROUP BY host ORDER BY cnt DESC`,
-  });
+  const { data: hostRows, error: hostErr } = await admin
+    .from("traffic_events")
+    .select("host")
+    .eq("user_id", userId)
+    .eq("app_category", "other")
+    .limit(5000);
 
   if (hostErr) {
-    // Fallback: query via regular select
-    const { data: fallbackRows, error: fallbackErr } = await admin
-      .from("traffic_events")
-      .select("host")
-      .eq("app_category", "other");
-
-    if (fallbackErr) {
-      return NextResponse.json(
-        { error: fallbackErr.message },
-        { status: 500 }
-      );
-    }
-
-    // Aggregate manually
-    const countMap: Record<string, number> = {};
-    for (const row of fallbackRows || []) {
-      countMap[row.host] = (countMap[row.host] || 0) + 1;
-    }
-    var hosts = Object.entries(countMap)
-      .map(([host, cnt]) => ({ host, cnt }))
-      .sort((a, b) => b.cnt - a.cnt);
-  } else {
-    var hosts = (hostRows as { host: string; cnt: number }[]) || [];
+    return NextResponse.json({ error: hostErr.message }, { status: 500 });
   }
+
+  const countMap: Record<string, number> = {};
+  for (const row of hostRows || []) {
+    const host = normalizeHost(row.host);
+    if (!host) continue;
+    countMap[host] = (countMap[host] || 0) + 1;
+  }
+  const hosts = Object.entries(countMap)
+    .map(([host, cnt]) => ({ host, cnt }))
+    .sort((a, b) => b.cnt - a.cnt);
 
   if (hosts.length === 0) {
     return NextResponse.json({ classified: {}, updated: 0 });
   }
 
-  const openaiKey = process.env.OPENAI_API_KEY;
-  if (!openaiKey) {
-    return NextResponse.json(
-      { error: "OPENAI_API_KEY not configured" },
-      { status: 500 }
-    );
-  }
-
-  // Batch hosts and classify with LLM
   const classificationMap: Record<string, string> = {};
-  const hostnames = hosts.map((h) => h.host);
-
-  for (let i = 0; i < hostnames.length; i += BATCH_SIZE) {
-    const batch = hostnames.slice(i, i + BATCH_SIZE);
-    const prompt = `Classify each hostname into exactly one category. Valid categories: ${validCategories.join(", ")}.
-
-Return a JSON object mapping each hostname to its category. If unsure, use "other".
-
-Hostnames:
-${batch.join("\n")}`;
-
-    try {
-      const llmRes = await fetch(
-        "https://api.openai.com/v1/chat/completions",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${openaiKey}`,
-          },
-          body: JSON.stringify({
-            model: "gpt-5-mini",
-            max_tokens: 1000,
-            response_format: { type: "json_object" },
-            messages: [
-              {
-                role: "system",
-                content:
-                  "You classify internet hostnames into app categories. Respond with only a JSON object mapping hostname to category.",
-              },
-              { role: "user", content: prompt },
-            ],
-          }),
-        }
-      );
-
-      if (llmRes.ok) {
-        const llmData = await llmRes.json();
-        const content = llmData.choices?.[0]?.message?.content || "{}";
-        const parsed = JSON.parse(content) as Record<string, string>;
-        for (const [host, category] of Object.entries(parsed)) {
-          if (validCategories.includes(category)) {
-            classificationMap[host] = category;
-          }
-        }
-      }
-    } catch {
-      // Continue with next batch on failure
+  for (const { host } of hosts) {
+    const category = classifyHost(host);
+    if (category !== "other" && validCategories.has(category)) {
+      classificationMap[host] = category;
     }
   }
 
@@ -123,6 +60,7 @@ ${batch.join("\n")}`;
     const { count } = await admin
       .from("traffic_events")
       .update({ app_category: category }, { count: "exact" })
+      .eq("user_id", userId)
       .eq("host", host)
       .eq("app_category", "other");
 
@@ -135,7 +73,88 @@ ${batch.join("\n")}`;
   return NextResponse.json({
     classified: classificationMap,
     updated,
-    hostsProcessed: hostnames.length,
+    hostsProcessed: hosts.length,
     recomputeError: recomputeErr?.message || null,
   });
+}
+
+function normalizeHost(host: string | null | undefined): string {
+  return (host || "")
+    .trim()
+    .toLowerCase()
+    .replace(/^www\./, "");
+}
+
+function classifyHost(host: string): string {
+  if (
+    matches(host, [
+      "instagram.com",
+      "cdninstagram.com",
+      "instagram.net",
+      "fbcdn.net",
+      "facebook.com",
+      "edge-mqtt.facebook.com",
+    ])
+  ) {
+    return "instagram";
+  }
+  if (matches(host, ["fanduel.com", "fanduelcdn.com"])) return "fanduel";
+  if (matches(host, ["kalshi.com"])) return "kalshi";
+  if (
+    matches(host, ["tiktok.com", "tiktokcdn.com", "byteoversea.com", "musical.ly"])
+  ) {
+    return "tiktok";
+  }
+  if (matches(host, ["youtube.com", "googlevideo.com", "ytimg.com", "youtu.be"])) {
+    return "youtube";
+  }
+  if (matches(host, ["twitter.com", "x.com", "twimg.com", "t.co"])) {
+    return "twitter";
+  }
+  if (
+    matches(host, ["reddit.com", "redd.it", "redditmedia.com", "redditstatic.com"])
+  ) {
+    return "reddit";
+  }
+  if (matches(host, ["snapchat.com", "sc-cdn.net"])) return "snapchat";
+  if (matches(host, ["openai.com", "anthropic.com", "claude.ai", "perplexity.ai"])) {
+    return "ai";
+  }
+  if (
+    matches(host, [
+      "google.com",
+      "googleapis.com",
+      "gstatic.com",
+      "googleusercontent.com",
+    ])
+  ) {
+    return "google";
+  }
+  if (
+    host.endsWith(".edu") ||
+    matches(host, ["canvaslms.com", "instructure.com", "khanacademy.org"])
+  ) {
+    return "education";
+  }
+  if (
+    matches(host, [
+      "apple.com",
+      "icloud.com",
+      "cloudflare.com",
+      "akamai",
+      "fastly",
+      "amazonaws.com",
+      "firebaseio.com",
+    ])
+  ) {
+    return "infrastructure";
+  }
+  return "other";
+}
+
+function matches(host: string, needles: string[]): boolean {
+  return needles.some(
+    (needle) =>
+      host === needle || host.endsWith(`.${needle}`) || host.includes(needle)
+  );
 }

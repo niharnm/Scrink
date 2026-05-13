@@ -2,7 +2,6 @@
 
 ## Required Before TestFlight
 
-- Add a real `RinklerTunnel` app extension target to `apps/ios/Bubble.xcodeproj` or regenerate the project from `apps/ios/project.yml` with XcodeGen and commit the generated project.
 - Set the Apple Developer Team ID in the app and tunnel targets.
 - Enable App Groups and Network Extension capabilities for:
   - `com.rinkler.app`
@@ -10,11 +9,12 @@
   - `group.com.rinkler.app`
 - Confirm the Network Extension entitlement is approved for the Apple Developer account.
 - Replace `apps/ios/Secrets.xcconfig` local placeholders with the real Supabase project URL and anon key.
+- Apply `supabase/migrations/20260513000000_initial_schema.sql` to the real Supabase project.
 - Test OTP login against the real Supabase project on a physical iPhone.
 - Test VPN start, stop, reconnect, and app relaunch behavior on a physical iPhone.
 - Confirm no sensitive traffic details, auth tokens, or user content are logged.
-- Replace or complete the App Icon set. Xcode currently warns that the app icon set has unassigned children.
 - Update App Store privacy nutrition labels to match actual behavior. Do not claim data stays only on-device if Supabase auth or dashboard storage is enabled.
+- Keep `ENABLE_EXTERNAL_AI_INSIGHTS=false` unless users explicitly opt into sending aggregate dashboard stats to the configured AI provider.
 
 ## Current Verification Gaps
 

@@ -41,7 +41,7 @@ export function registerTools(server: FastMCP) {
     parameters: z.object({
       user_id: z.string().describe("The user's UUID"),
       app_id: z.string().describe("App ID (e.g. instagram, shield, kalshi)"),
-      option_id: z.string().describe("Option ID (e.g. reels, msgs, ex-gf)"),
+      option_id: z.string().describe("Option ID (e.g. reels, msgs, profiles)"),
       is_enabled: z.boolean().describe("Whether the option should be enabled"),
       duration_minutes: z
         .number()
@@ -84,7 +84,7 @@ export function registerTools(server: FastMCP) {
         {
           id: "instagram",
           name: "Instagram",
-          options: ["reels", "msgs", "ex-gf", "explore"],
+          options: ["reels", "msgs", "profiles", "explore"],
         },
         {
           id: "shield",

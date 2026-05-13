@@ -32,8 +32,16 @@ pnpm build
 
 This machine currently does not have `pnpm` available, so regenerate `pnpm-lock.yaml` on a machine with pnpm before relying on web dependency changes.
 
+Apply the Supabase schema before using the dashboard or MCP server:
+
+```bash
+supabase db push
+```
+
+`ENABLE_EXTERNAL_AI_INSIGHTS` defaults to `false`. Leave it disabled unless you intentionally want dashboard summary statistics sent to the configured external AI provider.
+
 ## Release State
 
-Rinkler is not App Store-ready yet. The main app compiles at the Swift typecheck level, but the checked-in Xcode project still needs a real packet tunnel extension target before the VPN functionality can ship.
+Rinkler is not App Store-ready yet. The iOS project now includes the main app target and packet tunnel extension target, but release still requires real Apple Developer signing, Network Extension entitlement approval, Supabase credentials, and physical-device VPN testing.
 
 See `RELEASE.md` for the remaining production checklist.

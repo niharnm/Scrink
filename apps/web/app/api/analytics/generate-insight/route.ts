@@ -42,8 +42,9 @@ export async function POST() {
   // Generate insight
   let insightText: string;
   const openaiKey = process.env.OPENAI_API_KEY;
+  const externalAIEnabled = process.env.ENABLE_EXTERNAL_AI_INSIGHTS === "true";
 
-  if (openaiKey && totalReqs > 0) {
+  if (externalAIEnabled && openaiKey && totalReqs > 0) {
     const statsDesc = Object.entries(appStats)
       .map(([app, s]) => `${app}: ${s.requests} requests (${s.blocked} blocked)`)
       .join(", ");
@@ -92,7 +93,11 @@ export async function POST() {
       user_id: userId,
       job_type: "daily_summary",
       content: insightText,
-      metadata: { total_requests: totalReqs, total_blocked: totalBlocked, app_stats: appStats },
+      metadata: {
+        total_requests: totalReqs,
+        total_blocked: totalBlocked,
+        app_stats: appStats,
+      },
     })
     .select()
     .single();
@@ -125,5 +130,12 @@ function fallbackInsight(
   )[0];
   const blockedPct = Math.round((totalBlocked / totalReqs) * 100);
   const timeSaved = Math.round(totalBlocked * 0.5);
-  return `Rinkler blocked ${blockedPct}% of distracting content today (~${timeSaved} min saved). ${topApp ? `Your most active app was ${topApp[0]} with ${topApp[1].requests} requests.` : ""}`;
+  const topAppText = topApp
+    ? `Your most active app was ${topApp[0]} with ${topApp[1].requests} requests.`
+    : "";
+  const baseText =
+    `Rinkler blocked ${blockedPct}% of distracting content today ` +
+    `(~${timeSaved} min saved).`;
+
+  return `${baseText} ${topAppText}`.trim();
 }
