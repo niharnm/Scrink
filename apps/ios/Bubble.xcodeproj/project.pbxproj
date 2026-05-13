@@ -18,6 +18,7 @@
 		102A0000000000000000000F /* Tun2SocksKit in Frameworks */ = {isa = PBXBuildFile; productRef = 102A00000000000000000010 /* Tun2SocksKit */; };
 		102A00000000000000000011 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000012 /* NetworkExtension.framework */; };
 		102A00000000000000000022 /* TunnelLogReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000023 /* TunnelLogReader.swift */; };
+		102A00000000000000000024 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000025 /* Security.framework */; };
 		175B55D8F51D048B9FEFF95B /* BlockedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64DB7E7C0A427B4897386603 /* BlockedApp.swift */; };
 		1FDC9A48B273F1E91F3216E3 /* LandingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DECDACBEC0EF265C1407E1A /* LandingPage.swift */; };
 		26827D46EC95D3B01646A294 /* SK Pupok Solid 400.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A3FA39A10AAC758E79448541 /* SK Pupok Solid 400.ttf */; };
@@ -106,6 +107,7 @@
 		102A00000000000000000016 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		102A00000000000000000017 /* RinklerTunnel.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RinklerTunnel.entitlements; sourceTree = "<group>"; };
 		102A00000000000000000023 /* TunnelLogReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunnelLogReader.swift; sourceTree = "<group>"; };
+		102A00000000000000000025 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		04B4EC3C0F908E65D671403F /* AppOptionArcs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOptionArcs.swift; sourceTree = "<group>"; };
 		04C4502521522E3E2BE93F73 /* AppCluster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCluster.swift; sourceTree = "<group>"; };
 		106E25D023D63E8571E5D893 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				102A00000000000000000024 /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -204,6 +207,7 @@
 			isa = PBXGroup;
 			children = (
 				102A00000000000000000012 /* NetworkExtension.framework */,
+				102A00000000000000000025 /* Security.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

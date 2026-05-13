@@ -1,4 +1,5 @@
 import Foundation
+import Security
 
 struct SupabaseAuthSession: Codable, Equatable {
     let accessToken: String
@@ -28,32 +29,34 @@ enum SupabaseAuthError: LocalizedError {
 final class SupabaseAuthClient {
     static let shared = SupabaseAuthClient()
 
-    private let sessionKey = "rinkler.supabase.auth.session"
-    private let baseURL: URL
-    private let anonKey: String
+    private struct Configuration {
+        let baseURL: URL
+        let anonKey: String
+    }
+
+    private let keychainService = "com.rinkler.app.auth"
+    private let keychainAccount = "supabaseSession"
+    private let configuration: Configuration?
     private let urlSession: URLSession
-    private let userDefaults: UserDefaults
 
     init(
         urlSession: URLSession = .shared,
-        userDefaults: UserDefaults = .standard,
         bundle: Bundle = .main
     ) {
-        guard let urlString = bundle.infoDictionary?["SUPABASE_URL"] as? String,
+        if let urlString = bundle.infoDictionary?["SUPABASE_URL"] as? String,
               let url = URL(string: urlString),
               let key = bundle.infoDictionary?["SUPABASE_KEY"] as? String,
-              !key.isEmpty else {
-            fatalError("Missing SUPABASE_URL or SUPABASE_KEY in Info.plist. Check Secrets.xcconfig.")
+              !key.isEmpty {
+            self.configuration = Configuration(baseURL: url, anonKey: key)
+        } else {
+            self.configuration = nil
         }
 
-        self.baseURL = url
-        self.anonKey = key
         self.urlSession = urlSession
-        self.userDefaults = userDefaults
     }
 
     func sendMagicCode(email: String) async throws {
-        var request = authRequest(path: "otp")
+        var request = try authRequest(path: "otp")
         request.httpMethod = "POST"
         request.httpBody = try JSONEncoder().encode(OTPRequest(email: email))
 
@@ -61,7 +64,7 @@ final class SupabaseAuthClient {
     }
 
     func verifyEmailOTP(email: String, token: String) async throws -> SupabaseAuthSession {
-        var request = authRequest(path: "verify")
+        var request = try authRequest(path: "verify")
         request.httpMethod = "POST"
         request.httpBody = try JSONEncoder().encode(VerifyOTPRequest(email: email, token: token))
 
@@ -78,50 +81,75 @@ final class SupabaseAuthClient {
             userID: userID,
             email: response.user.email ?? email
         )
-        saveSession(session)
+        try saveSession(session)
         return session
     }
 
     func signOut() async {
         if let session = loadSession() {
-            var request = authRequest(path: "logout")
-            request.httpMethod = "POST"
-            request.setValue("Bearer \(session.accessToken)", forHTTPHeaderField: "Authorization")
-            _ = try? await urlSession.data(for: request)
+            if var request = try? authRequest(path: "logout") {
+                request.httpMethod = "POST"
+                request.setValue("Bearer \(session.accessToken)", forHTTPHeaderField: "Authorization")
+                _ = try? await urlSession.data(for: request)
+            }
         }
 
         clearSession()
     }
 
     func loadSession() -> SupabaseAuthSession? {
-        guard let data = userDefaults.data(forKey: sessionKey) else {
+        var query = keychainQuery()
+        query[kSecReturnData as String] = true
+        query[kSecMatchLimit as String] = kSecMatchLimitOne
+
+        var result: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        guard status == errSecSuccess, let data = result as? Data else {
             return nil
         }
 
         return try? JSONDecoder().decode(SupabaseAuthSession.self, from: data)
     }
 
-    private func saveSession(_ session: SupabaseAuthSession) {
-        guard let data = try? JSONEncoder().encode(session) else {
-            return
-        }
+    private func saveSession(_ session: SupabaseAuthSession) throws {
+        let data = try JSONEncoder().encode(session)
+        SecItemDelete(keychainQuery() as CFDictionary)
 
-        userDefaults.set(data, forKey: sessionKey)
+        var item = keychainQuery()
+        item[kSecValueData as String] = data
+        item[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+
+        let status = SecItemAdd(item as CFDictionary, nil)
+        guard status == errSecSuccess else {
+            throw SupabaseAuthError.requestFailed("Could not save your session securely.")
+        }
     }
 
     private func clearSession() {
-        userDefaults.removeObject(forKey: sessionKey)
+        SecItemDelete(keychainQuery() as CFDictionary)
     }
 
-    private func authRequest(path: String) -> URLRequest {
-        let url = baseURL
+    private func keychainQuery() -> [String: Any] {
+        [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: keychainService,
+            kSecAttrAccount as String: keychainAccount
+        ]
+    }
+
+    private func authRequest(path: String) throws -> URLRequest {
+        guard let configuration else {
+            throw SupabaseAuthError.missingConfiguration
+        }
+
+        let url = configuration.baseURL
             .appendingPathComponent("auth")
             .appendingPathComponent("v1")
             .appendingPathComponent(path)
 
         var request = URLRequest(url: url)
-        request.setValue(anonKey, forHTTPHeaderField: "apikey")
-        request.setValue("Bearer \(anonKey)", forHTTPHeaderField: "Authorization")
+        request.setValue(configuration.anonKey, forHTTPHeaderField: "apikey")
+        request.setValue("Bearer \(configuration.anonKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         return request
     }

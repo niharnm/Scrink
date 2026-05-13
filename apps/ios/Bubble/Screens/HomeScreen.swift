@@ -19,9 +19,7 @@ struct HomeScreen: View {
                 onTapApp: { app in
                     onSelectApp(app)
                 },
-                onTapAdd: {
-                    print("Add app tapped")
-                },
+                onTapAdd: {},
                 showAddButton: false
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)

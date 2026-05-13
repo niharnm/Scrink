@@ -84,16 +84,6 @@ struct SkyBackgroundView: View {
                         .frame(width: screenWidth)
                         .clipped()
                         .onAppear {
-                            // Debug: Print the dimensions to understand what we're working with
-                            print("Image natural size: \(imageNaturalWidth) x \(imageNaturalHeight)")
-                            print("Screen width: \(screenWidth)")
-                            print("Target display height: \(targetDisplayHeight)")
-                            print("Scale factor: \(scaleFactor)")
-                            print("Scaled width (display): \(scaledWidth)")
-                            print("Actual spacing between images: \(actualSpacing)")
-                            print("Cycle width: \(cycleWidth)")
-                            print("Cycle width in image widths: \(cycleWidth / scaledWidth)")
-                            
                             // Start seamless infinite scroll - wrap at cycle width
                             // Using actualSpacing to match where images actually repeat (prevents jumping)
                             // Duration is 10.0 seconds (twice as slow as before)
