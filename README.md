@@ -8,7 +8,6 @@ Rinkler is an iOS network-filtering app for keeping useful app features availabl
 - `apps/web` - Next.js dashboard for traffic summaries and insights.
 - `packages/mcp-server` - Supabase-backed MCP tools for blocker state.
 - `packages/assets` - shared static assets.
-- `quinn` - local filtering/proxy prototype code.
 - `supabase` - database migrations.
 
 ## Local Setup
