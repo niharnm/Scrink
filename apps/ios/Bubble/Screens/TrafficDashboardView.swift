@@ -11,6 +11,8 @@ struct TrafficDashboardView: View {
 
             ScrollView {
                 VStack(spacing: BubbleSpacing.md) {
+                    SyncStatusBanner(status: monitor.syncStatus)
+
                     // Section 1: Stats counters (tappable)
                     StatsCountersView(stats: monitor.current?.stats, events: monitor.events)
 
@@ -46,6 +48,91 @@ struct TrafficDashboardView: View {
         }
         .onAppear { monitor.startPolling() }
         .onDisappear { monitor.stopPolling() }
+    }
+}
+
+// MARK: - Sync Status
+
+private struct SyncStatusBanner: View {
+    let status: TrafficSyncStatus
+
+    private var iconName: String {
+        switch status {
+        case .waitingForTraffic:
+            return "antenna.radiowaves.left.and.right.slash"
+        case .notAuthenticated:
+            return "person.crop.circle.badge.exclamationmark"
+        case .syncing:
+            return "arrow.triangle.2.circlepath"
+        case .synced:
+            return "checkmark.icloud"
+        case .failed:
+            return "exclamationmark.triangle"
+        }
+    }
+
+    private var title: String {
+        switch status {
+        case .waitingForTraffic:
+            return "Waiting for VPN traffic"
+        case .notAuthenticated:
+            return "Sign in to sync traffic"
+        case .syncing:
+            return "Syncing traffic"
+        case .synced(_, let uploadedCount):
+            return uploadedCount > 0 ? "\(uploadedCount) events saved" : "Cloud sync current"
+        case .failed:
+            return "Cloud sync failed"
+        }
+    }
+
+    private var subtitle: String {
+        switch status {
+        case .waitingForTraffic:
+            return "Start protection and open an app to collect live activity."
+        case .notAuthenticated:
+            return "Your local data is still visible on this device."
+        case .syncing:
+            return "Saving recent activity to your Rinkler account."
+        case .synced(let date, _):
+            return "Last checked \(date.formatted(date: .omitted, time: .shortened))"
+        case .failed(let message):
+            return message
+        }
+    }
+
+    private var color: Color {
+        switch status {
+        case .failed, .notAuthenticated:
+            return .orange
+        case .synced:
+            return .green
+        default:
+            return BubbleColors.skyBlue
+        }
+    }
+
+    var body: some View {
+        HStack(spacing: BubbleSpacing.sm) {
+            Image(systemName: iconName)
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundColor(color)
+                .frame(width: 24)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title)
+                    .font(BubbleFonts.coolvetica(size: 16))
+                    .foregroundColor(.white)
+                Text(subtitle)
+                    .font(BubbleFonts.coolvetica(size: 12))
+                    .foregroundColor(BubbleColors.white60)
+                    .lineLimit(2)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(BubbleSpacing.md)
+        .background(Color.white.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 

@@ -41,6 +41,7 @@
 		6B2C4D5E6F708192A3B4C5D6 /* TrafficDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D3E5F60718293A4B5C6D7E8 /* TrafficDashboardView.swift */; };
 		6C3D5E6F708192A3B4C5D6E7 /* TrafficMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E4F60718293A4B5C6D7E8F9 /* TrafficMonitor.swift */; };
 		6D4E6F708192A3B4C5D6E7F8 /* TrafficStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F50718293A4B5C6D7E8F901 /* TrafficStats.swift */; };
+		6D7E8F90123456789ABCDEF0 /* TrafficSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E7D6C5B4A392817160504 /* TrafficSyncService.swift */; };
 		6E5F708192A3B4C5D6E7F809 /* VPNManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0618293A4B5C6D7E8F90123 /* VPNManager.swift */; };
 		6C7C6CFB4CD7288B0D1F0A69 /* BlockingOptionsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EB2E25C599188EFFAA656AA /* BlockingOptionsScreen.swift */; };
 		7187CAA7759A0FB102770E7D /* SVGView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11372BC005F536F03A206A0C /* SVGView.swift */; };
@@ -149,6 +150,7 @@
 		9D3E5F60718293A4B5C6D7E8 /* TrafficDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficDashboardView.swift; sourceTree = "<group>"; };
 		9E4F60718293A4B5C6D7E8F9 /* TrafficMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficMonitor.swift; sourceTree = "<group>"; };
 		9F50718293A4B5C6D7E8F901 /* TrafficStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficStats.swift; sourceTree = "<group>"; };
+		9F8E7D6C5B4A392817160504 /* TrafficSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficSyncService.swift; sourceTree = "<group>"; };
 		9D9EE6D24AD0B696F8DCB904 /* MagicSignInService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicSignInService.swift; sourceTree = "<group>"; };
 		9DE9069ED02F96B6B3BF4062 /* DialSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialSelector.swift; sourceTree = "<group>"; };
 		A30EEB2AB48FAE0B765F046C /* SVGCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGCache.swift; sourceTree = "<group>"; };
@@ -291,6 +293,7 @@
 				106E25D023D63E8571E5D893 /* Info.plist */,
 				9E4F60718293A4B5C6D7E8F9 /* TrafficMonitor.swift */,
 				9F50718293A4B5C6D7E8F901 /* TrafficStats.swift */,
+				9F8E7D6C5B4A392817160504 /* TrafficSyncService.swift */,
 				102A00000000000000000023 /* TunnelLogReader.swift */,
 				A0618293A4B5C6D7E8F90123 /* VPNManager.swift */,
 				1483554F60FA7FE0E51245E7 /* .claude */,
@@ -524,6 +527,7 @@
 				6B2C4D5E6F708192A3B4C5D6 /* TrafficDashboardView.swift in Sources */,
 				6C3D5E6F708192A3B4C5D6E7 /* TrafficMonitor.swift in Sources */,
 				6D4E6F708192A3B4C5D6E7F8 /* TrafficStats.swift in Sources */,
+				6D7E8F90123456789ABCDEF0 /* TrafficSyncService.swift in Sources */,
 				102A00000000000000000022 /* TunnelLogReader.swift in Sources */,
 				6E5F708192A3B4C5D6E7F809 /* VPNManager.swift in Sources */,
 			);

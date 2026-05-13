@@ -5,12 +5,19 @@ struct SupabaseAuthSession: Codable, Equatable {
     let accessToken: String
     let refreshToken: String?
     let expiresIn: Int?
+    let expiresAt: Date?
     let userID: String
     let email: String
+
+    var shouldRefresh: Bool {
+        guard let expiresAt else { return false }
+        return expiresAt.timeIntervalSinceNow < 120
+    }
 }
 
 enum SupabaseAuthError: LocalizedError {
     case missingConfiguration
+    case notAuthenticated
     case invalidResponse
     case requestFailed(String)
 
@@ -18,6 +25,8 @@ enum SupabaseAuthError: LocalizedError {
         switch self {
         case .missingConfiguration:
             return "Missing Supabase configuration."
+        case .notAuthenticated:
+            return "Please sign in again."
         case .invalidResponse:
             return "Supabase returned an invalid response."
         case .requestFailed(let message):
@@ -78,11 +87,45 @@ final class SupabaseAuthClient {
             accessToken: accessToken,
             refreshToken: response.refreshToken,
             expiresIn: response.expiresIn,
+            expiresAt: response.expiresIn.map { Date().addingTimeInterval(TimeInterval($0)) },
             userID: userID,
             email: response.user.email ?? email
         )
         try saveSession(session)
         return session
+    }
+
+    func authenticatedRESTRequest(
+        path: String,
+        method: String = "GET",
+        queryItems: [URLQueryItem] = []
+    ) async throws -> (request: URLRequest, session: SupabaseAuthSession) {
+        guard let configuration else {
+            throw SupabaseAuthError.missingConfiguration
+        }
+
+        let session = try await validSession()
+        let baseURL = configuration.baseURL
+            .appendingPathComponent("rest")
+            .appendingPathComponent("v1")
+            .appendingPathComponent(path)
+
+        guard var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false) else {
+            throw SupabaseAuthError.invalidResponse
+        }
+        components.queryItems = queryItems.isEmpty ? nil : queryItems
+
+        guard let url = components.url else {
+            throw SupabaseAuthError.invalidResponse
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = method
+        request.timeoutInterval = 20
+        request.setValue(configuration.anonKey, forHTTPHeaderField: "apikey")
+        request.setValue("Bearer \(session.accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        return (request, session)
     }
 
     func signOut() async {
@@ -109,6 +152,53 @@ final class SupabaseAuthClient {
         }
 
         return try? JSONDecoder().decode(SupabaseAuthSession.self, from: data)
+    }
+
+    private func validSession() async throws -> SupabaseAuthSession {
+        guard let session = loadSession() else {
+            throw SupabaseAuthError.notAuthenticated
+        }
+
+        guard session.shouldRefresh else {
+            return session
+        }
+
+        return try await refreshSession(session)
+    }
+
+    private func refreshSession(_ session: SupabaseAuthSession) async throws -> SupabaseAuthSession {
+        guard let refreshToken = session.refreshToken, !refreshToken.isEmpty else {
+            clearSession()
+            throw SupabaseAuthError.notAuthenticated
+        }
+
+        var request = try authRequest(path: "token")
+        guard let tokenURL = request.url,
+              var components = URLComponents(url: tokenURL, resolvingAgainstBaseURL: false) else {
+            throw SupabaseAuthError.invalidResponse
+        }
+        components.queryItems = [URLQueryItem(name: "grant_type", value: "refresh_token")]
+        request.url = components.url
+        request.httpMethod = "POST"
+        request.httpBody = try JSONEncoder().encode(RefreshSessionRequest(refreshToken: refreshToken))
+
+        let response = try await send(request, decodeAs: VerifyOTPResponse.self)
+        guard let accessToken = response.accessToken,
+              let userID = response.user.id else {
+            clearSession()
+            throw SupabaseAuthError.invalidResponse
+        }
+
+        let refreshed = SupabaseAuthSession(
+            accessToken: accessToken,
+            refreshToken: response.refreshToken ?? refreshToken,
+            expiresIn: response.expiresIn,
+            expiresAt: response.expiresIn.map { Date().addingTimeInterval(TimeInterval($0)) },
+            userID: userID,
+            email: response.user.email ?? session.email
+        )
+        try saveSession(refreshed)
+        return refreshed
     }
 
     private func saveSession(_ session: SupabaseAuthSession) throws {
@@ -196,6 +286,14 @@ private struct VerifyOTPRequest: Encodable {
     let email: String
     let token: String
     let type = "email"
+}
+
+private struct RefreshSessionRequest: Encodable {
+    let refreshToken: String
+
+    enum CodingKeys: String, CodingKey {
+        case refreshToken = "refresh_token"
+    }
 }
 
 private struct VerifyOTPResponse: Decodable {

@@ -6,8 +6,11 @@ final class TrafficMonitor: ObservableObject {
     @Published var current: TrafficSnapshot?
     @Published var history: [TrafficSnapshot] = []
     @Published var events: [TrafficEvent] = []
+    @Published var syncStatus: TrafficSyncStatus = .waitingForTraffic
 
     private var timer: AnyCancellable?
+    private var syncTask: Task<Void, Never>?
+    private let syncService = TrafficSyncService()
     private let decoder: JSONDecoder = {
         let d = JSONDecoder()
         d.dateDecodingStrategy = .iso8601
@@ -31,12 +34,15 @@ final class TrafficMonitor: ObservableObject {
     func stopPolling() {
         timer?.cancel()
         timer = nil
+        syncTask?.cancel()
+        syncTask = nil
     }
 
     func clearHistory() {
         history.removeAll()
         events.removeAll()
         current = nil
+        syncStatus = .waitingForTraffic
     }
 
     // Cumulative bytes down from history
@@ -62,6 +68,20 @@ final class TrafficMonitor: ObservableObject {
                 current = trafficData.snapshots.last
             }
             events = trafficData.events
+            scheduleSync(for: trafficData.events)
+        }
+    }
+
+    private func scheduleSync(for events: [TrafficEvent]) {
+        guard syncTask == nil else { return }
+
+        syncStatus = .syncing
+        syncTask = Task { [syncService] in
+            let status = await syncService.uploadNewEvents(events)
+            await MainActor.run { [weak self] in
+                self?.syncStatus = status
+                self?.syncTask = nil
+            }
         }
     }
 }

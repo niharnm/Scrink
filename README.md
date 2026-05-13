@@ -17,7 +17,7 @@ Create `apps/ios/Secrets.xcconfig` from `apps/ios/Secrets.xcconfig.example`:
 
 ```xcconfig
 SUPABASE_URL = https:/$()/YOUR_PROJECT.supabase.co
-SUPABASE_KEY = YOUR_SUPABASE_ANON_KEY
+SUPABASE_KEY = YOUR_SUPABASE_PUBLISHABLE_KEY
 ```
 
 Do not commit real keys. The checked-in `.gitignore` keeps local secrets and build output out of git.
@@ -38,10 +38,12 @@ Apply the Supabase schema before using the dashboard or MCP server:
 supabase db push
 ```
 
+The iOS app uploads terminal traffic events to `traffic_events` only after a user is signed in. The database trigger keeps hourly and daily `traffic_summaries` current for the web dashboard, so production does not need mock analytics rows.
+
 `ENABLE_EXTERNAL_AI_INSIGHTS` defaults to `false`. Leave it disabled unless you intentionally want dashboard summary statistics sent to the configured external AI provider.
 
 ## Release State
 
-Rinkler is not App Store-ready yet. The iOS project now includes the main app target and packet tunnel extension target, but release still requires real Apple Developer signing, Network Extension entitlement approval, Supabase credentials, and physical-device VPN testing.
+Rinkler builds unsigned for iPhoneOS with the app and packet tunnel extension. Release still requires Apple Developer signing/provisioning, Network Extension entitlement approval, App Store Connect app setup, and physical-device VPN testing with a signed build.
 
 See `RELEASE.md` for the remaining production checklist.
