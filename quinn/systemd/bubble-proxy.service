@@ -1,0 +1,24 @@
+# Application-layer proxy (mitmproxy with VeilHeuristicBlocker).
+# Install: copy to /etc/systemd/system/, edit BUBBLE_ROOT below if not /opt/bubble, then:
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now bubble-proxy
+# Create user: useradd -r -s /usr/sbin/nologin bubble
+# Ensure /opt/bubble (or BUBBLE_ROOT) has .env and is readable by bubble.
+
+[Unit]
+Description=Bubble VPN proxy (mitmproxy)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment=BUBBLE_ROOT=/opt/bubble
+EnvironmentFile=-/etc/default/bubble
+ExecStart=/bin/sh -c 'exec "${BUBBLE_ROOT}/scripts/run_proxy.sh" dump'
+Restart=on-failure
+RestartSec=5
+User=bubble
+Group=bubble
+
+[Install]
+WantedBy=multi-user.target

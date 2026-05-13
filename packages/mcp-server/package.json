@@ -1,0 +1,24 @@
+{
+  "name": "@bubble/mcp-server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "node --env-file=../../.env --import=tsx src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/index.js",
+    "clean": "rm -rf dist .turbo node_modules"
+  },
+  "dependencies": {
+    "fastmcp": "^3",
+    "@supabase/supabase-js": "^2",
+    "zod": "^3.25"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "tsx": "^4",
+    "typescript": "^5"
+  }
+}

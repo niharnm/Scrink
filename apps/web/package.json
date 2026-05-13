@@ -1,0 +1,32 @@
+{
+  "name": "web",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf .next .turbo node_modules"
+  },
+  "dependencies": {
+    "@bubble/assets": "workspace:*",
+    "@supabase/ssr": "^0.8",
+    "@supabase/supabase-js": "^2",
+    "framer-motion": "^12.34.0",
+    "next": "^15",
+    "react": "^19",
+    "react-dom": "^19",
+    "recharts": "^3.7.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "^15",
+    "typescript": "^5"
+  }
+}

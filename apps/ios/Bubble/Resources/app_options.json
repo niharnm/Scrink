@@ -1,0 +1,57 @@
+{
+  "instagram": {
+    "appId": "instagram",
+    "options": [
+      {
+        "id": "reels",
+        "label": "reels",
+        "isSelected": false
+      },
+      {
+        "id": "msgs",
+        "label": "msgs",
+        "isSelected": false
+      },
+      {
+        "id": "profiles",
+        "label": "profiles",
+        "isSelected": false
+      },
+      {
+        "id": "explore",
+        "label": "explore",
+        "isSelected": false
+      }
+    ]
+  },
+  "shield": {
+    "appId": "shield",
+    "options": [
+      {
+        "id": "alerts",
+        "label": "alerts",
+        "isSelected": false
+      },
+      {
+        "id": "feeds",
+        "label": "feeds",
+        "isSelected": false
+      }
+    ]
+  },
+  "kalshi": {
+    "appId": "kalshi",
+    "options": [
+      {
+        "id": "trades",
+        "label": "trades",
+        "isSelected": false
+      },
+      {
+        "id": "notifs",
+        "label": "notifs",
+        "isSelected": false
+      }
+    ]
+  }
+}

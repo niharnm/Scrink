@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "bubble": {
+      "type": "http",
+      "url": "http://localhost:8080/mcp",
+      "headers": {
+        "Authorization": "Bearer ${MCP_API_KEY}"
+      }
+    }
+  }
+}

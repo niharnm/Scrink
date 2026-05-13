@@ -1,0 +1,18 @@
+export const APP_META: Record<string, { name: string; icon: string }> = {
+  instagram: { name: "Instagram", icon: "/images/instagram.svg" },
+  fanduel: { name: "FanDuel", icon: "/images/fanduel.svg" },
+  kalshi: { name: "Kalshi", icon: "/images/kalshi.svg" },
+  tiktok: { name: "TikTok", icon: "T" },
+  youtube: { name: "YouTube", icon: "Y" },
+  twitter: { name: "Twitter", icon: "X" },
+  reddit: { name: "Reddit", icon: "R" },
+  snapchat: { name: "Snapchat", icon: "S" },
+  google: { name: "Google", icon: "G" },
+  education: { name: "Education", icon: "E" },
+  infrastructure: { name: "Infrastructure", icon: "I" },
+  analytics: { name: "Analytics", icon: "A" },
+  productivity: { name: "Productivity", icon: "P" },
+  ai: { name: "AI", icon: "A" },
+  social: { name: "Social", icon: "S" },
+  other: { name: "Other", icon: "?" },
+};

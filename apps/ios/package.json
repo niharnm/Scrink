@@ -1,0 +1,13 @@
+{
+  "name": "@bubble/ios",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo 'iOS build — use Xcode or xcodebuild'",
+    "lint": "echo 'iOS lint — use SwiftLint'",
+    "clean": "rm -rf build DerivedData"
+  },
+  "dependencies": {
+    "@bubble/assets": "workspace:*"
+  }
+}
