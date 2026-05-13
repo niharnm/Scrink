@@ -19,6 +19,8 @@
 		102A00000000000000000011 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000012 /* NetworkExtension.framework */; };
 		102A00000000000000000022 /* TunnelLogReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000023 /* TunnelLogReader.swift */; };
 		102A00000000000000000024 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000025 /* Security.framework */; };
+		102A00000000000000000026 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000027 /* PrivacyInfo.xcprivacy */; };
+		102A00000000000000000028 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000029 /* PrivacyInfo.xcprivacy */; };
 		175B55D8F51D048B9FEFF95B /* BlockedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64DB7E7C0A427B4897386603 /* BlockedApp.swift */; };
 		1FDC9A48B273F1E91F3216E3 /* LandingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DECDACBEC0EF265C1407E1A /* LandingPage.swift */; };
 		26827D46EC95D3B01646A294 /* SK Pupok Solid 400.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A3FA39A10AAC758E79448541 /* SK Pupok Solid 400.ttf */; };
@@ -109,6 +111,8 @@
 		102A00000000000000000017 /* RinklerTunnel.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RinklerTunnel.entitlements; sourceTree = "<group>"; };
 		102A00000000000000000023 /* TunnelLogReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunnelLogReader.swift; sourceTree = "<group>"; };
 		102A00000000000000000025 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		102A00000000000000000027 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		102A00000000000000000029 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		04B4EC3C0F908E65D671403F /* AppOptionArcs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOptionArcs.swift; sourceTree = "<group>"; };
 		04C4502521522E3E2BE93F73 /* AppCluster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCluster.swift; sourceTree = "<group>"; };
 		106E25D023D63E8571E5D893 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -196,6 +200,7 @@
 				102A0000000000000000000E /* BubbleConstants.swift */,
 				102A00000000000000000016 /* Info.plist */,
 				102A00000000000000000004 /* PacketTunnelProvider.swift */,
+				102A00000000000000000027 /* PrivacyInfo.xcprivacy */,
 				102A00000000000000000006 /* ReelsBlockFilter.swift */,
 				102A00000000000000000017 /* RinklerTunnel.entitlements */,
 				102A00000000000000000008 /* SOCKSProxyServer.swift */,
@@ -295,6 +300,7 @@
 				9F50718293A4B5C6D7E8F901 /* TrafficStats.swift */,
 				9F8E7D6C5B4A392817160504 /* TrafficSyncService.swift */,
 				102A00000000000000000023 /* TunnelLogReader.swift */,
+				102A00000000000000000029 /* PrivacyInfo.xcprivacy */,
 				A0618293A4B5C6D7E8F90123 /* VPNManager.swift */,
 				1483554F60FA7FE0E51245E7 /* .claude */,
 				DCECA00CFCFED8326D1C3563 /* Components */,
@@ -472,6 +478,7 @@
 				8CC77FCD2AFCCE05480781D9 /* icon_rect.png in Resources */,
 				9FB50AF4C11375E57288493D /* instagram.svg in Resources */,
 				A9C259B3E6CF8FA06E8DFED8 /* kalshi.svg in Resources */,
+				102A00000000000000000028 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -479,6 +486,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				102A00000000000000000026 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
