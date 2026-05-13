@@ -1,6 +1,5 @@
 import Foundation
 import Observation
-import Supabase
 
 @Observable
 class MagicSignInService {
@@ -21,7 +20,7 @@ class MagicSignInService {
         }
 
         do {
-            try await supabaseClient.auth.signInWithOTP(email: email)
+            try await SupabaseAuthClient.shared.sendMagicCode(email: email)
             self.email = email
             self.isCodeSent = true
         } catch {
@@ -33,7 +32,7 @@ class MagicSignInService {
         isLoading = false
     }
 
-    func verifyCode(_ code: String) async throws -> Bool {
+    func verifyCode(_ code: String, email: String) async throws -> Bool {
         isLoading = true
         errorMessage = nil
 
@@ -45,11 +44,8 @@ class MagicSignInService {
         }
 
         do {
-            try await supabaseClient.auth.verifyOTP(
-                email: email,
-                token: cleanedCode,
-                type: .email
-            )
+            _ = try await SupabaseAuthClient.shared.verifyEmailOTP(email: email, token: cleanedCode)
+            self.email = email
             self.code = cleanedCode
             isLoading = false
             return true

@@ -19,7 +19,7 @@ struct CodeVerificationScreen: View {
                 
                 // Title block
                 VStack(alignment: .leading, spacing: BubbleSpacing.xs) {
-                    Text("BUBBLE")
+                    Text("RINKLER")
                         .font(BubbleFonts.titleLarge)
                         .foregroundStyle(.white)
                     
@@ -95,9 +95,9 @@ struct CodeVerificationScreen: View {
                     Button(action: {
                         Task {
                             do {
-                                let isValid = try await service.verifyCode(code)
+                                let isValid = try await service.verifyCode(code, email: email)
                                 if isValid {
-                                    authStore.login(email: email)
+                                    authStore.refreshFromStoredSession()
                                     onVerified()
                                 }
                             } catch {

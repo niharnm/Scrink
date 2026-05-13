@@ -13,9 +13,6 @@ packages:
   Tun2SocksKit:
     url: https://github.com/EbrahimTahernejad/Tun2SocksKit
     exactVersion: "5.14.4"
-  Supabase:
-    url: https://github.com/supabase/supabase-swift
-    from: "2.0.0"
 
 targets:
   Rinkler:
@@ -24,7 +21,6 @@ targets:
     sources:
       - path: Bubble
     dependencies:
-      - package: Supabase
       - target: RinklerTunnel
       - sdk: NetworkExtension.framework
     info:

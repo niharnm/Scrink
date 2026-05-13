@@ -1,6 +1,5 @@
 import Foundation
 import Observation
-import Supabase
 
 @Observable
 final class AuthStore {
@@ -13,17 +12,23 @@ final class AuthStore {
     }
 
     func logout() async {
-        try? await supabaseClient.auth.signOut()
+        await SupabaseAuthClient.shared.signOut()
         isLoggedIn = false
         userEmail = ""
     }
 
     func listenForAuthChanges() async {
-        for await state in supabaseClient.auth.authStateChanges {
-            if [.initialSession, .signedIn, .signedOut].contains(state.event) {
-                isLoggedIn = state.session != nil
-                userEmail = state.session?.user.email ?? ""
-            }
+        refreshFromStoredSession()
+    }
+
+    func refreshFromStoredSession() {
+        guard let session = SupabaseAuthClient.shared.loadSession() else {
+            isLoggedIn = false
+            userEmail = ""
+            return
         }
+
+        isLoggedIn = true
+        userEmail = session.email
     }
 }
