@@ -48,7 +48,7 @@ export default function HeaderBar({ email, onSignOut }: HeaderBarProps) {
 
   return (
     <header style={headerStyle}>
-      <div style={titleStyle}>BUBBLE</div>
+      <div style={titleStyle}>Rinkler</div>
       <div style={rightStyle}>
         {email && <span style={emailStyle}>{email}</span>}
         {onSignOut && (
