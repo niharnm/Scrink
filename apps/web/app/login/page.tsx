@@ -1,7 +1,7 @@
 "use client";
 
-import { useActionState, useState, CSSProperties } from "react";
-import { signIn, signUp } from "./actions";
+import { useActionState, useEffect, useState, CSSProperties } from "react";
+import { requestEmailCode, verifyEmailCode } from "./actions";
 import SkyBackground from "@/components/dashboard/SkyBackground";
 
 const theme = {
@@ -15,13 +15,19 @@ const theme = {
 };
 
 export default function LoginPage() {
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [signInState, signInAction, signInPending] = useActionState(signIn, null);
-  const [signUpState, signUpAction, signUpPending] = useActionState(signUp, null);
+  const [requestState, requestAction, requestPending] = useActionState(requestEmailCode, null);
+  const [verifyState, verifyAction, verifyPending] = useActionState(verifyEmailCode, null);
+  const [codeInput, setCodeInput] = useState("");
+  const [callbackError, setCallbackError] = useState(false);
 
-  const action = isSignUp ? signUpAction : signInAction;
-  const pending = isSignUp ? signUpPending : signInPending;
-  const state = isSignUp ? signUpState : signInState;
+  const state = verifyState || requestState;
+  const email = state?.email || "";
+  const shouldEnterCode = state?.step === "code";
+  const isPending = requestPending || verifyPending;
+  const statusMessage = state && "message" in state ? state.message : null;
+  useEffect(() => {
+    setCallbackError(new URLSearchParams(window.location.search).has("error"));
+  }, []);
 
   const containerStyle: CSSProperties = {
     display: "flex",
@@ -85,8 +91,8 @@ export default function LoginPage() {
     color: theme.white,
     fontFamily: theme.display,
     fontSize: 22,
-    cursor: pending ? "not-allowed" : "pointer",
-    opacity: pending ? 0.6 : 1,
+    cursor: isPending ? "not-allowed" : "pointer",
+    opacity: isPending ? 0.6 : 1,
     transition: "opacity 0.2s ease",
   };
 
@@ -106,7 +112,7 @@ export default function LoginPage() {
     marginTop: 16,
   };
 
-  const toggleStyle: CSSProperties = {
+  const helperStyle: CSSProperties = {
     fontFamily: theme.body,
     fontSize: 15,
     color: theme.white60,
@@ -114,7 +120,7 @@ export default function LoginPage() {
     marginTop: 24,
   };
 
-  const toggleBtnStyle: CSSProperties = {
+  const linkButtonStyle: CSSProperties = {
     background: "none",
     border: "none",
     color: theme.white,
@@ -132,7 +138,7 @@ export default function LoginPage() {
           <div style={titleStyle}>Rinkler</div>
           <div style={subtitleStyle}>keep the useful parts.</div>
 
-          <form action={action}>
+          <form action={requestAction} style={{ display: shouldEnterCode ? "none" : "block" }}>
             <div style={{ marginBottom: 20 }}>
               <label style={labelStyle}>Email</label>
               <input
@@ -141,36 +147,81 @@ export default function LoginPage() {
                 placeholder="you@example.com"
                 required
                 autoCapitalize="none"
+                defaultValue={email}
                 style={inputStyle}
               />
             </div>
-            <div style={{ marginBottom: 32 }}>
-              <label style={labelStyle}>Password</label>
-              <input
-                name="password"
-                type="password"
-                placeholder="••••••"
-                required
-                minLength={6}
-                style={inputStyle}
-              />
-            </div>
-            <button type="submit" disabled={pending} style={buttonStyle}>
-              {pending ? "..." : isSignUp ? "Sign Up" : "Sign In"}
+            <button type="submit" disabled={requestPending} style={buttonStyle}>
+              {requestPending ? "..." : "Send Code"}
             </button>
           </form>
 
-          {state?.error && <p style={errorStyle}>{state.error}</p>}
-          {state && "message" in state && state.message && (
-            <p style={messageStyle}>{state.message}</p>
+          {shouldEnterCode && (
+            <form action={verifyAction}>
+              <input type="hidden" name="email" value={email} />
+              <div style={{ marginBottom: 20 }}>
+                <label style={labelStyle}>Verification code</label>
+                <input
+                  name="code"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  placeholder="000000"
+                  required
+                  maxLength={6}
+                  value={codeInput}
+                  onChange={(event) => {
+                    setCodeInput(event.target.value.replace(/\D/g, "").slice(0, 6));
+                  }}
+                  style={{
+                    ...inputStyle,
+                    textAlign: "center",
+                    letterSpacing: 6,
+                  }}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={verifyPending || codeInput.length !== 6}
+                style={{
+                  ...buttonStyle,
+                  opacity: verifyPending || codeInput.length !== 6 ? 0.6 : 1,
+                }}
+              >
+                {verifyPending ? "..." : "Verify"}
+              </button>
+            </form>
           )}
 
-          <p style={toggleStyle}>
-            {isSignUp ? "Already have an account?" : "Need an account?"}{" "}
-            <button onClick={() => setIsSignUp(!isSignUp)} style={toggleBtnStyle}>
-              {isSignUp ? "Sign In" : "Sign Up"}
-            </button>
-          </p>
+          {state?.error && <p style={errorStyle}>{state.error}</p>}
+          {!state?.error && callbackError && (
+            <p style={errorStyle}>That sign-in link could not be verified. Request a new code.</p>
+          )}
+          {statusMessage && (
+            <p style={messageStyle}>{statusMessage}</p>
+          )}
+
+          {shouldEnterCode && (
+            <form action={requestAction}>
+              <input type="hidden" name="email" value={email} />
+              <p style={helperStyle}>
+                Wrong email?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCodeInput("");
+                    window.location.href = "/login";
+                  }}
+                  style={linkButtonStyle}
+                >
+                  Start over
+                </button>
+                {" "}or{" "}
+                <button type="submit" disabled={requestPending} style={linkButtonStyle}>
+                  resend code
+                </button>
+              </p>
+            </form>
+          )}
         </div>
       </div>
     </SkyBackground>

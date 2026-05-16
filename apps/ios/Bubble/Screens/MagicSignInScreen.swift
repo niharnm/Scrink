@@ -5,6 +5,7 @@ struct MagicSignInScreen: View {
     @State private var email: String = ""
     @State private var service = MagicSignInService()
     var onCodeSent: (String) -> Void
+    var onContinueOffline: () -> Void = {}
     
     var body: some View {
         ZStack {
@@ -66,7 +67,7 @@ struct MagicSignInScreen: View {
                         Task {
                             do {
                                 try await service.sendMagicCode(email: email)
-                                onCodeSent(email)
+                                onCodeSent(service.email)
                             } catch {
                                 // Error is handled by service.errorMessage
                             }
@@ -92,6 +93,17 @@ struct MagicSignInScreen: View {
                         )
                     }
                     .disabled(service.isLoading || email.isEmpty)
+                    .padding(.horizontal, BubbleSpacing.buttonHorizontalPadding)
+
+                    Button(action: onContinueOffline) {
+                        Text("Continue without cloud sync")
+                            .font(BubbleFonts.coolvetica(size: 16))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, BubbleSpacing.sm)
+                            .background(Color.white.opacity(0.12))
+                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                    }
                     .padding(.horizontal, BubbleSpacing.buttonHorizontalPadding)
                 }
                 

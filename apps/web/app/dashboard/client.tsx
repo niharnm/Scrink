@@ -26,6 +26,7 @@ interface DashboardClientProps {
 }
 
 type Range = "today" | "7d" | "30d";
+const adminToolsEnabled = process.env.NEXT_PUBLIC_ENABLE_DASHBOARD_ADMIN_TOOLS === "true";
 
 export default function DashboardClient({ email }: DashboardClientProps) {
   const router = useRouter();
@@ -87,6 +88,7 @@ export default function DashboardClient({ email }: DashboardClientProps) {
 
   const [rollupStatus, setRollupStatus] = useState<string | null>(null);
   const handleRollup = useCallback(async () => {
+    if (!adminToolsEnabled) return;
     setRollupStatus("running...");
     try {
       const res = await fetch("/api/analytics/rollup", { method: "POST" });
@@ -108,6 +110,7 @@ export default function DashboardClient({ email }: DashboardClientProps) {
 
   const [classifyStatus, setClassifyStatus] = useState<string | null>(null);
   const handleClassify = useCallback(async () => {
+    if (!adminToolsEnabled) return;
     setClassifyStatus("classifying...");
     try {
       const res = await fetch("/api/analytics/classify", { method: "POST" });
@@ -267,32 +270,34 @@ export default function DashboardClient({ email }: DashboardClientProps) {
           <HeatmapGrid data={data.heatmap} />
         </div>
 
-        <div style={{ ...sectionGap, display: "flex", alignItems: "center", gap: theme.spacing.md, flexWrap: "wrap" }}>
-          <button
-            onClick={handleRollup}
-            disabled={rollupStatus === "running..."}
-            style={adminButtonStyle(rollupStatus === "running...")}
-          >
-            {rollupStatus === "running..." ? "Rolling up..." : "Rollup Traffic"}
-          </button>
-          <button
-            onClick={handleClassify}
-            disabled={classifyStatus === "classifying..."}
-            style={adminButtonStyle(classifyStatus === "classifying...")}
-          >
-            {classifyStatus === "classifying..." ? "Classifying..." : "Classify Domains"}
-          </button>
-          {rollupStatus && rollupStatus !== "running..." && (
-            <span style={{ fontFamily: theme.fonts.body, fontSize: 12, color: theme.colors.white60 }}>
-              {rollupStatus}
-            </span>
-          )}
-          {classifyStatus && classifyStatus !== "classifying..." && (
-            <span style={{ fontFamily: theme.fonts.body, fontSize: 12, color: theme.colors.white60 }}>
-              {classifyStatus}
-            </span>
-          )}
-        </div>
+        {adminToolsEnabled && (
+          <div style={{ ...sectionGap, display: "flex", alignItems: "center", gap: theme.spacing.md, flexWrap: "wrap" }}>
+            <button
+              onClick={handleRollup}
+              disabled={rollupStatus === "running..."}
+              style={adminButtonStyle(rollupStatus === "running...")}
+            >
+              {rollupStatus === "running..." ? "Rolling up..." : "Rollup Traffic"}
+            </button>
+            <button
+              onClick={handleClassify}
+              disabled={classifyStatus === "classifying..."}
+              style={adminButtonStyle(classifyStatus === "classifying...")}
+            >
+              {classifyStatus === "classifying..." ? "Classifying..." : "Classify Domains"}
+            </button>
+            {rollupStatus && rollupStatus !== "running..." && (
+              <span style={{ fontFamily: theme.fonts.body, fontSize: 12, color: theme.colors.white60 }}>
+                {rollupStatus}
+              </span>
+            )}
+            {classifyStatus && classifyStatus !== "classifying..." && (
+              <span style={{ fontFamily: theme.fonts.body, fontSize: 12, color: theme.colors.white60 }}>
+                {classifyStatus}
+              </span>
+            )}
+          </div>
+        )}
 
         <InsightCard text={data.insight} onGenerate={handleGenerateInsight} />
       </div>

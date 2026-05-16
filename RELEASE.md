@@ -11,12 +11,14 @@
 - Replace `apps/ios/Secrets.xcconfig` local placeholders with the real Supabase project URL and publishable key.
 - Apply all migrations in `supabase/migrations` to the real Supabase project.
 - Test OTP login against the real Supabase project on a physical iPhone.
+- Test web dashboard OTP login with the same Supabase project used by iOS.
 - Test VPN start, stop, reconnect, and app relaunch behavior on a physical iPhone.
 - Test Instagram Reels, TikTok scroll, and YouTube playback with each filter enabled and disabled. The YouTube filter is domain-based and can affect regular YouTube videos, not only Shorts.
 - Confirm traffic events upload after sign-in and that the web dashboard summaries update without mock rows.
 - Confirm no sensitive traffic details, auth tokens, or user content are logged.
 - Update App Store privacy nutrition labels to match actual behavior. Do not claim data stays only on-device if Supabase auth or dashboard storage is enabled.
 - Keep `ENABLE_EXTERNAL_AI_INSIGHTS=false` unless users explicitly opt into sending aggregate dashboard stats to the configured AI provider.
+- Keep `ENABLE_DASHBOARD_ADMIN_TOOLS=false` and `NEXT_PUBLIC_ENABLE_DASHBOARD_ADMIN_TOOLS=false` for public deployments unless you are running a trusted maintenance session.
 
 ## App Store Connect Setup
 
@@ -28,9 +30,8 @@
 ## Current Verification Gaps
 
 - Unsigned iPhoneOS builds pass, but signed device install is blocked until Xcode has a signed-in Apple Developer account and matching provisioning profiles for the app, tunnel, and App Group.
-- The latest signed-build probe failed because no iOS App Development provisioning profiles exist for `com.rinkler.app` or `com.rinkler.app.tunnel`. I did not pass `-allowProvisioningUpdates` because that can create or modify Apple Developer resources.
-- Simulator listing is affected by an Xcode/CoreSimulator mismatch:
-  `CoreSimulator is out of date. Current version (1051.50.0) is older than build version (1051.54.0).`
+- The latest signed iPhoneOS build probe failed because both targets have an empty `DEVELOPMENT_TEAM`. After setting the Apple Developer Team ID, matching provisioning profiles and Network Extension/App Group entitlements are still required.
+- Simulator UX smoke testing is currently blocked on this machine because `xcrun simctl bootstatus` stalls during simulator data migration / LaunchServices migration.
 - The local machine still has no installed `pnpm`, `npm`, or `corepack`. Web checks were run with a temporary pnpm 9.15.4 executable under `/tmp`.
 - `pnpm audit --json` currently reports zero known dependency advisories after the lockfile refresh.
 

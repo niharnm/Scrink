@@ -43,6 +43,10 @@ struct BubbleApp: App {
                         MagicSignInScreen(
                             onCodeSent: { email in
                                 path.append(Route.codeVerification(email: email))
+                            },
+                            onContinueOffline: {
+                                path = NavigationPath()
+                                path.append(Route.home)
                             }
                         )
                     case .codeVerification(let email):

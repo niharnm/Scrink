@@ -1,11 +1,18 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { createClient as createServiceClient } from "@supabase/supabase-js";
+import {
+  areDashboardAdminToolsEnabled,
+  createAdminClient,
+} from "@/lib/supabase/admin";
 import { APP_META } from "@/lib/app-meta";
 
 const validCategories = new Set(Object.keys(APP_META));
 
 export async function POST() {
+  if (!areDashboardAdminToolsEnabled()) {
+    return NextResponse.json({ error: "disabled" }, { status: 404 });
+  }
+
   const supabase = await createClient();
   const { data: claimsData, error: authError } =
     await supabase.auth.getClaims();
@@ -16,10 +23,13 @@ export async function POST() {
 
   const userId = claimsData.claims.sub as string;
 
-  const admin = createServiceClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
+  const admin = createAdminClient();
+  if (!admin) {
+    return NextResponse.json(
+      { error: "admin client is not configured" },
+      { status: 500 }
+    );
+  }
 
   const { data: hostRows, error: hostErr } = await admin
     .from("traffic_events")

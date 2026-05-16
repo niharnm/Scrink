@@ -1,10 +1,13 @@
 "use client";
 
 import { createBrowserClient } from "@supabase/ssr";
+import { requireSupabasePublicConfig } from "./config";
 
 export function createClient() {
+  const config = requireSupabasePublicConfig();
+
   return createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
+    config.url,
+    config.publishableKey
   );
 }

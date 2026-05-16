@@ -15,14 +15,16 @@ class MagicSignInService {
         errorMessage = nil
         defer { isLoading = false }
 
-        guard isValidEmail(email) else {
+        let normalizedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+
+        guard isValidEmail(normalizedEmail) else {
             errorMessage = "Please enter a valid email address"
             throw MagicSignInError.invalidEmail
         }
 
         do {
-            try await SupabaseAuthClient.shared.sendMagicCode(email: email)
-            self.email = email
+            try await SupabaseAuthClient.shared.sendMagicCode(email: normalizedEmail)
+            self.email = normalizedEmail
             self.isCodeSent = true
         } catch {
             errorMessage = error.localizedDescription
@@ -41,9 +43,11 @@ class MagicSignInService {
             throw MagicSignInError.invalidCode
         }
 
+        let normalizedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+
         do {
-            _ = try await SupabaseAuthClient.shared.verifyEmailOTP(email: email, token: cleanedCode)
-            self.email = email
+            _ = try await SupabaseAuthClient.shared.verifyEmailOTP(email: normalizedEmail, token: cleanedCode)
+            self.email = normalizedEmail
             self.code = cleanedCode
             return true
         } catch {

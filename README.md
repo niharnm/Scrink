@@ -41,7 +41,11 @@ supabase db push
 
 The iOS app uploads terminal traffic events to `traffic_events` only after a user is signed in. The database trigger keeps hourly and daily `traffic_summaries` current for the web dashboard, so production does not need mock analytics rows.
 
+The web dashboard uses the same email-code Supabase auth flow as iOS. Configure the Supabase email template to include the OTP token if you want numeric code entry, and keep `/auth/callback` enabled if you also support magic links.
+
 `ENABLE_EXTERNAL_AI_INSIGHTS` defaults to `false`. Leave it disabled unless you intentionally want dashboard summary statistics sent to the configured external AI provider.
+
+`ENABLE_DASHBOARD_ADMIN_TOOLS` and `NEXT_PUBLIC_ENABLE_DASHBOARD_ADMIN_TOOLS` default to `false`. Only enable them for trusted maintenance sessions because those endpoints run service-role rollups and domain classification.
 
 ## Release State
 

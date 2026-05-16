@@ -55,8 +55,12 @@ final class VPNManager: ObservableObject {
                     return
                 }
 
-                if let existingManagers = managers, !existingManagers.isEmpty {
-                    let mgr = existingManagers[0]
+                if let mgr = managers?.first(where: { candidate in
+                    let providerID = (candidate.protocolConfiguration as? NETunnelProviderProtocol)?
+                        .providerBundleIdentifier
+                    return providerID == BubbleConstants.tunnelBundleID
+                        || candidate.localizedDescription == BubbleConstants.vpnDescription
+                }) {
                     self.manager = mgr
                     self.vpnStatus = mgr.connection.status
                     self.appendLog("Found existing profile. Status: \(self.statusString)")
