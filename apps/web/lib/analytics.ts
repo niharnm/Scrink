@@ -64,7 +64,7 @@ export interface AppDetailData {
   contentTypes: { type: string; count: number }[];
 }
 
-const EMPTY_DASHBOARD: DashboardData = {
+export const EMPTY_DASHBOARD: DashboardData = {
   apps: [],
   totalBlocked: 0,
   totalAllowed: 0,
@@ -84,61 +84,60 @@ const EMPTY_DASHBOARD: DashboardData = {
 export async function fetchDashboardData(
   range: "today" | "7d" | "30d"
 ): Promise<DashboardData> {
-  try {
-    const [summaryRes, detailsRes] = await Promise.all([
-      fetch(`/api/analytics/summary?range=${range}`),
-      fetch(`/api/analytics/details?range=${range}`),
-    ]);
+  const [summaryRes, detailsRes] = await Promise.all([
+    fetch(`/api/analytics/summary?range=${range}`),
+    fetch(`/api/analytics/details?range=${range}`),
+  ]);
 
-    if (!summaryRes.ok) throw new Error(`HTTP ${summaryRes.status}`);
-    const json = await summaryRes.json();
-
-    let details = {
-      topDomains: [] as TopDomain[],
-      totalBytesIn: 0,
-      totalBytesOut: 0,
-      methods: [] as MethodEntry[],
-      contentTypes: [] as ContentTypeEntry[],
-    };
-    if (detailsRes.ok) {
-      const d = await detailsRes.json();
-      details = {
-        topDomains: d.topDomains || [],
-        totalBytesIn: d.totalBytesIn || 0,
-        totalBytesOut: d.totalBytesOut || 0,
-        methods: d.methods || [],
-        contentTypes: d.contentTypes || [],
-      };
-    }
-
-    let insight = EMPTY_DASHBOARD.insight;
-    try {
-      const insightRes = await fetch("/api/analytics/insights?limit=1");
-      if (insightRes.ok) {
-        const insightJson = await insightRes.json();
-        if (insightJson.insights?.length > 0) {
-          insight = insightJson.insights[0].content;
-        }
-      }
-    } catch {
-      // keep default
-    }
-
-    return {
-      apps: json.apps || [],
-      totalBlocked: json.totalBlocked || 0,
-      totalAllowed: json.totalAllowed || 0,
-      timeSaved: json.timeSaved || "~0 min",
-      peakHours: json.peakHours || "N/A",
-      mostActive: json.mostActive || "N/A",
-      usageOverTime: json.usageOverTime || [],
-      heatmap: json.heatmap || [],
-      insight,
-      ...details,
-    };
-  } catch {
-    return EMPTY_DASHBOARD;
+  if (!summaryRes.ok) {
+    throw new Error(await responseError(summaryRes, "Could not load dashboard summary."));
   }
+
+  const json = await summaryRes.json();
+
+  let details = {
+    topDomains: [] as TopDomain[],
+    totalBytesIn: 0,
+    totalBytesOut: 0,
+    methods: [] as MethodEntry[],
+    contentTypes: [] as ContentTypeEntry[],
+  };
+  if (detailsRes.ok) {
+    const d = await detailsRes.json();
+    details = {
+      topDomains: d.topDomains || [],
+      totalBytesIn: d.totalBytesIn || 0,
+      totalBytesOut: d.totalBytesOut || 0,
+      methods: d.methods || [],
+      contentTypes: d.contentTypes || [],
+    };
+  }
+
+  let insight = EMPTY_DASHBOARD.insight;
+  try {
+    const insightRes = await fetch("/api/analytics/insights?limit=1");
+    if (insightRes.ok) {
+      const insightJson = await insightRes.json();
+      if (insightJson.insights?.length > 0) {
+        insight = insightJson.insights[0].content;
+      }
+    }
+  } catch {
+    // Insights are optional; keep the dashboard usable if this request fails.
+  }
+
+  return {
+    apps: json.apps || [],
+    totalBlocked: json.totalBlocked || 0,
+    totalAllowed: json.totalAllowed || 0,
+    timeSaved: json.timeSaved || "~0 min",
+    peakHours: json.peakHours || "N/A",
+    mostActive: json.mostActive || "N/A",
+    usageOverTime: json.usageOverTime || [],
+    heatmap: json.heatmap || [],
+    insight,
+    ...details,
+  };
 }
 
 export async function fetchAppDetail(
@@ -151,4 +150,16 @@ export async function fetchAppDetail(
   } catch {
     return null;
   }
+}
+
+async function responseError(response: Response, fallback: string): Promise<string> {
+  try {
+    const body = await response.json();
+    if (typeof body?.error === "string" && body.error.trim()) {
+      return body.error;
+    }
+  } catch {
+    // Use fallback below.
+  }
+  return `${fallback} HTTP ${response.status}.`;
 }

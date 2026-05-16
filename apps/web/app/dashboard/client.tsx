@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useEffect, useRef, CSSProperties } from "react";
 import { useRouter } from "next/navigation";
-import { createBrowserClient } from "@supabase/ssr";
 import SkyBackground from "@/components/dashboard/SkyBackground";
 import HeaderBar from "@/components/dashboard/HeaderBar";
 import DateRangeSelector from "@/components/dashboard/DateRangeSelector";
@@ -19,6 +18,7 @@ import {
   fetchDashboardData,
   DashboardData,
 } from "@/lib/analytics";
+import { createClient as createSupabaseClient } from "@/lib/supabase/client";
 import { theme } from "@/lib/theme";
 
 interface DashboardClientProps {
@@ -31,23 +31,34 @@ export default function DashboardClient({ email }: DashboardClientProps) {
   const router = useRouter();
   const [range, setRange] = useState<Range>("today");
   const [data, setData] = useState<DashboardData | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const supabaseRef = useRef(
-    createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-    )
-  );
+  const supabaseRef = useRef(createSupabaseClient());
+  const loadRequestRef = useRef(0);
+
+  const loadDashboard = useCallback(async (activeRange: Range) => {
+    const requestID = loadRequestRef.current + 1;
+    loadRequestRef.current = requestID;
+    setIsLoading(true);
+    setLoadError(null);
+    try {
+      const result = await fetchDashboardData(activeRange);
+      if (requestID !== loadRequestRef.current) return;
+      setData(result);
+    } catch (error) {
+      if (requestID !== loadRequestRef.current) return;
+      setData(null);
+      setLoadError(error instanceof Error ? error.message : "Could not load dashboard data.");
+    } finally {
+      if (requestID !== loadRequestRef.current) return;
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    let cancelled = false;
-    fetchDashboardData(range).then((result) => {
-      if (!cancelled) setData(result);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [range]);
+    void loadDashboard(range);
+  }, [loadDashboard, range]);
 
   const handleSignOut = useCallback(async () => {
     await supabaseRef.current.auth.signOut();
@@ -79,32 +90,40 @@ export default function DashboardClient({ email }: DashboardClientProps) {
     setRollupStatus("running...");
     try {
       const res = await fetch("/api/analytics/rollup", { method: "POST" });
-      const json = await res.json();
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setRollupStatus(json.error || "rollup failed");
+        return;
+      }
       const parts = Object.entries(json.results || {}).map(
         ([k, v]) => `${k}: ${v}`
       );
       setRollupStatus(parts.join(" | "));
-      fetchDashboardData(range).then(setData);
+      void loadDashboard(range);
     } catch {
       setRollupStatus("failed");
     }
     setTimeout(() => setRollupStatus(null), 5000);
-  }, [range]);
+  }, [loadDashboard, range]);
 
   const [classifyStatus, setClassifyStatus] = useState<string | null>(null);
   const handleClassify = useCallback(async () => {
     setClassifyStatus("classifying...");
     try {
       const res = await fetch("/api/analytics/classify", { method: "POST" });
-      const json = await res.json();
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setClassifyStatus(json.error || "classification failed");
+        return;
+      }
       const count = Object.keys(json.classified || {}).length;
       setClassifyStatus(`${count} hosts classified, ${json.updated || 0} events updated`);
-      fetchDashboardData(range).then(setData);
+      void loadDashboard(range);
     } catch {
       setClassifyStatus("failed");
     }
     setTimeout(() => setClassifyStatus(null), 8000);
-  }, [range]);
+  }, [loadDashboard, range]);
 
   const contentStyle: CSSProperties = {
     maxWidth: 960,
@@ -168,12 +187,29 @@ export default function DashboardClient({ email }: DashboardClientProps) {
     cursor: disabled ? "default" : "pointer",
   });
 
-  if (!data) {
+  if (isLoading) {
     return (
       <SkyBackground>
         <HeaderBar email={email} onSignOut={handleSignOut} />
         <div style={{ ...contentStyle, textAlign: "center" as const, paddingTop: 120 }}>
           <div style={{ ...greetingStyle, marginBottom: theme.spacing.md }}>Loading...</div>
+        </div>
+      </SkyBackground>
+    );
+  }
+
+  if (loadError || !data) {
+    return (
+      <SkyBackground>
+        <HeaderBar email={email} onSignOut={handleSignOut} />
+        <div style={{ ...contentStyle, textAlign: "center" as const, paddingTop: 100 }}>
+          <div style={{ ...greetingStyle, marginBottom: theme.spacing.sm }}>Dashboard unavailable</div>
+          <div style={{ ...subGreetingStyle, marginBottom: theme.spacing.lg }}>
+            {loadError || "Could not load dashboard data."}
+          </div>
+          <button onClick={() => void loadDashboard(range)} style={adminButtonStyle(false)}>
+            Retry
+          </button>
         </div>
       </SkyBackground>
     );
