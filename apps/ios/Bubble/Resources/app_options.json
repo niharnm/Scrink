@@ -8,5 +8,25 @@
         "isSelected": true
       }
     ]
+  },
+  "tiktok": {
+    "appId": "tiktok",
+    "options": [
+      {
+        "id": "scroll",
+        "label": "scroll feed",
+        "isSelected": true
+      }
+    ]
+  },
+  "youtube": {
+    "appId": "youtube",
+    "options": [
+      {
+        "id": "video",
+        "label": "video streams",
+        "isSelected": true
+      }
+    ]
   }
 }

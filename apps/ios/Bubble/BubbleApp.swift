@@ -8,7 +8,11 @@ struct BubbleApp: App {
 
     init() {
         UserDefaults(suiteName: BubbleConstants.appGroupID)?
-            .register(defaults: [BubbleConstants.blockReelsEnabledKey: true])
+            .register(defaults: [
+                BubbleConstants.blockInstagramShortVideoEnabledKey: true,
+                BubbleConstants.blockTikTokShortVideoEnabledKey: true,
+                BubbleConstants.blockYouTubeShortVideoEnabledKey: true,
+            ])
     }
 
     var body: some Scene {

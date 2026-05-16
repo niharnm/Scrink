@@ -98,14 +98,38 @@ function classifyHost(host: string): string {
   ) {
     return "instagram";
   }
-  if (matches(host, ["fanduel.com", "fanduelcdn.com"])) return "fanduel";
-  if (matches(host, ["kalshi.com"])) return "kalshi";
   if (
-    matches(host, ["tiktok.com", "tiktokcdn.com", "byteoversea.com", "musical.ly"])
+    matches(host, [
+      "tiktok.com",
+      "tiktokcdn.com",
+      "tiktokcdn-us.com",
+      "tiktokcdn-eu.com",
+      "tiktokcdn-in.com",
+      "tiktokv.com",
+      "byteoversea.com",
+      "byteoversea.net",
+      "byteimg.com",
+      "ibyteimg.com",
+      "ibytedtos.com",
+      "muscdn.com",
+      "musical.ly",
+      "snssdk.com",
+      "ttwstatic.com",
+    ])
   ) {
     return "tiktok";
   }
-  if (matches(host, ["youtube.com", "googlevideo.com", "ytimg.com", "youtu.be"])) {
+  if (
+    matches(host, [
+      "youtube.com",
+      "youtube-nocookie.com",
+      "youtubei.googleapis.com",
+      "googlevideo.com",
+      "ytimg.com",
+      "yt3.ggpht.com",
+      "youtu.be",
+    ])
+  ) {
     return "youtube";
   }
   if (matches(host, ["twitter.com", "x.com", "twimg.com", "t.co"])) {

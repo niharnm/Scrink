@@ -9,12 +9,12 @@ struct SocialMediaIcon: View {
             switch platform.lowercased() {
             case "instagram":
                 InstagramIcon(size: size)
+            case "tiktok":
+                TikTokIcon(size: size)
+            case "youtube":
+                YouTubeIcon(size: size)
             case "facebook", "shield":
                 FacebookIcon(size: size)
-            case "kalshi":
-                KalshiIcon(size: size)
-            case "fanduel":
-                FanduelIcon(size: size)
             default:
                 Image(systemName: "app.fill")
                     .font(.system(size: size * 0.4))
@@ -30,6 +30,36 @@ struct InstagramIcon: View {
     var body: some View {
         SVGView(svgName: "instagram")
             .frame(width: size, height: size)
+    }
+}
+
+struct TikTokIcon: View {
+    let size: CGFloat
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(Color.black)
+            Image(systemName: "music.note")
+                .font(.system(size: size * 0.42, weight: .bold))
+                .foregroundStyle(.white)
+        }
+        .frame(width: size, height: size)
+    }
+}
+
+struct YouTubeIcon: View {
+    let size: CGFloat
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: size * 0.18)
+                .fill(Color.red)
+            Image(systemName: "play.fill")
+                .font(.system(size: size * 0.38, weight: .bold))
+                .foregroundStyle(.white)
+        }
+        .frame(width: size, height: size)
     }
 }
 
@@ -68,32 +98,14 @@ struct FacebookIcon: View {
     }
 }
 
-struct KalshiIcon: View {
-    let size: CGFloat
-
-    var body: some View {
-        SVGView(svgName: "kalshi")
-            .frame(width: size * 0.7, height: size * 0.7)
-    }
-}
-
-struct FanduelIcon: View {
-    let size: CGFloat
-    
-    var body: some View {
-        SVGView(svgName: "fanduel")
-            .frame(width: size, height: size)
-    }
-}
-
 #Preview {
     ZStack {
         BubbleColors.skyGradient.ignoresSafeArea()
         HStack(spacing: 20) {
             SocialMediaIcon(platform: "instagram")
+            SocialMediaIcon(platform: "tiktok")
+            SocialMediaIcon(platform: "youtube")
             SocialMediaIcon(platform: "facebook")
-            SocialMediaIcon(platform: "kalshi")
-            SocialMediaIcon(platform: "fanduel")
         }
     }
 }

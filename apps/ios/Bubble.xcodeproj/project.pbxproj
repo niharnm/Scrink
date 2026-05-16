@@ -49,7 +49,6 @@
 		7187CAA7759A0FB102770E7D /* SVGView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11372BC005F536F03A206A0C /* SVGView.swift */; };
 		7ACC24B7F11F3FEB7E430EFF /* MagicSignInScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E171A52D23611FA571259FA /* MagicSignInScreen.swift */; };
 		8050EE548DB56DDCA4FB2A2A /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = EFBD2984D0510752BD1D03BD /* background.png */; };
-		8199BCF44719F74292618D17 /* fanduel.svg in Resources */ = {isa = PBXBuildFile; fileRef = 1FB8B9D12B287276CD1AA084 /* fanduel.svg */; };
 		88E96BE752A5DBCDD02D793B /* BubbleColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74330F9AFC4182AB67F02F83 /* BubbleColors.swift */; };
 		8CC77FCD2AFCCE05480781D9 /* icon_rect.png in Resources */ = {isa = PBXBuildFile; fileRef = 6A14727AF55B2D6A666F3D1B /* icon_rect.png */; };
 		8F0D57C9A6E3045BBE001928 /* AppOptionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A500B91AAD8FCE188E83A9D /* AppOptionsService.swift */; };
@@ -60,7 +59,6 @@
 		9FB50AF4C11375E57288493D /* instagram.svg in Resources */ = {isa = PBXBuildFile; fileRef = C8F7AEAFA028F049E6650638 /* instagram.svg */; };
 		A382BF14BA5A5938A5D0B0E2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8240EBF328085BD8C6215C5B /* Assets.xcassets */; };
 		A4F54B5F314F2FF8E40B46D2 /* clouds.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F112CC7035E04A18029EC82 /* clouds.png */; };
-		A9C259B3E6CF8FA06E8DFED8 /* kalshi.svg in Resources */ = {isa = PBXBuildFile; fileRef = 1A0A6E06F3393512D15706E4 /* kalshi.svg */; };
 		ACA43E523546E460FF425CF2 /* HeaderBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA7879AE04880FB01A49C3C /* HeaderBar.swift */; };
 		B2D940F3D19D696D7AFFBB1F /* clouds_continous.png in Resources */ = {isa = PBXBuildFile; fileRef = 54C6C8C64B29A95223064A2A /* clouds_continous.png */; };
 		B63F3A7EE3787197C19D9D8A /* Coolvetica Rg It.otf in Resources */ = {isa = PBXBuildFile; fileRef = B033FC1D06B6F626D38BA842 /* Coolvetica Rg It.otf */; };
@@ -118,9 +116,7 @@
 		106E25D023D63E8571E5D893 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		10B73DFB24FA4518541EBD14 /* HexGridOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexGridOverlay.swift; sourceTree = "<group>"; };
 		11372BC005F536F03A206A0C /* SVGView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGView.swift; sourceTree = "<group>"; };
-		1A0A6E06F3393512D15706E4 /* kalshi.svg */ = {isa = PBXFileReference; path = kalshi.svg; sourceTree = "<group>"; };
 		1DECDACBEC0EF265C1407E1A /* LandingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingPage.swift; sourceTree = "<group>"; };
-		1FB8B9D12B287276CD1AA084 /* fanduel.svg */ = {isa = PBXFileReference; path = fanduel.svg; sourceTree = "<group>"; };
 		221C01C91E8FC62806530668 /* SocialMediaIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialMediaIcon.swift; sourceTree = "<group>"; };
 		2657A23991F8E73241EC8D2A /* BubbleSpacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BubbleSpacing.swift; sourceTree = "<group>"; };
 		28E7DF720D3EB9EAC56B49CB /* BackArrowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackArrowView.swift; sourceTree = "<group>"; };
@@ -368,10 +364,8 @@
 				EFBD2984D0510752BD1D03BD /* background.png */,
 				54C6C8C64B29A95223064A2A /* clouds_continous.png */,
 				5F112CC7035E04A18029EC82 /* clouds.png */,
-				1FB8B9D12B287276CD1AA084 /* fanduel.svg */,
 				6A14727AF55B2D6A666F3D1B /* icon_rect.png */,
 				C8F7AEAFA028F049E6650638 /* instagram.svg */,
-				1A0A6E06F3393512D15706E4 /* kalshi.svg */,
 				51406CAC99AB2D457E23AE3A /* Fonts */,
 			);
 			path = Resources;
@@ -474,10 +468,8 @@
 				8050EE548DB56DDCA4FB2A2A /* background.png in Resources */,
 				A4F54B5F314F2FF8E40B46D2 /* clouds.png in Resources */,
 				B2D940F3D19D696D7AFFBB1F /* clouds_continous.png in Resources */,
-				8199BCF44719F74292618D17 /* fanduel.svg in Resources */,
 				8CC77FCD2AFCCE05480781D9 /* icon_rect.png in Resources */,
 				9FB50AF4C11375E57288493D /* instagram.svg in Resources */,
-				A9C259B3E6CF8FA06E8DFED8 /* kalshi.svg in Resources */,
 				102A00000000000000000028 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

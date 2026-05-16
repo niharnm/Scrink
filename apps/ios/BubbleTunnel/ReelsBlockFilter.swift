@@ -5,11 +5,9 @@ final class ReelsBlockFilter: ConnectionFilter {
     private let sharedDefaults = UserDefaults(suiteName: BubbleConstants.appGroupID)
 
     var isEnabled: Bool {
-        guard let defaults = sharedDefaults else { return true }
-        guard defaults.object(forKey: BubbleConstants.blockReelsEnabledKey) != nil else {
-            return true
-        }
-        return defaults.bool(forKey: BubbleConstants.blockReelsEnabledKey)
+        isFilterEnabled(forKey: BubbleConstants.blockInstagramShortVideoEnabledKey)
+            || isFilterEnabled(forKey: BubbleConstants.blockTikTokShortVideoEnabledKey)
+            || isFilterEnabled(forKey: BubbleConstants.blockYouTubeShortVideoEnabledKey)
     }
 
     // MARK: - ConnectionFilter
@@ -28,9 +26,13 @@ final class ReelsBlockFilter: ConnectionFilter {
         let thresholds = loadDomainThresholds()
         let lower = sni.lowercased()
 
-        // Check each tracked domain — match if the SNI contains it
+        // Match exact domains and subdomains only.
         for (domain, threshold) in thresholds {
-            if lower.contains(domain.lowercased()) {
+            if matches(sni: lower, trackedDomain: domain) {
+                guard let enabledKey = BubbleConstants.filterEnabledKey(forTrackedDomain: domain),
+                      isFilterEnabled(forKey: enabledKey) else {
+                    continue
+                }
                 if threshold == BubbleConstants.noLimitThreshold {
                     return nil // no limit for this domain
                 }
@@ -58,5 +60,18 @@ final class ReelsBlockFilter: ConnectionFilter {
             thresholds[domain] = threshold
         }
         return thresholds
+    }
+
+    private func isFilterEnabled(forKey key: String) -> Bool {
+        guard let defaults = sharedDefaults else { return true }
+        guard defaults.object(forKey: key) != nil else {
+            return true
+        }
+        return defaults.bool(forKey: key)
+    }
+
+    private func matches(sni: String, trackedDomain: String) -> Bool {
+        let domain = trackedDomain.lowercased()
+        return sni == domain || sni.hasSuffix(".\(domain)")
     }
 }

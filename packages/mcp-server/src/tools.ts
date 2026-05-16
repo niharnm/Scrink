@@ -40,8 +40,8 @@ export function registerTools(server: FastMCP) {
       "Enable or disable a blocking option for a user. Pass duration_minutes for a timed blocker (e.g. 180 for 3 hours). Omit duration_minutes for a permanent toggle.",
     parameters: z.object({
       user_id: z.string().describe("The user's UUID"),
-      app_id: z.string().describe("App ID (e.g. instagram, shield, kalshi)"),
-      option_id: z.string().describe("Option ID (e.g. reels, msgs, profiles)"),
+      app_id: z.string().describe("App ID (e.g. instagram, tiktok, youtube)"),
+      option_id: z.string().describe("Option ID (e.g. reels, scroll, video)"),
       is_enabled: z.boolean().describe("Whether the option should be enabled"),
       duration_minutes: z
         .number()
@@ -84,14 +84,18 @@ export function registerTools(server: FastMCP) {
         {
           id: "instagram",
           name: "Instagram",
-          options: ["reels", "msgs", "profiles", "explore"],
+          options: ["reels"],
         },
         {
-          id: "shield",
-          name: "Shield (Facebook)",
-          options: ["alerts", "feeds"],
+          id: "tiktok",
+          name: "TikTok",
+          options: ["scroll"],
         },
-        { id: "kalshi", name: "Kalshi", options: ["trades", "notifs"] },
+        {
+          id: "youtube",
+          name: "YouTube",
+          options: ["video"],
+        },
       ];
       return JSON.stringify(apps, null, 2);
     },

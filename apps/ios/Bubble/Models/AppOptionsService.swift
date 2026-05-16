@@ -30,11 +30,10 @@ final class AppOptionsService {
     static let shared = AppOptionsService()
 
     private var cachedData: [String: AppOptionsData] = [:]
-    private var reelFilterEnabled: Bool
+    private var optionStateRevision = 0
     private let defaults = UserDefaults(suiteName: BubbleConstants.appGroupID)
 
     private init() {
-        self.reelFilterEnabled = defaults?.object(forKey: BubbleConstants.blockReelsEnabledKey) as? Bool ?? true
         loadData()
     }
 
@@ -57,6 +56,7 @@ final class AppOptionsService {
     }
 
     func getAllOptions(for appId: String) -> [AppOption] {
+        _ = optionStateRevision
         guard let appData = cachedData[appId] else { return [] }
         return appData.options.map { option in
             var mutableOption = option
@@ -66,14 +66,14 @@ final class AppOptionsService {
     }
 
     func toggleOption(appId: String, optionId: String) {
-        guard appId == "instagram", optionId == "reels" else { return }
-        reelFilterEnabled.toggle()
-        defaults?.set(reelFilterEnabled, forKey: BubbleConstants.blockReelsEnabledKey)
+        guard let key = defaultsKey(appId: appId, optionId: optionId) else { return }
+        defaults?.set(!isOptionSelected(appId: appId, optionId: optionId), forKey: key)
+        optionStateRevision += 1
     }
 
     func isOptionSelected(appId: String, optionId: String) -> Bool {
-        guard appId == "instagram", optionId == "reels" else { return false }
-        return reelFilterEnabled
+        guard let key = defaultsKey(appId: appId, optionId: optionId) else { return false }
+        return defaults?.object(forKey: key) as? Bool ?? true
     }
 
     private static let productionDefaults: [String: AppOptionsData] = [
@@ -82,6 +82,31 @@ final class AppOptionsService {
             options: [
                 AppOption(id: "reels", label: "short video", isSelected: true)
             ]
+        ),
+        "tiktok": AppOptionsData(
+            appId: "tiktok",
+            options: [
+                AppOption(id: "scroll", label: "scroll feed", isSelected: true)
+            ]
+        ),
+        "youtube": AppOptionsData(
+            appId: "youtube",
+            options: [
+                AppOption(id: "video", label: "video streams", isSelected: true)
+            ]
         )
     ]
+
+    private func defaultsKey(appId: String, optionId: String) -> String? {
+        switch (appId, optionId) {
+        case ("instagram", "reels"):
+            return BubbleConstants.blockInstagramShortVideoEnabledKey
+        case ("tiktok", "scroll"):
+            return BubbleConstants.blockTikTokShortVideoEnabledKey
+        case ("youtube", "video"):
+            return BubbleConstants.blockYouTubeShortVideoEnabledKey
+        default:
+            return nil
+        }
+    }
 }

@@ -1,7 +1,5 @@
 export const APP_META: Record<string, { name: string; icon: string }> = {
   instagram: { name: "Instagram", icon: "/images/instagram.svg" },
-  fanduel: { name: "FanDuel", icon: "/images/fanduel.svg" },
-  kalshi: { name: "Kalshi", icon: "/images/kalshi.svg" },
   tiktok: { name: "TikTok", icon: "T" },
   youtube: { name: "YouTube", icon: "Y" },
   twitter: { name: "Twitter", icon: "X" },

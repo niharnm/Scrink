@@ -5,9 +5,17 @@ struct SettingsScreen: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var vpnManager: VPNManager
 
-    @AppStorage(BubbleConstants.blockReelsEnabledKey,
+    @AppStorage(BubbleConstants.blockInstagramShortVideoEnabledKey,
                 store: UserDefaults(suiteName: BubbleConstants.appGroupID))
-    private var blockReelsEnabled: Bool = true
+    private var blockInstagramShortVideo: Bool = true
+
+    @AppStorage(BubbleConstants.blockTikTokShortVideoEnabledKey,
+                store: UserDefaults(suiteName: BubbleConstants.appGroupID))
+    private var blockTikTokShortVideo: Bool = true
+
+    @AppStorage(BubbleConstants.blockYouTubeShortVideoEnabledKey,
+                store: UserDefaults(suiteName: BubbleConstants.appGroupID))
+    private var blockYouTubeVideo: Bool = true
 
     @StateObject private var domainThresholds = DomainThresholdsStore()
 
@@ -25,11 +33,11 @@ struct SettingsScreen: View {
                     // VPN Toggle Button
                     vpnToggleButton
 
-                    // Block Reels Toggle
-                    blockReelsSection
+                    // Short-form filter toggles
+                    shortVideoFiltersSection
 
                     // Domain Thresholds
-                    if blockReelsEnabled {
+                    if hasActiveShortVideoFilter {
                         domainThresholdsSection
                     }
 
@@ -106,21 +114,36 @@ struct SettingsScreen: View {
         return vpnManager.vpnStatus == .connected ? "STOP PROTECTION" : "START PROTECTION"
     }
 
-    // MARK: - Block Reels
+    // MARK: - Short-Video Filters
 
-    private var blockReelsSection: some View {
-        HStack {
-            Text("Block short-form video")
+    private var shortVideoFiltersSection: some View {
+        VStack(alignment: .leading, spacing: BubbleSpacing.sm) {
+            Text("Short-video filters")
                 .font(BubbleFonts.coolvetica(size: 18))
                 .foregroundColor(.white)
-            Spacer()
-            Toggle("", isOn: $blockReelsEnabled)
-                .labelsHidden()
+
+            filterToggleRow(title: "Instagram Reels", isOn: $blockInstagramShortVideo)
+            filterToggleRow(title: "TikTok scroll", isOn: $blockTikTokShortVideo)
+            filterToggleRow(title: "YouTube video", isOn: $blockYouTubeVideo)
         }
-        .padding(.horizontal, BubbleSpacing.md)
-        .padding(.vertical, BubbleSpacing.sm)
+        .padding(BubbleSpacing.md)
         .background(Color.white.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private func filterToggleRow(title: String, isOn: Binding<Bool>) -> some View {
+        HStack {
+            Text(title)
+                .font(BubbleFonts.coolvetica(size: 16))
+                .foregroundColor(BubbleColors.white60)
+            Spacer()
+            Toggle("", isOn: isOn)
+                .labelsHidden()
+        }
+    }
+
+    private var hasActiveShortVideoFilter: Bool {
+        blockInstagramShortVideo || blockTikTokShortVideo || blockYouTubeVideo
     }
 
     // MARK: - Domain Thresholds
@@ -132,11 +155,21 @@ struct SettingsScreen: View {
                 .foregroundColor(BubbleColors.white60)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            ForEach(BubbleConstants.trackedDomains, id: \.self) { domain in
-                DomainThresholdRow(
-                    domain: domain,
-                    threshold: domainThresholds.binding(for: domain)
-                )
+            ForEach(BubbleConstants.domainThresholdGroups.indices, id: \.self) { index in
+                let group = BubbleConstants.domainThresholdGroups[index]
+                VStack(alignment: .leading, spacing: BubbleSpacing.xs) {
+                    Text(group.title)
+                        .font(BubbleFonts.coolvetica(size: 14))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    ForEach(group.domains, id: \.self) { domain in
+                        DomainThresholdRow(
+                            domain: domain,
+                            threshold: domainThresholds.binding(for: domain)
+                        )
+                    }
+                }
             }
         }
         .padding(BubbleSpacing.md)

@@ -37,7 +37,7 @@ enum BubbleConstants {
     // MARK: - Stream Blocking
     static let streamBlockDefaultThreshold = 512 * 1024  // 0.5 MB
     static let noLimitThreshold = -1
-    static let trackedDomains = [
+    static let instagramTrackedDomains = [
         "cdninstagram.com",
         "i.instagram.com",
         "graph.instagram.com",
@@ -49,14 +49,61 @@ enum BubbleConstants {
         "fbsbx.com",
         "instagram.net",
     ]
+
+    static let tiktokTrackedDomains = [
+        "tiktok.com",
+        "tiktokcdn.com",
+        "tiktokcdn-us.com",
+        "tiktokcdn-eu.com",
+        "tiktokcdn-in.com",
+        "tiktokv.com",
+        "byteoversea.com",
+        "byteoversea.net",
+        "byteimg.com",
+        "ibyteimg.com",
+        "ibytedtos.com",
+        "muscdn.com",
+        "musical.ly",
+        "snssdk.com",
+        "ttwstatic.com",
+    ]
+
+    static let youtubeTrackedDomains = [
+        "youtube.com",
+        "youtube-nocookie.com",
+        "youtubei.googleapis.com",
+        "googlevideo.com",
+        "ytimg.com",
+        "yt3.ggpht.com",
+        "youtu.be",
+    ]
+
+    static let trackedDomains = instagramTrackedDomains + tiktokTrackedDomains + youtubeTrackedDomains
+
     static var defaultDomainThresholds: [String: Int] {
         Dictionary(uniqueKeysWithValues: trackedDomains.map { ($0, streamBlockDefaultThreshold) })
     }
 
     // MARK: - UserDefaults Keys
-    static let blockReelsEnabledKey = "blockReelsEnabled"
+    static let blockInstagramShortVideoEnabledKey = "blockReelsEnabled"
+    static let blockTikTokShortVideoEnabledKey = "blockTikTokScrollEnabled"
+    static let blockYouTubeShortVideoEnabledKey = "blockYouTubeVideoEnabled"
+    static let blockReelsEnabledKey = blockInstagramShortVideoEnabledKey
     static let domainThresholdsKey = "domainThresholds"
     static let optionStatesKey = "optionStates"
+
+    static func filterEnabledKey(forTrackedDomain domain: String) -> String? {
+        if instagramTrackedDomains.contains(domain) {
+            return blockInstagramShortVideoEnabledKey
+        }
+        if tiktokTrackedDomains.contains(domain) {
+            return blockTikTokShortVideoEnabledKey
+        }
+        if youtubeTrackedDomains.contains(domain) {
+            return blockYouTubeShortVideoEnabledKey
+        }
+        return nil
+    }
 
     // MARK: - VPN
     static let vpnDescription = "Rinkler Protection"

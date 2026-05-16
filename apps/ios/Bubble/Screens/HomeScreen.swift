@@ -4,9 +4,17 @@ struct HomeScreen: View {
     @Environment(AuthStore.self) private var authStore
     @EnvironmentObject private var vpnManager: VPNManager
 
-    @AppStorage(BubbleConstants.blockReelsEnabledKey,
+    @AppStorage(BubbleConstants.blockInstagramShortVideoEnabledKey,
                 store: UserDefaults(suiteName: BubbleConstants.appGroupID))
-    private var blockShortVideo: Bool = true
+    private var blockInstagramShortVideo: Bool = true
+
+    @AppStorage(BubbleConstants.blockTikTokShortVideoEnabledKey,
+                store: UserDefaults(suiteName: BubbleConstants.appGroupID))
+    private var blockTikTokShortVideo: Bool = true
+
+    @AppStorage(BubbleConstants.blockYouTubeShortVideoEnabledKey,
+                store: UserDefaults(suiteName: BubbleConstants.appGroupID))
+    private var blockYouTubeVideo: Bool = true
 
     var onSignIn: (() -> Void)? = nil
     var onSettings: (() -> Void)? = nil
@@ -94,27 +102,40 @@ struct HomeScreen: View {
 
     private var filterCard: some View {
         VStack(alignment: .leading, spacing: BubbleSpacing.md) {
-            HStack(alignment: .center, spacing: BubbleSpacing.md) {
-                SocialMediaIcon(platform: "instagram", size: 34)
-                    .frame(width: 52, height: 52)
-                    .background(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
-
+            HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: BubbleSpacing.xs) {
-                    Text("Instagram short video")
+                    Text("Short-video filters")
                         .font(BubbleFonts.coolvetica(size: 20))
                         .foregroundStyle(.white)
-                    Text("Limits tracked Instagram video domains after 0.5 MB by default.")
+                    Text("Choose which supported feeds Rinkler should interrupt.")
                         .font(BubbleFonts.coolvetica(size: 14))
                         .foregroundStyle(BubbleColors.white60)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-
-                Spacer(minLength: BubbleSpacing.sm)
-
-                Toggle("", isOn: $blockShortVideo)
-                    .labelsHidden()
+                Spacer()
             }
+
+            VStack(spacing: BubbleSpacing.sm) {
+                filterRow(
+                    platform: "instagram",
+                    title: "Instagram Reels",
+                    subtitle: "Tracked Instagram video domains",
+                    isOn: $blockInstagramShortVideo
+                )
+                filterRow(
+                    platform: "tiktok",
+                    title: "TikTok scroll",
+                    subtitle: "TikTok media delivery domains",
+                    isOn: $blockTikTokShortVideo
+                )
+                filterRow(
+                    platform: "youtube",
+                    title: "YouTube video",
+                    subtitle: "YouTube media delivery domains",
+                    isOn: $blockYouTubeVideo
+                )
+            }
+            .padding(.vertical, BubbleSpacing.xs)
 
             if let onSettings {
                 Button {
@@ -137,6 +158,31 @@ struct HomeScreen: View {
             RoundedRectangle(cornerRadius: 18)
                 .strokeBorder(Color.white.opacity(0.16), lineWidth: 1)
         )
+    }
+
+    private func filterRow(platform: String, title: String, subtitle: String, isOn: Binding<Bool>) -> some View {
+        HStack(alignment: .center, spacing: BubbleSpacing.md) {
+            SocialMediaIcon(platform: platform, size: 30)
+                .frame(width: 46, height: 46)
+                .background(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(BubbleFonts.coolvetica(size: 17))
+                    .foregroundStyle(.white)
+                Text(subtitle)
+                    .font(BubbleFonts.coolvetica(size: 13))
+                    .foregroundStyle(BubbleColors.white60)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: BubbleSpacing.sm)
+
+            Toggle("", isOn: isOn)
+                .labelsHidden()
+        }
     }
 
     private var accountCard: some View {

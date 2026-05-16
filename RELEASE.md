@@ -12,6 +12,7 @@
 - Apply all migrations in `supabase/migrations` to the real Supabase project.
 - Test OTP login against the real Supabase project on a physical iPhone.
 - Test VPN start, stop, reconnect, and app relaunch behavior on a physical iPhone.
+- Test Instagram Reels, TikTok scroll, and YouTube playback with each filter enabled and disabled. The YouTube filter is domain-based and can affect regular YouTube videos, not only Shorts.
 - Confirm traffic events upload after sign-in and that the web dashboard summaries update without mock rows.
 - Confirm no sensitive traffic details, auth tokens, or user content are logged.
 - Update App Store privacy nutrition labels to match actual behavior. Do not claim data stays only on-device if Supabase auth or dashboard storage is enabled.
