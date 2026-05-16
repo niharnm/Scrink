@@ -4,8 +4,6 @@ import SwiftUI
 struct BubbleApp: App {
     @StateObject private var vpnManager = VPNManager()
     @State private var path = NavigationPath()
-    @State private var store = AppStore()
-    @State private var gridPositionStore = GridPositionStore()
     @State private var authStore = AuthStore()
 
     init() {
@@ -27,9 +25,6 @@ struct BubbleApp: App {
                     switch route {
                     case .home:
                         HomeScreen(
-                            onSelectApp: { app in
-                                path.append(Route.blockingOptions(appId: app.id))
-                            },
                             onSignIn: {
                                 path.append(Route.magicSignIn)
                             },
@@ -40,8 +35,6 @@ struct BubbleApp: App {
                                 path.append(Route.trafficDashboard)
                             }
                         )
-                    case .blockingOptions(let appId):
-                        BlockingOptionsScreen(appId: appId)
                     case .magicSignIn:
                         MagicSignInScreen(
                             onCodeSent: { email in
@@ -62,13 +55,11 @@ struct BubbleApp: App {
                     }
                 }
             }
-            .environment(store)
-            .environment(gridPositionStore)
             .environment(authStore)
             .environmentObject(vpnManager)
             .preferredColorScheme(.dark)
             .task {
-                SVGCache.shared.preload(svgNames: ["instagram", "kalshi", "fanduel"])
+                SVGCache.shared.preload(svgNames: ["instagram"])
             }
             .task {
                 await authStore.listenForAuthChanges()
