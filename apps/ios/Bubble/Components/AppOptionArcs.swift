@@ -176,10 +176,7 @@ struct ArcTapShape: Shape {
         BubbleColors.skyGradient.ignoresSafeArea()
         AppOptionArcs(
             options: [
-                AppOption(id: "1", label: "reels", isSelected: true),
-                AppOption(id: "2", label: "msgs", isSelected: true),
-                AppOption(id: "3", label: "profiles", isSelected: false),
-                AppOption(id: "4", label: "explore", isSelected: false)
+                AppOption(id: "reels", label: "short video", isSelected: true)
             ],
             radius: 140
         )

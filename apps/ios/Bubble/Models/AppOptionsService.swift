@@ -30,50 +30,22 @@ final class AppOptionsService {
     static let shared = AppOptionsService()
 
     private var cachedData: [String: AppOptionsData] = [:]
-    private var optionStates: [String: [String: Bool]] = [:] // appId -> optionId -> isSelected
+    private var reelFilterEnabled: Bool
     private let defaults = UserDefaults(suiteName: BubbleConstants.appGroupID)
 
     private init() {
+        self.reelFilterEnabled = defaults?.object(forKey: BubbleConstants.blockReelsEnabledKey) as? Bool ?? true
         loadData()
-        loadSavedStates()
     }
 
     func loadData() {
         guard let url = Bundle.main.url(forResource: "app_options", withExtension: "json"),
               let data = try? Data(contentsOf: url),
               let decoded = try? JSONDecoder().decode([String: AppOptionsData].self, from: data) else {
+            cachedData = Self.productionDefaults
             return
         }
         cachedData = decoded
-
-        // Initialize option states from cached data (all default to false from JSON)
-        for (appId, appData) in decoded {
-            var states: [String: Bool] = [:]
-            for option in appData.options {
-                states[option.id] = option.isSelected
-            }
-            optionStates[appId] = states
-        }
-    }
-
-    private func loadSavedStates() {
-        guard let data = defaults?.data(forKey: BubbleConstants.optionStatesKey),
-              let saved = try? JSONDecoder().decode([String: [String: Bool]].self, from: data) else { return }
-
-        for (appId, appStates) in saved {
-            if optionStates[appId] == nil {
-                optionStates[appId] = [:]
-            }
-            for (optionId, isSelected) in appStates {
-                optionStates[appId]?[optionId] = isSelected
-            }
-        }
-    }
-
-    private func saveStates() {
-        if let data = try? JSONEncoder().encode(optionStates) {
-            defaults?.set(data, forKey: BubbleConstants.optionStatesKey)
-        }
     }
 
     func getOptions(for appId: String) -> AppOptionsData? {
@@ -88,21 +60,28 @@ final class AppOptionsService {
         guard let appData = cachedData[appId] else { return [] }
         return appData.options.map { option in
             var mutableOption = option
-            mutableOption.isSelected = optionStates[appId]?[option.id] ?? false
+            mutableOption.isSelected = isOptionSelected(appId: appId, optionId: option.id)
             return mutableOption
         }
     }
 
     func toggleOption(appId: String, optionId: String) {
-        if optionStates[appId] == nil {
-            optionStates[appId] = [:]
-        }
-        let currentState = optionStates[appId]?[optionId] ?? false
-        optionStates[appId]?[optionId] = !currentState
-        saveStates()
+        guard appId == "instagram", optionId == "reels" else { return }
+        reelFilterEnabled.toggle()
+        defaults?.set(reelFilterEnabled, forKey: BubbleConstants.blockReelsEnabledKey)
     }
 
     func isOptionSelected(appId: String, optionId: String) -> Bool {
-        return optionStates[appId]?[optionId] ?? false
+        guard appId == "instagram", optionId == "reels" else { return false }
+        return reelFilterEnabled
     }
+
+    private static let productionDefaults: [String: AppOptionsData] = [
+        "instagram": AppOptionsData(
+            appId: "instagram",
+            options: [
+                AppOption(id: "reels", label: "short video", isSelected: true)
+            ]
+        )
+    ]
 }

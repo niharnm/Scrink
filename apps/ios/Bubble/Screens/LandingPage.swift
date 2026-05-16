@@ -50,8 +50,7 @@ struct LandingPage: View {
         }
         .navigationBarBackButtonHidden(true)
         .onAppear {
-            // Preload SVG icons for faster loading
-            SVGCache.shared.preload(svgNames: ["kalshi", "instagram", "fanduel"])
+            SVGCache.shared.preload(svgNames: ["instagram"])
         }
     }
 }

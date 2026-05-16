@@ -12,10 +12,11 @@ class DomainThresholdsStore: ObservableObject {
     func load() {
         guard let data = defaults?.data(forKey: BubbleConstants.domainThresholdsKey),
               let dict = try? JSONDecoder().decode([String: Int].self, from: data) else {
-            thresholds = [:]
+            thresholds = BubbleConstants.defaultDomainThresholds
+            save()
             return
         }
-        thresholds = dict
+        thresholds = BubbleConstants.defaultDomainThresholds.merging(dict) { _, saved in saved }
     }
 
     func save() {
@@ -25,7 +26,7 @@ class DomainThresholdsStore: ObservableObject {
 
     func binding(for domain: String) -> Binding<Int> {
         Binding(
-            get: { self.thresholds[domain] ?? BubbleConstants.noLimitThreshold },
+            get: { self.thresholds[domain] ?? BubbleConstants.streamBlockDefaultThreshold },
             set: { newValue in
                 self.thresholds[domain] = newValue
                 self.save()

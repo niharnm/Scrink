@@ -48,11 +48,15 @@ final class ReelsBlockFilter: ConnectionFilter {
     // MARK: - Private
 
     private func loadDomainThresholds() -> [String: Int] {
+        var thresholds = BubbleConstants.defaultDomainThresholds
         guard let defaults = sharedDefaults,
               let data = defaults.data(forKey: BubbleConstants.domainThresholdsKey),
               let dict = try? JSONDecoder().decode([String: Int].self, from: data) else {
-            return [:]
+            return thresholds
         }
-        return dict
+        for (domain, threshold) in dict {
+            thresholds[domain] = threshold
+        }
+        return thresholds
     }
 }

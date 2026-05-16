@@ -49,6 +49,9 @@ enum BubbleConstants {
         "fbsbx.com",
         "instagram.net",
     ]
+    static var defaultDomainThresholds: [String: Int] {
+        Dictionary(uniqueKeysWithValues: trackedDomains.map { ($0, streamBlockDefaultThreshold) })
+    }
 
     // MARK: - UserDefaults Keys
     static let blockReelsEnabledKey = "blockReelsEnabled"
