@@ -2,7 +2,7 @@
 
 Rinkler is an iOS network-filtering app for keeping useful app features available while blocking distracting traffic. The iOS app uses a local Network Extension tunnel and a Supabase-backed email OTP login flow.
 
-The current production filters target Instagram Reels, TikTok scroll feeds, and YouTube video delivery domains. Filtering is enforced locally in the packet tunnel by SNI/domain and byte thresholds; it does not decrypt traffic or inspect private page contents. YouTube Shorts and regular YouTube video share delivery infrastructure, so the YouTube filter may interrupt regular YouTube playback too.
+The current production filters target large Instagram and TikTok short-video media streams. Filtering is enforced locally in the packet tunnel by SNI/domain and byte thresholds; it does not decrypt traffic or inspect private page contents. YouTube Shorts, Facebook Reels, Snapchat Spotlight, X video, Reddit video, and similar sections are not enabled as section-only blockers because they share hosts with normal app traffic at the tunnel layer. Adding those without verified path-level visibility would overblock legitimate app features.
 
 ## Repo Layout
 

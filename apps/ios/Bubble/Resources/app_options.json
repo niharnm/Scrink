@@ -18,15 +18,5 @@
         "isSelected": true
       }
     ]
-  },
-  "youtube": {
-    "appId": "youtube",
-    "options": [
-      {
-        "id": "video",
-        "label": "video streams",
-        "isSelected": true
-      }
-    ]
   }
 }

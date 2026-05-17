@@ -21,15 +21,6 @@ final class AppStore {
             options: [
                 BlockingOption(id: "scroll", label: "scroll feed", isEnabled: true)
             ]
-        ),
-        BlockedApp(
-            id: "youtube",
-            name: "YouTube",
-            iconName: "play.rectangle.fill",
-            platform: "youtube",
-            options: [
-                BlockingOption(id: "video", label: "video streams", isEnabled: true)
-            ]
         )
     ]
 
@@ -72,8 +63,6 @@ final class AppStore {
             return BubbleConstants.blockInstagramShortVideoEnabledKey
         case ("tiktok", "scroll"):
             return BubbleConstants.blockTikTokShortVideoEnabledKey
-        case ("youtube", "video"):
-            return BubbleConstants.blockYouTubeShortVideoEnabledKey
         default:
             return nil
         }

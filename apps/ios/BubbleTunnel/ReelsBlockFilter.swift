@@ -2,12 +2,15 @@ import Foundation
 
 final class ReelsBlockFilter: ConnectionFilter {
 
-    private let sharedDefaults = UserDefaults(suiteName: BubbleConstants.appGroupID)
+    private let sharedDefaults: UserDefaults?
+
+    init(sharedDefaults: UserDefaults? = UserDefaults(suiteName: BubbleConstants.appGroupID)) {
+        self.sharedDefaults = sharedDefaults
+    }
 
     var isEnabled: Bool {
         isFilterEnabled(forKey: BubbleConstants.blockInstagramShortVideoEnabledKey)
             || isFilterEnabled(forKey: BubbleConstants.blockTikTokShortVideoEnabledKey)
-            || isFilterEnabled(forKey: BubbleConstants.blockYouTubeShortVideoEnabledKey)
     }
 
     // MARK: - ConnectionFilter

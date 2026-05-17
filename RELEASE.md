@@ -13,7 +13,7 @@
 - Test OTP login against the real Supabase project on a physical iPhone.
 - Test web dashboard OTP login with the same Supabase project used by iOS.
 - Test VPN start, stop, reconnect, and app relaunch behavior on a physical iPhone.
-- Test Instagram Reels, TikTok scroll, and YouTube playback with each filter enabled and disabled. The YouTube filter is domain-based and can affect regular YouTube videos, not only Shorts.
+- Test Instagram and TikTok video feeds with each filter enabled and disabled. Rinkler intentionally does not ship a YouTube Shorts, Facebook Reels, Snapchat Spotlight, X video, Reddit video, or Threads/Reels section blocker yet because the current tunnel sees host/SNI metadata, not HTTPS paths or in-app section state.
 - Confirm traffic events upload after sign-in and that the web dashboard summaries update without mock rows.
 - Confirm no sensitive traffic details, auth tokens, or user content are logged.
 - Update App Store privacy nutrition labels to match actual behavior. Do not claim data stays only on-device if Supabase auth or dashboard storage is enabled.
@@ -31,7 +31,8 @@
 
 - Unsigned iPhoneOS builds pass, but signed device install is blocked until Xcode has a signed-in Apple Developer account and matching provisioning profiles for the app, tunnel, and App Group.
 - The latest signed iPhoneOS build probe failed because both targets have an empty `DEVELOPMENT_TEAM`. After setting the Apple Developer Team ID, matching provisioning profiles and Network Extension/App Group entitlements are still required.
-- Simulator UX smoke testing is currently blocked on this machine because `xcrun simctl bootstatus` stalls during simulator data migration / LaunchServices migration.
+- Simulator UX smoke testing is currently blocked on this machine. The simulator can report `Booted`, but install/launch commands hang and screenshots show only the system spinner.
+- Section-only blocking for YouTube Shorts and other mainstream short-video surfaces needs a different, App-Store-safe architecture or verified app-specific hosts. The current local VPN tunnel must not claim that precision or it will break normal YouTube/social app behavior.
 - The local machine still has no installed `pnpm`, `npm`, or `corepack`. Web checks were run with a temporary pnpm 9.15.4 executable under `/tmp`.
 - `pnpm audit --json` currently reports zero known dependency advisories after the lockfile refresh.
 

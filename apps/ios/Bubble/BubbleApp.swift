@@ -11,7 +11,6 @@ struct BubbleApp: App {
             .register(defaults: [
                 BubbleConstants.blockInstagramShortVideoEnabledKey: true,
                 BubbleConstants.blockTikTokShortVideoEnabledKey: true,
-                BubbleConstants.blockYouTubeShortVideoEnabledKey: true,
             ])
     }
 

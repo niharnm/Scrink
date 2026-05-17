@@ -5,6 +5,7 @@
   "scripts": {
     "build": "echo 'iOS build — use Xcode or xcodebuild'",
     "lint": "echo 'iOS lint — use SwiftLint'",
+    "filter-check": "swiftc scripts/filter_regression_check.swift BubbleTunnel/BubbleConstants.swift BubbleTunnel/ReelsBlockFilter.swift -o /tmp/rinkler-filter-regression && /tmp/rinkler-filter-regression",
     "clean": "rm -rf build DerivedData"
   },
   "dependencies": {

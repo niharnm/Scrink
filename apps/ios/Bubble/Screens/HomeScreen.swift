@@ -12,10 +12,6 @@ struct HomeScreen: View {
                 store: UserDefaults(suiteName: BubbleConstants.appGroupID))
     private var blockTikTokShortVideo: Bool = true
 
-    @AppStorage(BubbleConstants.blockYouTubeShortVideoEnabledKey,
-                store: UserDefaults(suiteName: BubbleConstants.appGroupID))
-    private var blockYouTubeVideo: Bool = true
-
     var onSignIn: (() -> Void)? = nil
     var onSettings: (() -> Void)? = nil
     var onTrafficDashboard: (() -> Void)? = nil
@@ -107,7 +103,7 @@ struct HomeScreen: View {
                     Text("Short-video filters")
                         .font(BubbleFonts.coolvetica(size: 20))
                         .foregroundStyle(.white)
-                    Text("Choose which supported feeds Rinkler should interrupt.")
+                    Text("Choose which supported media feeds Rinkler should interrupt.")
                         .font(BubbleFonts.coolvetica(size: 14))
                         .foregroundStyle(BubbleColors.white60)
                         .fixedSize(horizontal: false, vertical: true)
@@ -118,21 +114,15 @@ struct HomeScreen: View {
             VStack(spacing: BubbleSpacing.sm) {
                 filterRow(
                     platform: "instagram",
-                    title: "Instagram Reels",
-                    subtitle: "Tracked Instagram video domains",
+                    title: "Instagram video feed",
+                    subtitle: "Large Instagram video streams",
                     isOn: $blockInstagramShortVideo
                 )
                 filterRow(
                     platform: "tiktok",
-                    title: "TikTok scroll",
-                    subtitle: "TikTok media delivery domains",
+                    title: "TikTok feed",
+                    subtitle: "Large TikTok video streams",
                     isOn: $blockTikTokShortVideo
-                )
-                filterRow(
-                    platform: "youtube",
-                    title: "YouTube video",
-                    subtitle: "YouTube media delivery domains",
-                    isOn: $blockYouTubeVideo
                 )
             }
             .padding(.vertical, BubbleSpacing.xs)

@@ -88,12 +88,6 @@ final class AppOptionsService {
             options: [
                 AppOption(id: "scroll", label: "scroll feed", isSelected: true)
             ]
-        ),
-        "youtube": AppOptionsData(
-            appId: "youtube",
-            options: [
-                AppOption(id: "video", label: "video streams", isSelected: true)
-            ]
         )
     ]
 
@@ -103,8 +97,6 @@ final class AppOptionsService {
             return BubbleConstants.blockInstagramShortVideoEnabledKey
         case ("tiktok", "scroll"):
             return BubbleConstants.blockTikTokShortVideoEnabledKey
-        case ("youtube", "video"):
-            return BubbleConstants.blockYouTubeShortVideoEnabledKey
         default:
             return nil
         }

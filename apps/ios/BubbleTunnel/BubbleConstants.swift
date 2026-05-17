@@ -78,7 +78,11 @@ enum BubbleConstants {
         "youtu.be",
     ]
 
-    static let trackedDomains = instagramTrackedDomains + tiktokTrackedDomains + youtubeTrackedDomains
+    // Keep YouTube domains observable in analytics, but do not enable a production
+    // stream-block rule here. Shorts and normal YouTube playback share the same
+    // SNI/media hosts, and this privacy-preserving tunnel cannot inspect HTTPS
+    // paths like /shorts without decrypting traffic.
+    static let trackedDomains = instagramTrackedDomains + tiktokTrackedDomains
 
     static var defaultDomainThresholds: [String: Int] {
         Dictionary(uniqueKeysWithValues: trackedDomains.map { ($0, streamBlockDefaultThreshold) })
@@ -87,7 +91,6 @@ enum BubbleConstants {
     // MARK: - UserDefaults Keys
     static let blockInstagramShortVideoEnabledKey = "blockReelsEnabled"
     static let blockTikTokShortVideoEnabledKey = "blockTikTokScrollEnabled"
-    static let blockYouTubeShortVideoEnabledKey = "blockYouTubeVideoEnabled"
     static let blockReelsEnabledKey = blockInstagramShortVideoEnabledKey
     static let domainThresholdsKey = "domainThresholds"
     static let optionStatesKey = "optionStates"
@@ -98,9 +101,6 @@ enum BubbleConstants {
         }
         if tiktokTrackedDomains.contains(domain) {
             return blockTikTokShortVideoEnabledKey
-        }
-        if youtubeTrackedDomains.contains(domain) {
-            return blockYouTubeShortVideoEnabledKey
         }
         return nil
     }

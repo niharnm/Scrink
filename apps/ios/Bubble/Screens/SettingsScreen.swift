@@ -13,10 +13,6 @@ struct SettingsScreen: View {
                 store: UserDefaults(suiteName: BubbleConstants.appGroupID))
     private var blockTikTokShortVideo: Bool = true
 
-    @AppStorage(BubbleConstants.blockYouTubeShortVideoEnabledKey,
-                store: UserDefaults(suiteName: BubbleConstants.appGroupID))
-    private var blockYouTubeVideo: Bool = true
-
     @StateObject private var domainThresholds = DomainThresholdsStore()
 
     @State private var showExtensionLog = false
@@ -122,9 +118,8 @@ struct SettingsScreen: View {
                 .font(BubbleFonts.coolvetica(size: 18))
                 .foregroundColor(.white)
 
-            filterToggleRow(title: "Instagram Reels", isOn: $blockInstagramShortVideo)
-            filterToggleRow(title: "TikTok scroll", isOn: $blockTikTokShortVideo)
-            filterToggleRow(title: "YouTube video", isOn: $blockYouTubeVideo)
+            filterToggleRow(title: "Instagram video feed", isOn: $blockInstagramShortVideo)
+            filterToggleRow(title: "TikTok feed", isOn: $blockTikTokShortVideo)
         }
         .padding(BubbleSpacing.md)
         .background(Color.white.opacity(0.1))
@@ -143,7 +138,7 @@ struct SettingsScreen: View {
     }
 
     private var hasActiveShortVideoFilter: Bool {
-        blockInstagramShortVideo || blockTikTokShortVideo || blockYouTubeVideo
+        blockInstagramShortVideo || blockTikTokShortVideo
     }
 
     // MARK: - Domain Thresholds

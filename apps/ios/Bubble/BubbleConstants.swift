@@ -78,12 +78,14 @@ enum BubbleConstants {
         "youtu.be",
     ]
 
-    static let trackedDomains = instagramTrackedDomains + tiktokTrackedDomains + youtubeTrackedDomains
+    // Keep YouTube domains available for analytics/classification, but do not
+    // expose them as stream-block thresholds. Shorts and normal YouTube playback
+    // share SNI/media hosts, and this tunnel cannot inspect HTTPS paths.
+    static let trackedDomains = instagramTrackedDomains + tiktokTrackedDomains
 
     static let domainThresholdGroups: [(title: String, domains: [String])] = [
         ("Instagram", instagramTrackedDomains),
         ("TikTok", tiktokTrackedDomains),
-        ("YouTube", youtubeTrackedDomains),
     ]
 
     static var defaultDomainThresholds: [String: Int] {
@@ -93,7 +95,6 @@ enum BubbleConstants {
     // MARK: - UserDefaults Keys
     static let blockInstagramShortVideoEnabledKey = "blockReelsEnabled"
     static let blockTikTokShortVideoEnabledKey = "blockTikTokScrollEnabled"
-    static let blockYouTubeShortVideoEnabledKey = "blockYouTubeVideoEnabled"
     static let blockReelsEnabledKey = blockInstagramShortVideoEnabledKey
     static let domainThresholdsKey = "domainThresholds"
     static let optionStatesKey = "optionStates"
@@ -104,9 +105,6 @@ enum BubbleConstants {
         }
         if tiktokTrackedDomains.contains(domain) {
             return blockTikTokShortVideoEnabledKey
-        }
-        if youtubeTrackedDomains.contains(domain) {
-            return blockYouTubeShortVideoEnabledKey
         }
         return nil
     }
