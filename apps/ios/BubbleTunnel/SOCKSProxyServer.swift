@@ -6,8 +6,11 @@ import os
 
 protocol ConnectionFilter {
     func shouldAllow(host: String, port: UInt16) -> FilterDecision
+    func shouldBlockUDP(host: String, port: UInt16) -> FilterDecision
     func isStreamBlockTarget(_ domain: String) -> Bool
     func streamBlockThreshold(for sni: String) -> Int?
+    func recordDNS(host: String, ips: [String])
+    func recordSNI(_ sni: String, ip: String)
 }
 
 enum FilterDecision {
@@ -528,10 +531,11 @@ final class SOCKSProxyServer {
             self.statsUDP += 1
             self.log.log("UDP #\(id): dest=\(addr.host):\(addr.port), payload=\(payload.count)B")
 
-            // Apply filter to UDP destinations too
-            let decision = self.filter.shouldAllow(host: addr.host, port: addr.port)
-            if decision == .block {
+            // Block QUIC (UDP 443) to tracked CDNs so video falls back to TLS.
+            if self.filter.shouldBlockUDP(host: addr.host, port: addr.port) == .block {
                 self.statsBlocked += 1
+                self.log.log("UDP #\(id): QUIC BLOCKED \(addr.host):\(addr.port) (tracked CDN)")
+                self.recordEvent(type: .blocked, connId: id, host: addr.host, port: addr.port, detail: "QUIC/UDP 443 blocked (forces TLS fallback)")
                 self.readUDPFrameLength(client: client, id: id)
                 return
             }
@@ -590,6 +594,11 @@ final class SOCKSProxyServer {
                     udp.receiveMessage { respData, context, isComplete, recvError in
                         if let respData = respData, !respData.isEmpty {
                             self?.log.log("UDP #\(id): got \(respData.count)B response from \(host):\(port)")
+                            // Snoop DNS answers to learn which IPs belong to
+                            // tracked CDNs (needed to block their QUIC traffic).
+                            if port == 53, let dns = TrackedIPStore.parseDNSResponse(respData) {
+                                self?.filter.recordDNS(host: dns.host, ips: dns.ips)
+                            }
                             var frame = headerBytes
                             frame.append(contentsOf: [UInt8](respData))
                             let frameLen = frame.count
@@ -825,6 +834,8 @@ final class SOCKSProxyServer {
                             tracker.sni = sni
                             self.log.logConnection("TCP #\(tracker.id): SNI=\(sni) IP=\(tracker.host):\(tracker.port)")
                             TunnelLogger.connectionLog.log("[SNI] \(sni, privacy: .private)")
+                            // Learn this IP for QUIC blocking on parallel UDP/443.
+                            self.filter.recordSNI(sni, ip: tracker.host)
                         }
                     }
                 case .download:

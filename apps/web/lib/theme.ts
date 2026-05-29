@@ -1,18 +1,34 @@
 export const theme = {
   colors: {
-    skyBlue: "#3A8DDE",
-    backArrow: "#0C6CC2",
+    skyBlue: "#4C9DFF",
+    backArrow: "#7FB6FF",
     white: "#FFFFFF",
-    white10: "rgba(255,255,255,0.1)",
-    white15: "rgba(255,255,255,0.15)",
-    white30: "rgba(255,255,255,0.3)",
-    white60: "rgba(255,255,255,0.6)",
+    // On the dark navy surface these read as crisp glass / legible text.
+    white10: "rgba(255,255,255,0.05)",
+    white15: "rgba(255,255,255,0.07)",
+    white30: "rgba(255,255,255,0.14)",
+    white60: "rgba(235,242,255,0.62)",
   },
+  // Deep navy gradient that matches the iOS app's dark aesthetic.
   gradient: {
-    stop1: "rgb(102,178,255)", // top
-    stop2: "rgb(89,166,242)",
-    stop3: "rgb(77,153,230)",
-    stop4: "rgb(64,140,217)", // bottom
+    stop1: "#0A1124", // top
+    stop2: "#0C1530",
+    stop3: "#0B1330",
+    stop4: "#070C1C", // bottom
+  },
+  // Semantic surface tokens for glass cards, borders, accents and glows.
+  surface: {
+    card: "rgba(255,255,255,0.045)",
+    cardStrong: "rgba(255,255,255,0.07)",
+    border: "rgba(255,255,255,0.10)",
+    borderStrong: "rgba(255,255,255,0.18)",
+    accent: "#4C9DFF",
+    accentSoft: "rgba(76,157,255,0.16)",
+    glowA: "rgba(76,157,255,0.22)", // top-left cool glow
+    glowB: "rgba(120,86,255,0.16)", // bottom-right violet glow
+    shadow: "0 18px 48px rgba(0,0,0,0.45)",
+    danger: "#FF6B6B",
+    success: "#4ADE80",
   },
   fonts: {
     display: "'Coolvetica', system-ui, sans-serif",

@@ -1,97 +1,50 @@
 "use client";
 
-import { useEffect, useRef, CSSProperties } from "react";
-import NextImage from "next/image";
+import { CSSProperties } from "react";
 import { theme } from "@/lib/theme";
-
-const CLOUD_COPIES = 6;
-const CLOUD_OVERLAP = 5;
 
 interface SkyBackgroundProps {
   children: React.ReactNode;
-  /** When true, clouds scroll. When false, clouds are static. Default false. */
+  /**
+   * Retained for API compatibility. The cloud animation was replaced by the
+   * dark glow aesthetic; when true the accent glow drifts subtly.
+   */
   animateClouds?: boolean;
 }
 
+/**
+ * Full-bleed dark backdrop: a deep navy base gradient with two soft radial
+ * glows (cool blue + violet). Matches the iOS app's dark theme and gives the
+ * glass cards above it enough contrast to read cleanly.
+ */
 export default function SkyBackground({
   children,
   animateClouds = false,
 }: SkyBackgroundProps) {
-  const stripRef = useRef<HTMLDivElement>(null);
-  const offsetRef = useRef(0);
-  const frameRef = useRef<number>(0);
-
-  useEffect(() => {
-    if (!animateClouds) return;
-
-    const strip = stripRef.current;
-    if (!strip) return;
-
-    let cancelled = false;
-
-    function startAnimation(singleWidth: number) {
-      const speed = singleWidth / (theme.animation.cloudDuration * 600);
-      const el = strip!;
-
-      const tick = () => {
-        if (cancelled) return;
-        offsetRef.current -= speed;
-        if (Math.abs(offsetRef.current) >= singleWidth - CLOUD_OVERLAP) {
-          offsetRef.current += singleWidth - CLOUD_OVERLAP;
-        }
-        el.style.transform = `translateX(${offsetRef.current}px)`;
-        frameRef.current = requestAnimationFrame(tick);
-      };
-      frameRef.current = requestAnimationFrame(tick);
-    }
-
-    const img = new Image();
-    img.src = "/images/clouds_continous.png";
-
-    if (img.complete && img.naturalWidth > 0) {
-      startAnimation(img.naturalWidth);
-    } else {
-      img.onload = () => {
-        if (!cancelled) startAnimation(img.naturalWidth);
-      };
-    }
-
-    return () => {
-      cancelled = true;
-      cancelAnimationFrame(frameRef.current);
-    };
-  }, [animateClouds]);
-
   const wrapperStyle: CSSProperties = {
     minHeight: "100vh",
     position: "relative",
-    background: `linear-gradient(to bottom, ${theme.gradient.stop1}, ${theme.gradient.stop2}, ${theme.gradient.stop3}, ${theme.gradient.stop4})`,
+    background: `linear-gradient(160deg, ${theme.gradient.stop1}, ${theme.gradient.stop2} 38%, ${theme.gradient.stop3} 64%, ${theme.gradient.stop4})`,
+    overflow: "hidden",
   };
 
-  const cloudContainerStyle: CSSProperties = {
+  const glowStyle: CSSProperties = {
     position: "fixed",
-    bottom: 0,
-    left: 0,
-    width: "100%",
-    height: "25%",
-    overflow: "hidden",
+    inset: 0,
     pointerEvents: "none",
     zIndex: 0,
+    background: `radial-gradient(60% 50% at 12% 6%, ${theme.surface.glowA}, transparent 70%), radial-gradient(55% 55% at 92% 100%, ${theme.surface.glowB}, transparent 70%)`,
+    animation: animateClouds ? "rinklerGlowDrift 18s ease-in-out infinite alternate" : undefined,
   };
 
-  const cloudStripStyle: CSSProperties = {
-    display: "flex",
-    height: "100%",
-    willChange: animateClouds ? "transform" : "auto",
-  };
-
-  const cloudImgStyle: CSSProperties = {
-    height: "100%",
-    width: "auto",
-    marginRight: -CLOUD_OVERLAP,
-    flexShrink: 0,
-    userSelect: "none",
+  const grainStyle: CSSProperties = {
+    position: "fixed",
+    inset: 0,
     pointerEvents: "none",
+    zIndex: 0,
+    opacity: 0.5,
+    background:
+      "radial-gradient(120% 120% at 50% -10%, transparent 55%, rgba(0,0,0,0.35) 100%)",
   };
 
   const contentStyle: CSSProperties = {
@@ -101,22 +54,14 @@ export default function SkyBackground({
 
   return (
     <div style={wrapperStyle}>
-      <div style={cloudContainerStyle}>
-        <div ref={stripRef} style={cloudStripStyle}>
-          {Array.from({ length: CLOUD_COPIES }).map((_, i) => (
-            <NextImage
-              key={i}
-              src="/images/clouds_continous.png"
-              alt=""
-              width={8517}
-              height={3639}
-              style={cloudImgStyle}
-              draggable={false}
-              priority={i === 0}
-            />
-          ))}
-        </div>
-      </div>
+      <style>{`
+        @keyframes rinklerGlowDrift {
+          0%   { transform: translate3d(0, 0, 0); }
+          100% { transform: translate3d(-3%, 2%, 0); }
+        }
+      `}</style>
+      <div style={glowStyle} />
+      <div style={grainStyle} />
       <div style={contentStyle}>{children}</div>
     </div>
   );

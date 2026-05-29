@@ -11,6 +11,7 @@
 		102A00000000000000000001 /* RinklerTunnel.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000002 /* RinklerTunnel.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		102A00000000000000000003 /* PacketTunnelProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000004 /* PacketTunnelProvider.swift */; };
 		102A00000000000000000005 /* ReelsBlockFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000006 /* ReelsBlockFilter.swift */; };
+		102A000000000000000000A1 /* TrackedIPStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A000000000000000000A2 /* TrackedIPStore.swift */; };
 		102A00000000000000000007 /* SOCKSProxyServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000008 /* SOCKSProxyServer.swift */; };
 		102A00000000000000000009 /* TrafficStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A0000000000000000000A /* TrafficStats.swift */; };
 		102A0000000000000000000B /* TunnelLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A0000000000000000000C /* TunnelLogger.swift */; };
@@ -100,6 +101,7 @@
 		102A00000000000000000002 /* RinklerTunnel.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RinklerTunnel.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		102A00000000000000000004 /* PacketTunnelProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PacketTunnelProvider.swift; sourceTree = "<group>"; };
 		102A00000000000000000006 /* ReelsBlockFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReelsBlockFilter.swift; sourceTree = "<group>"; };
+		102A000000000000000000A2 /* TrackedIPStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackedIPStore.swift; sourceTree = "<group>"; };
 		102A00000000000000000008 /* SOCKSProxyServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOCKSProxyServer.swift; sourceTree = "<group>"; };
 		102A0000000000000000000A /* TrafficStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficStats.swift; sourceTree = "<group>"; };
 		102A0000000000000000000C /* TunnelLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunnelLogger.swift; sourceTree = "<group>"; };
@@ -198,6 +200,7 @@
 				102A00000000000000000004 /* PacketTunnelProvider.swift */,
 				102A00000000000000000027 /* PrivacyInfo.xcprivacy */,
 				102A00000000000000000006 /* ReelsBlockFilter.swift */,
+				102A000000000000000000A2 /* TrackedIPStore.swift */,
 				102A00000000000000000017 /* RinklerTunnel.entitlements */,
 				102A00000000000000000008 /* SOCKSProxyServer.swift */,
 				102A0000000000000000000A /* TrafficStats.swift */,
@@ -540,6 +543,7 @@
 				102A0000000000000000000D /* BubbleConstants.swift in Sources */,
 				102A00000000000000000003 /* PacketTunnelProvider.swift in Sources */,
 				102A00000000000000000005 /* ReelsBlockFilter.swift in Sources */,
+				102A000000000000000000A1 /* TrackedIPStore.swift in Sources */,
 				102A00000000000000000007 /* SOCKSProxyServer.swift in Sources */,
 				102A00000000000000000009 /* TrafficStats.swift in Sources */,
 				102A0000000000000000000B /* TunnelLogger.swift in Sources */,

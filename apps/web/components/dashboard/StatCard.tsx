@@ -11,10 +11,13 @@ interface StatCardProps {
 
 export default function StatCard({ label, value, subtitle }: StatCardProps) {
   const cardStyle: CSSProperties = {
-    background: theme.colors.white15,
+    background: theme.surface.card,
     borderRadius: 20,
     padding: `${theme.spacing.lg}px ${theme.spacing.xl}px`,
-    border: `1px solid ${theme.colors.white30}`,
+    border: `1px solid ${theme.surface.border}`,
+    boxShadow: theme.surface.shadow,
+    backdropFilter: "blur(12px)",
+    WebkitBackdropFilter: "blur(12px)",
     minWidth: 180,
     flex: 1,
   };

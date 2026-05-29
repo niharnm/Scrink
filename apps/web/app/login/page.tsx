@@ -3,16 +3,7 @@
 import { useActionState, useState, CSSProperties } from "react";
 import { signIn, signUp } from "./actions";
 import SkyBackground from "@/components/dashboard/SkyBackground";
-
-const theme = {
-  skyBlue: "#3A8DDE",
-  white: "#FFFFFF",
-  white10: "rgba(255,255,255,0.1)",
-  white30: "rgba(255,255,255,0.3)",
-  white60: "rgba(255,255,255,0.6)",
-  display: "'Coolvetica', system-ui, sans-serif",
-  body: "'Coolvetica', system-ui, sans-serif",
-};
+import { theme } from "@/lib/theme";
 
 export default function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -34,128 +25,144 @@ export default function LoginPage() {
 
   const cardStyle: CSSProperties = {
     width: "100%",
-    maxWidth: 400,
-    padding: 40,
+    maxWidth: 420,
+    padding: "44px 40px",
+    background: theme.surface.card,
+    border: `1px solid ${theme.surface.border}`,
+    borderRadius: 28,
+    backdropFilter: "blur(18px)",
+    WebkitBackdropFilter: "blur(18px)",
+    boxShadow: theme.surface.shadow,
   };
 
-  const titleStyle: CSSProperties = {
-    fontFamily: theme.display,
-    fontSize: 48,
-    color: theme.white,
+  const brandStyle: CSSProperties = {
+    fontFamily: theme.fonts.display,
+    fontSize: 52,
+    color: theme.colors.white,
     textAlign: "center",
-    marginBottom: 8,
+    letterSpacing: 0.5,
+    lineHeight: 1.05,
   };
 
   const subtitleStyle: CSSProperties = {
-    fontFamily: theme.body,
-    fontSize: 18,
-    color: theme.white60,
+    fontFamily: theme.fonts.body,
+    fontSize: 17,
+    color: theme.colors.white60,
     fontStyle: "italic",
     textAlign: "center",
-    marginBottom: 48,
+    marginTop: 6,
+    marginBottom: 40,
   };
 
   const labelStyle: CSSProperties = {
-    fontFamily: theme.body,
-    fontSize: 16,
-    color: theme.white,
+    fontFamily: theme.fonts.body,
+    fontSize: 14,
+    color: theme.colors.white60,
     marginBottom: 8,
     display: "block",
-  };
-
-  const inputStyle: CSSProperties = {
-    width: "100%",
-    padding: 16,
-    borderRadius: 28,
-    border: `1px solid ${theme.white30}`,
-    background: theme.white10,
-    color: theme.white,
-    fontFamily: theme.body,
-    fontSize: 18,
-    outline: "none",
-    boxSizing: "border-box",
-  };
-
-  const buttonStyle: CSSProperties = {
-    width: "100%",
-    padding: 16,
-    borderRadius: 28,
-    border: `2px solid ${theme.white}`,
-    background: theme.skyBlue,
-    color: theme.white,
-    fontFamily: theme.display,
-    fontSize: 22,
-    cursor: pending ? "not-allowed" : "pointer",
-    opacity: pending ? 0.6 : 1,
-    transition: "opacity 0.2s ease",
+    letterSpacing: 0.3,
+    textTransform: "uppercase",
   };
 
   const errorStyle: CSSProperties = {
-    fontFamily: theme.body,
+    fontFamily: theme.fonts.body,
     fontSize: 14,
-    color: "#FF6B6B",
+    color: theme.surface.danger,
     textAlign: "center",
-    marginTop: 16,
+    marginTop: 18,
   };
 
   const messageStyle: CSSProperties = {
-    fontFamily: theme.body,
+    fontFamily: theme.fonts.body,
     fontSize: 14,
-    color: theme.white60,
+    color: theme.colors.white60,
     textAlign: "center",
-    marginTop: 16,
+    marginTop: 18,
   };
 
   const toggleStyle: CSSProperties = {
-    fontFamily: theme.body,
+    fontFamily: theme.fonts.body,
     fontSize: 15,
-    color: theme.white60,
+    color: theme.colors.white60,
     textAlign: "center",
-    marginTop: 24,
-  };
-
-  const toggleBtnStyle: CSSProperties = {
-    background: "none",
-    border: "none",
-    color: theme.white,
-    cursor: "pointer",
-    textDecoration: "underline",
-    fontFamily: theme.body,
-    fontSize: 15,
-    padding: 0,
+    marginTop: 28,
   };
 
   return (
     <SkyBackground animateClouds>
+      <style>{`
+        .rk-input {
+          width: 100%;
+          padding: 15px 18px;
+          border-radius: 16px;
+          border: 1px solid ${theme.surface.border};
+          background: rgba(255,255,255,0.04);
+          color: ${theme.colors.white};
+          font-family: ${theme.fonts.body};
+          font-size: 17px;
+          outline: none;
+          box-sizing: border-box;
+          transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
+        }
+        .rk-input::placeholder { color: rgba(255,255,255,0.32); }
+        .rk-input:focus {
+          border-color: ${theme.surface.accent};
+          background: rgba(255,255,255,0.07);
+          box-shadow: 0 0 0 4px ${theme.surface.accentSoft};
+        }
+        .rk-submit {
+          width: 100%;
+          padding: 16px;
+          border-radius: 16px;
+          border: none;
+          background: ${theme.surface.accent};
+          color: ${theme.colors.white};
+          font-family: ${theme.fonts.display};
+          font-size: 21px;
+          letter-spacing: 0.3px;
+          cursor: pointer;
+          transition: filter .18s ease, transform .06s ease, opacity .18s ease;
+        }
+        .rk-submit:hover:not(:disabled) { filter: brightness(1.08); }
+        .rk-submit:active:not(:disabled) { transform: translateY(1px); }
+        .rk-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+        .rk-link {
+          background: none; border: none; color: ${theme.colors.white};
+          cursor: pointer; font-family: ${theme.fonts.body}; font-size: 15px;
+          padding: 0; text-decoration: underline; text-underline-offset: 3px;
+        }
+        .rk-link:hover { color: ${theme.surface.accent}; }
+      `}</style>
+
       <div style={containerStyle}>
         <div style={cardStyle}>
-          <div style={titleStyle}>Rinkler</div>
+          <div style={brandStyle}>Rinkler</div>
           <div style={subtitleStyle}>keep the useful parts.</div>
 
           <form action={action}>
             <div style={{ marginBottom: 20 }}>
               <label style={labelStyle}>Email</label>
               <input
+                className="rk-input"
                 name="email"
                 type="email"
                 placeholder="you@example.com"
                 required
                 autoCapitalize="none"
-                style={inputStyle}
               />
             </div>
             <div style={{ marginBottom: 32 }}>
               <label style={labelStyle}>Password</label>
               <input
+                className="rk-input"
                 name="password"
                 type="password"
                 placeholder="••••••"
                 required
                 minLength={6}
-                style={inputStyle}
               />
             </div>
-            <button type="submit" disabled={pending} style={buttonStyle}>
+            <button type="submit" disabled={pending} className="rk-submit">
               {pending ? "..." : isSignUp ? "Sign Up" : "Sign In"}
             </button>
           </form>
@@ -167,7 +174,7 @@ export default function LoginPage() {
 
           <p style={toggleStyle}>
             {isSignUp ? "Already have an account?" : "Need an account?"}{" "}
-            <button onClick={() => setIsSignUp(!isSignUp)} style={toggleBtnStyle}>
+            <button onClick={() => setIsSignUp(!isSignUp)} className="rk-link">
               {isSignUp ? "Sign In" : "Sign Up"}
             </button>
           </p>
