@@ -31,6 +31,12 @@ struct RinklerApp: App {
                 })
                 .navigationDestination(for: Route.self) { route in
                     switch route {
+                    case .today:
+                        TodayDashboard(
+                            onSettings: { path.append(Route.settings) },
+                            onStartSession: { path.append(Route.focusSetup) },
+                            onTrafficDashboard: { path.append(Route.trafficDashboard) }
+                        )
                     case .home:
                         HomeScreen(
                             onSignIn: {
@@ -94,7 +100,7 @@ struct RinklerApp: App {
                 } else {
                     OnboardingFlow(onFinish: {
                         path = NavigationPath()
-                        path.append(Route.home)
+                        path.append(Route.today)
                     })
                 }
             }

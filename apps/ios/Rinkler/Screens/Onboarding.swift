@@ -762,3 +762,205 @@ struct OnboardingFlow: View {
         }
     }
 }
+
+// MARK: - Today dashboard (post-onboarding home in the Signal identity)
+
+/// The screen the user lands on after onboarding. It shows their Signal Score,
+/// the rules their answers generated, the next scheduled window, and one primary
+/// action — so the app feels already set up before they touch any settings.
+struct TodayDashboard: View {
+    @EnvironmentObject private var focusSystem: FocusSystemStore
+    @EnvironmentObject private var vpnManager: VPNManager
+
+    var onSettings: (() -> Void)? = nil
+    var onStartSession: (() -> Void)? = nil
+    var onTrafficDashboard: (() -> Void)? = nil
+
+    var body: some View {
+        ZStack {
+            RinklerColors.signalBackground.ignoresSafeArea()
+
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
+                    header
+                    scoreCard
+                    nextWindowCard
+                    rulesSection
+                    protectionRow
+                }
+                .padding(.horizontal, RinklerSpacing.lg)
+                .padding(.top, RinklerSpacing.lg)
+                .padding(.bottom, RinklerSpacing.xxl)
+            }
+        }
+        .navigationBarBackButtonHidden(true)
+        .preferredColorScheme(.dark)
+    }
+
+    private var header: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("TODAY")
+                    .font(RinklerFonts.sans(13, .semibold))
+                    .foregroundStyle(RinklerColors.signalTextDim)
+                Text("Your Focus System")
+                    .font(RinklerFonts.sans(24, .bold))
+                    .foregroundStyle(RinklerColors.signalText)
+            }
+            Spacer()
+            iconButton("chart.bar.fill", action: onTrafficDashboard)
+            iconButton("gearshape.fill", action: onSettings)
+        }
+    }
+
+    private var scoreCard: some View {
+        HStack(spacing: RinklerSpacing.lg) {
+            SignalRing(progress: Double(focusSystem.signalScore) / 100.0, lineWidth: 10) {
+                VStack(spacing: 0) {
+                    Text("\(focusSystem.signalScore)")
+                        .font(RinklerFonts.mono(30, .medium))
+                        .foregroundStyle(RinklerColors.signalText)
+                    Text("Signal")
+                        .font(RinklerFonts.sans(10, .medium))
+                        .foregroundStyle(RinklerColors.signalTextDim)
+                }
+            }
+            .frame(width: 104, height: 104)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Scroll Control")
+                    .font(RinklerFonts.sans(17, .semibold))
+                    .foregroundStyle(RinklerColors.signalText)
+                Text("Your system is armed. Start a session to win your first ring and push the score up.")
+                    .font(RinklerFonts.sans(13, .regular))
+                    .foregroundStyle(RinklerColors.signalTextDim)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(RinklerSpacing.lg)
+        .background(RinklerColors.signalCard)
+        .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+    }
+
+    private var nextWindowCard: some View {
+        Button { onStartSession?() } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(nextRule != nil ? "Next window" : "Suggested")
+                        .font(RinklerFonts.sans(12, .medium))
+                        .foregroundStyle(RinklerColors.signalTextDim)
+                    Text(nextRule?.name ?? "Start a 10-minute Control Session")
+                        .font(RinklerFonts.sans(18, .semibold))
+                        .foregroundStyle(RinklerColors.signalText)
+                    if let rule = nextRule {
+                        Text(rule.timeRangeLabel)
+                            .font(RinklerFonts.mono(12, .regular))
+                            .foregroundStyle(RinklerColors.signalTextDim)
+                    }
+                }
+                Spacer()
+                Image(systemName: "play.circle.fill")
+                    .font(.system(size: 34))
+                    .foregroundStyle(RinklerColors.signalBlue)
+            }
+            .padding(RinklerSpacing.lg)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(RinklerColors.signalBlue.opacity(0.12))
+            .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).strokeBorder(RinklerColors.signalBlue.opacity(0.4), lineWidth: 1))
+            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var rulesSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("RULES")
+                .font(RinklerFonts.sans(12, .semibold))
+                .foregroundStyle(RinklerColors.signalTextDim)
+            if focusSystem.rules.isEmpty {
+                Text("No rules yet — re-run setup from Settings to generate them.")
+                    .font(RinklerFonts.sans(13, .regular))
+                    .foregroundStyle(RinklerColors.signalTextDim)
+            } else {
+                ForEach(focusSystem.rules) { rule in
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            Text(rule.name)
+                                .font(RinklerFonts.sans(16, .semibold))
+                                .foregroundStyle(RinklerColors.signalText)
+                            Spacer()
+                            Text(rule.difficulty.title)
+                                .font(RinklerFonts.sans(11, .medium))
+                                .foregroundStyle(RinklerColors.signalBlue)
+                                .padding(.horizontal, 8).padding(.vertical, 3)
+                                .background(RinklerColors.signalBlue.opacity(0.12))
+                                .clipShape(Capsule())
+                        }
+                        Text(rule.timeRangeLabel)
+                            .font(RinklerFonts.mono(12, .regular))
+                            .foregroundStyle(RinklerColors.signalTextDim)
+                        Text("Blocks " + rule.blocked.prefix(4).joined(separator: ", "))
+                            .font(RinklerFonts.sans(12, .regular))
+                            .foregroundStyle(RinklerColors.signalTextDim)
+                    }
+                    .padding(RinklerSpacing.md)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(RinklerColors.signalCard)
+                    .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
+                    .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                }
+            }
+        }
+    }
+
+    private var protectionRow: some View {
+        HStack(spacing: RinklerSpacing.md) {
+            Image(systemName: vpnManager.vpnStatus == .connected ? "shield.lefthalf.filled" : "shield.slash")
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundStyle(vpnManager.vpnStatus == .connected ? RinklerColors.signalSuccess : RinklerColors.signalTextDim)
+            Text(vpnManager.vpnStatus == .connected ? "Protection on" : "Protection off")
+                .font(RinklerFonts.sans(15, .medium))
+                .foregroundStyle(RinklerColors.signalText)
+            Spacer()
+            Button { vpnManager.toggleVPN() } label: {
+                Text(vpnManager.vpnStatus == .connected ? "Stop" : "Start")
+                    .font(RinklerFonts.sans(14, .semibold))
+                    .foregroundStyle(vpnManager.vpnStatus == .connected ? RinklerColors.signalText : .black)
+                    .padding(.horizontal, 18).frame(height: 36)
+                    .background(vpnManager.vpnStatus == .connected ? AnyView(RinklerColors.signalCardRaised) : AnyView(RinklerColors.signalGlow))
+                    .clipShape(Capsule())
+            }
+            .buttonStyle(.plain)
+            .disabled(vpnManager.isPreparingProfile)
+        }
+        .padding(RinklerSpacing.md)
+        .background(RinklerColors.signalCard)
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
+    /// The first rule whose window hasn't ended yet today (simple heuristic until
+    /// the scheduler backend lands).
+    private var nextRule: FocusRule? {
+        let now = Calendar.current
+        let minutes = now.component(.hour, from: Date()) * 60 + now.component(.minute, from: Date())
+        return focusSystem.rules
+            .sorted { $0.startMinute < $1.startMinute }
+            .first { $0.endMinute > minutes } ?? focusSystem.rules.first
+    }
+
+    private func iconButton(_ systemName: String, action: (() -> Void)?) -> some View {
+        Button { action?() } label: {
+            Image(systemName: systemName)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(RinklerColors.signalText)
+                .frame(width: 40, height: 40)
+                .background(RinklerColors.signalCard)
+                .clipShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .disabled(action == nil)
+    }
+}
