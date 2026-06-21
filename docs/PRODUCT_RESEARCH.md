@@ -54,11 +54,20 @@ differentiator; lead with it.
 
 ## Suggested near-term order
 
-1. **Commitment / disable-friction mode** — directly answers the top complaint and
-   makes the product sticky.
+1. ~~**Commitment / disable-friction mode**~~ — ✅ shipped (`CommitmentMode.swift`).
+   Friction on turning protection *off* (cooldown + typed confirm), with an honest
+   "iOS Settings can still kill the VPN" caveat and accountability receipts. Also
+   Rinkler's most original angle — it turns the bypass into visible self-data
+   instead of pretending to be unbreakable.
 2. **Schedules** (block feeds 9–5, or after bedtime) — most-requested missing piece.
-3. **Plain-language insights + a streak** — leverages data you already collect.
-4. **Pre-open friction interstitial** — cheap, proven to reduce use.
+   Note: reliable *background* enforcement needs the app/extension awake on a
+   schedule; a foreground/best-effort version is the realistic first cut.
+3. **Plain-language insights + a streak** — leverages data you already collect (the
+   streak already exists; turn traffic stats into "Reels intercepted today" and
+   time-of-day patterns).
+4. **Pre-open friction interstitial** — a true app-launch pause needs the Screen
+   Time / FamilyControls API (a network tunnel can't intercept app opens). The
+   Commitment Mode pause is the on-brand version Rinkler can ship today.
 
 ## Sources
 
