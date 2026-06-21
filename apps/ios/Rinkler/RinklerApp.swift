@@ -4,6 +4,7 @@ import SwiftUI
 struct RinklerApp: App {
     @StateObject private var vpnManager = VPNManager()
     @StateObject private var sessions = FocusSessionStore()
+    @StateObject private var commitment = CommitmentStore()
     @State private var path = NavigationPath()
     @State private var authStore = AuthStore()
 
@@ -90,6 +91,7 @@ struct RinklerApp: App {
             .environment(authStore)
             .environmentObject(vpnManager)
             .environmentObject(sessions)
+            .environmentObject(commitment)
             .preferredColorScheme(.dark)
             .task {
                 SVGCache.shared.preload(svgNames: ["instagram"])
