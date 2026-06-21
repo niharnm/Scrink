@@ -36,17 +36,17 @@ Send me those lines and I can pin the cause precisely.
 > plausible cause of stalls/teardown. If logs show a *different* stop reason,
 > that points at signing/entitlements rather than code.
 
-## B. Reels / Shorts / TikTok actually get blocked
-With all three filters ON and protection connected:
+## B. Instagram Reels / TikTok actually get blocked
+With both production filters ON and protection connected:
 1. [ ] **Instagram** → open Reels, scroll. Video should stall/refuse to play
        after the first clip. Tunnel log should show `STREAM BLOCK` (TCP/TLS path)
        and/or `QUIC BLOCKED ... (tracked CDN)` (UDP/443 path).
 2. [ ] **TikTok** → open the For You feed. Same expectation.
-3. [ ] **YouTube** → open Shorts. Same expectation.
-4. [ ] Confirm the **non-blocked** parts still work: Instagram DMs, search,
-       posting; YouTube regular (long-form) video if its filter is the only thing
-       you intend to limit.
-5. [ ] Toggle a filter OFF → that app's video should play normally again
+3. [ ] Confirm the **non-blocked** parts still work: Instagram DMs, search,
+       posting, and general browsing. YouTube Shorts is not a production filter
+       in this build because Shorts and normal YouTube playback share hosts at
+       the tunnel layer.
+4. [ ] Toggle a filter OFF → that app's video should play normally again
        (verifies per-app enable is respected).
 
 > What changed in code: video on these apps rides QUIC (HTTP/3, UDP 443), which
@@ -61,6 +61,9 @@ With all three filters ON and protection connected:
       catches IPs once any TCP/443 connection to the CDN is seen. Watch for any
       app whose video keeps playing — its log line `[UNTRACKED-LARGE]` flags a
       domain getting big downloads with no rule.
+- [ ] **YouTube Shorts:** intentionally not blocked in this build. Do not treat
+      YouTube playback as a release gate unless a future implementation can
+      distinguish Shorts from normal YouTube traffic without decrypting content.
 - [ ] **Threshold feel:** 0.5 MB per stream ≈ ~1s of video before the cut. Adjust
       `streamBlockDefaultThreshold` in `RinklerConstants.swift` if you want it
       tighter/looser.
