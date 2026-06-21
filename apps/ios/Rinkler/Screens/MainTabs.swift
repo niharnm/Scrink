@@ -279,6 +279,144 @@ struct FlowChipsPublic: View {
     }
 }
 
+// MARK: - Rule editor
+
+/// Edit a generated preset: name, on/off, time window, difficulty, and which
+/// surfaces it blocks / keeps. Saving re-emits the tunnel schedule.
+struct RuleEditorView: View {
+    @EnvironmentObject private var focusSystem: FocusSystemStore
+    @Environment(\.dismiss) private var dismiss
+    @State private var draft: FocusRule
+
+    init(rule: FocusRule) { _draft = State(initialValue: rule) }
+
+    private let blockedCatalog = ["Reels", "Shorts", "TikTok FYP", "Explore", "Spotlight", "Reddit feed", "X feed"]
+    private let allowedCatalog = ["DMs", "Messages", "Search", "YouTube Search", "School apps", "Music", "Maps", "Calendar", "Family contacts", "Phone", "Alarm"]
+    private let cols = [GridItem(.adaptive(minimum: 96), spacing: 8)]
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                RinklerColors.signalBackground.ignoresSafeArea()
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
+                        group("NAME") {
+                            TextField("Rule name", text: $draft.name)
+                                .font(RinklerFonts.sans(17, .medium))
+                                .foregroundStyle(RinklerColors.signalText)
+                                .padding(12)
+                                .background(RinklerColors.signalCard)
+                                .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
+                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        }
+
+                        Toggle(isOn: $draft.enabled) {
+                            Text("Rule enabled")
+                                .font(RinklerFonts.sans(15, .medium))
+                                .foregroundStyle(RinklerColors.signalText)
+                        }
+                        .tint(RinklerColors.signalBlue)
+
+                        group("WINDOW") {
+                            HStack {
+                                DatePicker("Starts", selection: startBinding, displayedComponents: .hourAndMinute)
+                                DatePicker("Ends", selection: endBinding, displayedComponents: .hourAndMinute)
+                            }
+                            .font(RinklerFonts.sans(14, .medium))
+                            .foregroundStyle(RinklerColors.signalTextDim)
+                            .tint(RinklerColors.signalBlue)
+                        }
+
+                        group("STRICTNESS") {
+                            Picker("Strictness", selection: difficultyBinding) {
+                                ForEach(Difficulty.allCases) { Text($0.title).tag($0) }
+                            }
+                            .pickerStyle(.segmented)
+                        }
+
+                        group("BLOCKS") { chips(blockedCatalog, list: \.blocked, color: RinklerColors.signalWarning) }
+                        group("KEEPS OPEN") { chips(allowedCatalog, list: \.allowed, color: RinklerColors.signalSuccess) }
+
+                        Button(role: .destructive) {
+                            focusSystem.deleteRule(draft.id)
+                            dismiss()
+                        } label: {
+                            Text("Delete rule")
+                                .font(RinklerFonts.sans(15, .medium))
+                                .foregroundStyle(RinklerColors.signalWarning)
+                                .frame(maxWidth: .infinity).frame(height: 48)
+                                .background(RinklerColors.signalCard)
+                                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(RinklerSpacing.lg)
+                }
+            }
+            .navigationTitle("Edit rule")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") { focusSystem.updateRule(draft); dismiss() }
+                        .fontWeight(.semibold)
+                }
+            }
+            .preferredColorScheme(.dark)
+        }
+    }
+
+    private func group<C: View>(_ title: String, @ViewBuilder content: () -> C) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(title)
+                .font(RinklerFonts.sans(12, .semibold))
+                .foregroundStyle(RinklerColors.signalTextDim)
+            content()
+        }
+    }
+
+    private func chips(_ catalog: [String], list: WritableKeyPath<FocusRule, [String]>, color: Color) -> some View {
+        LazyVGrid(columns: cols, alignment: .leading, spacing: 8) {
+            ForEach(catalog, id: \.self) { item in
+                let on = draft[keyPath: list].contains(item)
+                Button {
+                    if on { draft[keyPath: list].removeAll { $0 == item } }
+                    else { draft[keyPath: list].append(item) }
+                } label: {
+                    Text(item)
+                        .font(RinklerFonts.sans(12, .medium))
+                        .foregroundStyle(on ? RinklerColors.signalText : RinklerColors.signalTextDim)
+                        .padding(.horizontal, 10).padding(.vertical, 7)
+                        .background(on ? color.opacity(0.16) : RinklerColors.signalCard)
+                        .overlay(Capsule().strokeBorder(on ? color.opacity(0.5) : RinklerColors.signalBorder, lineWidth: 1))
+                        .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    private var startBinding: Binding<Date> {
+        Binding(get: { Self.date(from: draft.startMinute) }, set: { draft.startMinute = Self.minute(from: $0) })
+    }
+    private var endBinding: Binding<Date> {
+        Binding(get: { Self.date(from: draft.endMinute) }, set: { draft.endMinute = Self.minute(from: $0) })
+    }
+    private var difficultyBinding: Binding<Difficulty> {
+        Binding(get: { draft.difficulty }, set: { draft.difficultyRaw = $0.rawValue })
+    }
+
+    private static func date(from minute: Int) -> Date {
+        Calendar.current.date(bySettingHour: minute / 60, minute: minute % 60, second: 0, of: Date()) ?? Date()
+    }
+    private static func minute(from date: Date) -> Int {
+        let c = Calendar.current.dateComponents([.hour, .minute], from: date)
+        return (c.hour ?? 0) * 60 + (c.minute ?? 0)
+    }
+}
+
 // MARK: - Progress tab (scroll report)
 
 /// Scroll-specific report. Reads the tunnel's blocked counter from the shared

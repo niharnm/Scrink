@@ -292,6 +292,36 @@ final class FocusSystemStore: ObservableObject {
         persist()
     }
 
+    // MARK: Rule editing
+
+    /// Replaces a rule (matched by id), or appends it if new. Re-persists and
+    /// re-emits the tunnel schedule.
+    func updateRule(_ rule: FocusRule) {
+        if let idx = rules.firstIndex(where: { $0.id == rule.id }) {
+            rules[idx] = rule
+        } else {
+            rules.append(rule)
+        }
+        persist()
+    }
+
+    func deleteRule(_ id: UUID) {
+        rules.removeAll { $0.id == id }
+        persist()
+    }
+
+    func addBlankRule() {
+        rules.append(FocusRule(
+            name: "New Rule",
+            startMinute: 20 * 60,
+            endMinute: 22 * 60,
+            blocked: ["Reels", "Shorts", "TikTok FYP"],
+            allowed: ["Messages"],
+            difficultyRaw: difficulty.rawValue
+        ))
+        persist()
+    }
+
     private func uniqueAllowed(_ items: [String]) -> [String] {
         var seen = Set<String>()
         return items.filter { seen.insert($0).inserted }
@@ -813,6 +843,8 @@ struct TodayDashboard: View {
     var onStartSession: (() -> Void)? = nil
     var onTrafficDashboard: (() -> Void)? = nil
 
+    @State private var editingRule: FocusRule?
+
     var body: some View {
         ZStack {
             RinklerColors.signalBackground.ignoresSafeArea()
@@ -832,6 +864,9 @@ struct TodayDashboard: View {
         }
         .navigationBarBackButtonHidden(true)
         .preferredColorScheme(.dark)
+        .sheet(item: $editingRule) { rule in
+            RuleEditorView(rule: rule)
+        }
     }
 
     private var header: some View {
@@ -913,40 +948,66 @@ struct TodayDashboard: View {
 
     private var rulesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("RULES")
-                .font(RinklerFonts.sans(12, .semibold))
-                .foregroundStyle(RinklerColors.signalTextDim)
+            HStack {
+                Text("RULES")
+                    .font(RinklerFonts.sans(12, .semibold))
+                    .foregroundStyle(RinklerColors.signalTextDim)
+                Spacer()
+                Button {
+                    focusSystem.addBlankRule()
+                    editingRule = focusSystem.rules.last
+                } label: {
+                    Label("Add", systemImage: "plus")
+                        .font(RinklerFonts.sans(12, .semibold))
+                        .foregroundStyle(RinklerColors.signalBlue)
+                }
+                .buttonStyle(.plain)
+            }
             if focusSystem.rules.isEmpty {
-                Text("No rules yet — re-run setup from Settings to generate them.")
+                Text("No rules yet — add one, or re-run setup from Settings.")
                     .font(RinklerFonts.sans(13, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
             } else {
                 ForEach(focusSystem.rules) { rule in
-                    VStack(alignment: .leading, spacing: 6) {
-                        HStack {
-                            Text(rule.name)
-                                .font(RinklerFonts.sans(16, .semibold))
-                                .foregroundStyle(RinklerColors.signalText)
-                            Spacer()
-                            Text(rule.difficulty.title)
-                                .font(RinklerFonts.sans(11, .medium))
-                                .foregroundStyle(RinklerColors.signalBlue)
-                                .padding(.horizontal, 8).padding(.vertical, 3)
-                                .background(RinklerColors.signalBlue.opacity(0.12))
-                                .clipShape(Capsule())
+                    Button { editingRule = rule } label: {
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack {
+                                Text(rule.name)
+                                    .font(RinklerFonts.sans(16, .semibold))
+                                    .foregroundStyle(rule.enabled ? RinklerColors.signalText : RinklerColors.signalTextDim)
+                                if !rule.enabled {
+                                    Text("Off")
+                                        .font(RinklerFonts.sans(10, .medium))
+                                        .foregroundStyle(RinklerColors.signalTextDim)
+                                        .padding(.horizontal, 6).padding(.vertical, 2)
+                                        .background(RinklerColors.signalCardRaised)
+                                        .clipShape(Capsule())
+                                }
+                                Spacer()
+                                Text(rule.difficulty.title)
+                                    .font(RinklerFonts.sans(11, .medium))
+                                    .foregroundStyle(RinklerColors.signalBlue)
+                                    .padding(.horizontal, 8).padding(.vertical, 3)
+                                    .background(RinklerColors.signalBlue.opacity(0.12))
+                                    .clipShape(Capsule())
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 11, weight: .semibold))
+                                    .foregroundStyle(RinklerColors.signalTextDim)
+                            }
+                            Text(rule.timeRangeLabel)
+                                .font(RinklerFonts.mono(12, .regular))
+                                .foregroundStyle(RinklerColors.signalTextDim)
+                            Text("Blocks " + rule.blocked.prefix(4).joined(separator: ", "))
+                                .font(RinklerFonts.sans(12, .regular))
+                                .foregroundStyle(RinklerColors.signalTextDim)
                         }
-                        Text(rule.timeRangeLabel)
-                            .font(RinklerFonts.mono(12, .regular))
-                            .foregroundStyle(RinklerColors.signalTextDim)
-                        Text("Blocks " + rule.blocked.prefix(4).joined(separator: ", "))
-                            .font(RinklerFonts.sans(12, .regular))
-                            .foregroundStyle(RinklerColors.signalTextDim)
+                        .padding(RinklerSpacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(RinklerColors.signalCard)
+                        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
+                        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                     }
-                    .padding(RinklerSpacing.md)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(RinklerColors.signalCard)
-                    .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
-                    .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    .buttonStyle(.plain)
                 }
             }
         }
