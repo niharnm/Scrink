@@ -20,8 +20,8 @@ enum FilterRegressionCheck {
         }
         defer { defaults.removePersistentDomain(forName: suiteName) }
 
-        defaults.set(true, forKey: BubbleConstants.blockInstagramShortVideoEnabledKey)
-        defaults.set(true, forKey: BubbleConstants.blockTikTokShortVideoEnabledKey)
+        defaults.set(true, forKey: RinklerConstants.blockInstagramShortVideoEnabledKey)
+        defaults.set(true, forKey: RinklerConstants.blockTikTokShortVideoEnabledKey)
 
         let thresholds = [
             "cdninstagram.com": 512,
@@ -31,7 +31,7 @@ enum FilterRegressionCheck {
             "youtubei.googleapis.com": 512,
         ]
         let thresholdData = try JSONEncoder().encode(thresholds)
-        defaults.set(thresholdData, forKey: BubbleConstants.domainThresholdsKey)
+        defaults.set(thresholdData, forKey: RinklerConstants.domainThresholdsKey)
 
         let filter = ReelsBlockFilter(sharedDefaults: defaults)
 
@@ -60,7 +60,7 @@ enum FilterRegressionCheck {
             "YouTube app API hosts must not be stream-blocked as Shorts-only blocking"
         )
 
-        defaults.set(false, forKey: BubbleConstants.blockTikTokShortVideoEnabledKey)
+        defaults.set(false, forKey: RinklerConstants.blockTikTokShortVideoEnabledKey)
         try expect(
             filter.streamBlockThreshold(for: "v16-webapp-prime.tiktokcdn.com") == nil,
             "TikTok threshold should respect the user toggle"

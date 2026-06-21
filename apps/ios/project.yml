@@ -19,29 +19,35 @@ targets:
     type: application
     platform: iOS
     sources:
-      - path: Bubble
+      - path: Rinkler
     dependencies:
       - target: RinklerTunnel
       - sdk: NetworkExtension.framework
     info:
-      path: Bubble/Info.plist
+      path: Rinkler/Info.plist
       properties:
         UIAppFonts:
           - SK Pupok Solid 400.ttf
           - Coolvetica Rg.otf
           - Coolvetica Rg It.otf
+          - Geist-Regular.ttf
+          - Geist-Medium.ttf
+          - Geist-SemiBold.ttf
+          - Geist-Bold.ttf
+          - GeistMono-Regular.ttf
+          - GeistMono-Medium.ttf
         UIViewControllerBasedStatusBarAppearance: false
         UIStatusBarStyle: UIStatusBarStyleLightContent
         UILaunchScreen: {}
         SUPABASE_URL: $(SUPABASE_URL)
         SUPABASE_KEY: $(SUPABASE_KEY)
     entitlements:
-      path: Bubble/Rinkler.entitlements
+      path: Rinkler/Rinkler.entitlements
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.rinkler.app
         TARGETED_DEVICE_FAMILY: 1
-        INFOPLIST_FILE: Bubble/Info.plist
+        INFOPLIST_FILE: Rinkler/Info.plist
         DEVELOPMENT_TEAM: ""
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
@@ -51,18 +57,18 @@ targets:
     type: app-extension
     platform: iOS
     sources:
-      - BubbleTunnel
+      - RinklerTunnel
     dependencies:
       - package: Tun2SocksKit
       - sdk: NetworkExtension.framework
     info:
-      path: BubbleTunnel/Info.plist
+      path: RinklerTunnel/Info.plist
       properties:
         NSExtension:
           NSExtensionPointIdentifier: com.apple.networkextension.packet-tunnel
           NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).PacketTunnelProvider
     entitlements:
-      path: BubbleTunnel/RinklerTunnel.entitlements
+      path: RinklerTunnel/RinklerTunnel.entitlements
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.rinkler.app.tunnel

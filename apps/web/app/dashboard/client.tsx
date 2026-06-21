@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import SkyBackground from "@/components/dashboard/SkyBackground";
 import HeaderBar from "@/components/dashboard/HeaderBar";
 import DateRangeSelector from "@/components/dashboard/DateRangeSelector";
-import BubbleCluster from "@/components/dashboard/BubbleCluster";
+import RinklerCluster from "@/components/dashboard/RinklerCluster";
 import StatCard from "@/components/dashboard/StatCard";
 import UsageChart from "@/components/dashboard/UsageChart";
 import HeatmapGrid from "@/components/dashboard/HeatmapGrid";
@@ -232,7 +232,7 @@ export default function DashboardClient({ email }: DashboardClientProps) {
         </div>
 
         <div style={sectionGap}>
-          <BubbleCluster apps={data.apps} onAppClick={handleAppClick} />
+          <RinklerCluster apps={data.apps} onAppClick={handleAppClick} />
         </div>
 
         <div style={statsGridStyle}>
