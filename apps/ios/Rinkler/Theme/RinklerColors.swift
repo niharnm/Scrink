@@ -90,4 +90,39 @@ enum RinklerColors {
             blue: Double(b1 + (b2 - b1) * t)
         )
     }
+
+    // MARK: - Signal palette (attention control panel)
+    //
+    // The newer "Signal" identity used by onboarding and the redesigned tabs: a
+    // near-black control-panel surface with a blue→violet signal glow. Distinct
+    // from Opal's gem/orb gradients on purpose. The Living Sky tokens above stay
+    // for the existing focus-session screens.
+
+    static let signalBackground = hex(0x08090B)
+    static let signalCard = hex(0x14161A)
+    static let signalCardRaised = hex(0x1B1E24)
+    static let signalBorder = hex(0x2A2E36)
+    static let signalText = hex(0xF8FAFC)
+    static let signalTextDim = hex(0x9CA3AF)
+    static let signalBlue = hex(0x5B7CFF)
+    static let signalViolet = hex(0x8B5CF6)
+    static let signalSuccess = hex(0x63D297)
+    static let signalWarning = hex(0xFFB454)
+
+    /// The signal glow gradient (blue → violet). Used for the ring stroke and
+    /// the single primary action per screen.
+    static let signalGlow = LinearGradient(
+        colors: [signalBlue, signalViolet],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+
+    /// Builds a Color from a 0xRRGGBB literal.
+    static func hex(_ value: UInt32) -> Color {
+        Color(
+            red: Double((value >> 16) & 0xFF) / 255.0,
+            green: Double((value >> 8) & 0xFF) / 255.0,
+            blue: Double(value & 0xFF) / 255.0
+        )
+    }
 }

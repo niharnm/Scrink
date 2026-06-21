@@ -5,6 +5,7 @@ struct RinklerApp: App {
     @StateObject private var vpnManager = VPNManager()
     @StateObject private var sessions = FocusSessionStore()
     @StateObject private var commitment = CommitmentStore()
+    @StateObject private var focusSystem = FocusSystemStore()
     @State private var path = NavigationPath()
     @State private var authStore = AuthStore()
 
@@ -18,7 +19,9 @@ struct RinklerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            NavigationStack(path: $path) {
+            Group {
+                if focusSystem.hasCompletedOnboarding {
+                NavigationStack(path: $path) {
                 LandingPage(onGo: {
                     if authStore.isLoggedIn {
                         path.append(Route.home)
@@ -88,10 +91,18 @@ struct RinklerApp: App {
                     }
                 }
             }
+                } else {
+                    OnboardingFlow(onFinish: {
+                        path = NavigationPath()
+                        path.append(Route.home)
+                    })
+                }
+            }
             .environment(authStore)
             .environmentObject(vpnManager)
             .environmentObject(sessions)
             .environmentObject(commitment)
+            .environmentObject(focusSystem)
             .preferredColorScheme(.dark)
             .task {
                 SVGCache.shared.preload(svgNames: ["instagram"])

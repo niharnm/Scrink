@@ -5,6 +5,9 @@ struct SettingsScreen: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var vpnManager: VPNManager
     @EnvironmentObject private var commitment: CommitmentStore
+    @EnvironmentObject private var focusSystem: FocusSystemStore
+
+    @State private var showResetOnboarding = false
 
     @AppStorage(RinklerConstants.blockInstagramShortVideoEnabledKey,
                 store: UserDefaults(suiteName: RinklerConstants.appGroupID))
@@ -29,6 +32,9 @@ struct SettingsScreen: View {
 
                     // VPN Toggle Button
                     vpnToggleButton
+
+                    // Focus System (rules created during onboarding)
+                    focusSystemSection
 
                     // Commitment mode (friction on turning protection OFF)
                     commitmentSection
@@ -112,6 +118,60 @@ struct SettingsScreen: View {
             return "PREPARING..."
         }
         return vpnManager.vpnStatus == .connected ? "STOP PROTECTION" : "START PROTECTION"
+    }
+
+    // MARK: - Focus System
+
+    private var focusSystemSection: some View {
+        VStack(alignment: .leading, spacing: RinklerSpacing.sm) {
+            Text("Your Focus System")
+                .font(RinklerFonts.coolvetica(size: 18))
+                .foregroundColor(.white)
+
+            if focusSystem.rules.isEmpty {
+                Text("No rules yet. Re-run setup to generate personalized rules.")
+                    .font(RinklerFonts.coolvetica(size: 13))
+                    .foregroundColor(RinklerColors.white60)
+            } else {
+                ForEach(focusSystem.rules) { rule in
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(rule.name)
+                                .font(RinklerFonts.coolvetica(size: 15))
+                                .foregroundColor(.white)
+                            Text(rule.timeRangeLabel)
+                                .font(RinklerFonts.mono(12, .regular))
+                                .foregroundColor(RinklerColors.white60)
+                        }
+                        Spacer()
+                        Text(rule.difficulty.title)
+                            .font(RinklerFonts.coolvetica(size: 11))
+                            .foregroundColor(RinklerColors.signalBlue)
+                    }
+                }
+            }
+
+            Button(role: .destructive) {
+                showResetOnboarding = true
+            } label: {
+                Text("Reset onboarding (testing)")
+                    .font(RinklerFonts.coolvetica(size: 14))
+                    .foregroundColor(RinklerColors.signalWarning)
+            }
+            .padding(.top, RinklerSpacing.xs)
+        }
+        .padding(RinklerSpacing.md)
+        .background(Color.white.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .alert("Reset onboarding?", isPresented: $showResetOnboarding) {
+            Button("Cancel", role: .cancel) {}
+            Button("Reset", role: .destructive) {
+                focusSystem.resetOnboarding()
+                dismiss()
+            }
+        } message: {
+            Text("Story-mode setup will show again next launch and your generated rules will be cleared.")
+        }
     }
 
     // MARK: - Commitment Mode
