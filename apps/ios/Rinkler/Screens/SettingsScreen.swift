@@ -23,7 +23,7 @@ struct SettingsScreen: View {
 
     var body: some View {
         ZStack {
-            SkyBackgroundView()
+            RinklerColors.signalBackground.ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: RinklerSpacing.lg) {
@@ -161,7 +161,8 @@ struct SettingsScreen: View {
             .padding(.top, RinklerSpacing.xs)
         }
         .padding(RinklerSpacing.md)
-        .background(Color.white.opacity(0.1))
+        .background(RinklerColors.signalCard)
+        .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .alert("Reset onboarding?", isPresented: $showResetOnboarding) {
             Button("Cancel", role: .cancel) {}
@@ -219,7 +220,8 @@ struct SettingsScreen: View {
             }
         }
         .padding(RinklerSpacing.md)
-        .background(Color.white.opacity(0.1))
+        .background(RinklerColors.signalCard)
+        .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
@@ -235,7 +237,8 @@ struct SettingsScreen: View {
             filterToggleRow(title: "TikTok feed", isOn: $blockTikTokShortVideo)
         }
         .padding(RinklerSpacing.md)
-        .background(Color.white.opacity(0.1))
+        .background(RinklerColors.signalCard)
+        .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
@@ -281,7 +284,8 @@ struct SettingsScreen: View {
             }
         }
         .padding(RinklerSpacing.md)
-        .background(Color.white.opacity(0.1))
+        .background(RinklerColors.signalCard)
+        .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
@@ -364,7 +368,7 @@ struct ExtensionLogView: View {
 
     var body: some View {
         ZStack {
-            SkyBackgroundView()
+            RinklerColors.signalBackground.ignoresSafeArea()
 
             ScrollView {
                 Text(vpnManager.tunnelLog)
