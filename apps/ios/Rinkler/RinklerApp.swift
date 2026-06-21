@@ -6,6 +6,7 @@ struct RinklerApp: App {
     @StateObject private var sessions = FocusSessionStore()
     @State private var path = NavigationPath()
     @State private var authStore = AuthStore()
+    @State private var showStoryIntro = !Story.hasSeenIntro
 
     init() {
         UserDefaults(suiteName: RinklerConstants.appGroupID)?
@@ -13,6 +14,23 @@ struct RinklerApp: App {
                 RinklerConstants.blockInstagramShortVideoEnabledKey: true,
                 RinklerConstants.blockTikTokShortVideoEnabledKey: true,
             ])
+
+        #if DEBUG
+        // Deterministic jump for screenshot/UI verification:
+        //   -uiPreview home | journey | settings
+        let args = ProcessInfo.processInfo.arguments
+        if let i = args.firstIndex(of: "-uiPreview"), i + 1 < args.count {
+            Story.hasSeenIntro = true
+            _showStoryIntro = State(initialValue: false)
+            var p = NavigationPath()
+            switch args[i + 1] {
+            case "journey": p.append(Route.home); p.append(Route.storyJourney)
+            case "settings": p.append(Route.home); p.append(Route.settings)
+            default: p.append(Route.home)
+            }
+            _path = State(initialValue: p)
+        }
+        #endif
     }
 
     var body: some Scene {
@@ -43,6 +61,9 @@ struct RinklerApp: App {
                             },
                             onResumeSession: {
                                 path.append(Route.activeSession)
+                            },
+                            onJourney: {
+                                path.append(Route.storyJourney)
                             }
                         )
                     case .focusSetup:
@@ -79,13 +100,25 @@ struct RinklerApp: App {
                             path.append(Route.home)
                         })
                     case .settings:
-                        SettingsScreen()
+                        SettingsScreen(onReplayIntro: {
+                            path.append(Route.storyIntro)
+                        })
                     case .trafficDashboard:
                         TrafficDashboardView()
                     case .extensionLog:
                         ExtensionLogView()
+                    case .storyJourney:
+                        StoryJourneyView()
+                    case .storyIntro:
+                        StoryIntroView(onFinish: {
+                            if !path.isEmpty { path.removeLast() }
+                        })
                     }
                 }
+            }
+            .fullScreenCover(isPresented: $showStoryIntro) {
+                StoryIntroView(onFinish: { showStoryIntro = false })
+                    .preferredColorScheme(.dark)
             }
             .environment(authStore)
             .environmentObject(vpnManager)

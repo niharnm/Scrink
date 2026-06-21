@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0E6B244A6DE7DF4C8BEE6CB9 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5A0931BEF4F3F4B1BF8741 /* Route.swift */; };
-		A1F0C0DE0000000000000101 /* FocusSessionFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000201 /* FocusSessionFlow.swift */; };
-		A1F0C0DE0000000000000102 /* FocusSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000202 /* FocusSessionStore.swift */; };
 		102A00000000000000000001 /* RinklerTunnel.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000002 /* RinklerTunnel.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		102A00000000000000000003 /* PacketTunnelProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000004 /* PacketTunnelProvider.swift */; };
 		102A00000000000000000005 /* ReelsBlockFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000006 /* ReelsBlockFilter.swift */; };
@@ -26,22 +24,17 @@
 		175B55D8F51D048B9FEFF95B /* BlockedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64DB7E7C0A427B4897386603 /* BlockedApp.swift */; };
 		1FDC9A48B273F1E91F3216E3 /* LandingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DECDACBEC0EF265C1407E1A /* LandingPage.swift */; };
 		26827D46EC95D3B01646A294 /* SK Pupok Solid 400.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A3FA39A10AAC758E79448541 /* SK Pupok Solid 400.ttf */; };
-		A1F0C0DE0000000000000F01 /* Geist-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000F11 /* Geist-Regular.ttf */; };
-		A1F0C0DE0000000000000F02 /* Geist-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000F12 /* Geist-Medium.ttf */; };
-		A1F0C0DE0000000000000F03 /* Geist-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000F13 /* Geist-SemiBold.ttf */; };
-		A1F0C0DE0000000000000F04 /* Geist-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000F14 /* Geist-Bold.ttf */; };
-		A1F0C0DE0000000000000F05 /* GeistMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000F15 /* GeistMono-Regular.ttf */; };
-		A1F0C0DE0000000000000F06 /* GeistMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000F16 /* GeistMono-Medium.ttf */; };
 		277E9995B4CE17920C7359B3 /* AppCluster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C4502521522E3E2BE93F73 /* AppCluster.swift */; };
 		280BFBB48D2EC57A67614BEF /* RinklerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B12D2A976C53EEB139FC50 /* RinklerApp.swift */; };
-		2A1B3C4D5E6F708192A3B4C5 /* RinklerConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1B3C4D5E6F708192A3B4C5 /* RinklerConstants.swift */; };
 		287F80E9B726B8336D5110D2 /* RinklerFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F0388BBA774E17DCA5497C6 /* RinklerFonts.swift */; };
+		2A1B3C4D5E6F708192A3B4C5 /* RinklerConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1B3C4D5E6F708192A3B4C5 /* RinklerConstants.swift */; };
 		2B1C3D4E5F60718293A4B5C6 /* DomainThresholdsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B1C3D4E5F60718293A4B5C6 /* DomainThresholdsStore.swift */; };
 		3422D1868715CE563B813F46 /* PageIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0B814D56804DA2A853F0CC7 /* PageIndicator.swift */; };
 		3AC691E9CD1580465E66E643 /* HexCoordinate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9432F97BCE16A023A0A8E1EC /* HexCoordinate.swift */; };
 		3D24A9C6B91CA4CF08C13CA6 /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97236875B7F5FA2B9FE201A3 /* HomeScreen.swift */; };
 		3E2F4A5B6C7D8091A2B3C4D5 /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2D4E5F60718293A4B5C6D7 /* SettingsScreen.swift */; };
 		3EBF87D830A1629BCEB7B827 /* RinklerSpacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2657A23991F8E73241EC8D2A /* RinklerSpacing.swift */; };
+		41CD2956B4F6D87F3DEC4BB0 /* StoryIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA8D55716FCC928B541F589 /* StoryIntroView.swift */; };
 		4CBD13A9A63EB6FFDE23B67B /* SVGCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30EEB2AB48FAE0B765F046C /* SVGCache.swift */; };
 		55B0C1B5A6CF3AA8C6AEF432 /* AppOptionArcs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B4EC3C0F908E65D671403F /* AppOptionArcs.swift */; };
 		55B9C498EF03C4B9380E9BA0 /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E46F6CBC4504443A3E050DE /* AppStore.swift */; };
@@ -50,10 +43,10 @@
 		6AB0C375DDD14ACE8678338E /* SupabaseAuthClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EF496D1E6382443B39705A /* SupabaseAuthClient.swift */; };
 		6B2C4D5E6F708192A3B4C5D6 /* TrafficDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D3E5F60718293A4B5C6D7E8 /* TrafficDashboardView.swift */; };
 		6C3D5E6F708192A3B4C5D6E7 /* TrafficMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E4F60718293A4B5C6D7E8F9 /* TrafficMonitor.swift */; };
+		6C7C6CFB4CD7288B0D1F0A69 /* BlockingOptionsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EB2E25C599188EFFAA656AA /* BlockingOptionsScreen.swift */; };
 		6D4E6F708192A3B4C5D6E7F8 /* TrafficStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F50718293A4B5C6D7E8F901 /* TrafficStats.swift */; };
 		6D7E8F90123456789ABCDEF0 /* TrafficSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8E7D6C5B4A392817160504 /* TrafficSyncService.swift */; };
 		6E5F708192A3B4C5D6E7F809 /* VPNManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0618293A4B5C6D7E8F90123 /* VPNManager.swift */; };
-		6C7C6CFB4CD7288B0D1F0A69 /* BlockingOptionsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EB2E25C599188EFFAA656AA /* BlockingOptionsScreen.swift */; };
 		7187CAA7759A0FB102770E7D /* SVGView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11372BC005F536F03A206A0C /* SVGView.swift */; };
 		7ACC24B7F11F3FEB7E430EFF /* MagicSignInScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E171A52D23611FA571259FA /* MagicSignInScreen.swift */; };
 		8050EE548DB56DDCA4FB2A2A /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = EFBD2984D0510752BD1D03BD /* background.png */; };
@@ -65,6 +58,14 @@
 		98CE2E34082CA58764807157 /* MagicSignInService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9EE6D24AD0B696F8DCB904 /* MagicSignInService.swift */; };
 		9DEA878857BBF38484E29279 /* CodeVerificationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ADB6187B6C76458B5AF5BB8 /* CodeVerificationScreen.swift */; };
 		9FB50AF4C11375E57288493D /* instagram.svg in Resources */ = {isa = PBXBuildFile; fileRef = C8F7AEAFA028F049E6650638 /* instagram.svg */; };
+		A1F0C0DE0000000000000101 /* FocusSessionFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000201 /* FocusSessionFlow.swift */; };
+		A1F0C0DE0000000000000102 /* FocusSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000202 /* FocusSessionStore.swift */; };
+		A1F0C0DE0000000000000F01 /* Geist-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000F11 /* Geist-Regular.ttf */; };
+		A1F0C0DE0000000000000F02 /* Geist-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000F12 /* Geist-Medium.ttf */; };
+		A1F0C0DE0000000000000F03 /* Geist-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000F13 /* Geist-SemiBold.ttf */; };
+		A1F0C0DE0000000000000F04 /* Geist-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000F14 /* Geist-Bold.ttf */; };
+		A1F0C0DE0000000000000F05 /* GeistMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000F15 /* GeistMono-Regular.ttf */; };
+		A1F0C0DE0000000000000F06 /* GeistMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000F16 /* GeistMono-Medium.ttf */; };
 		A382BF14BA5A5938A5D0B0E2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8240EBF328085BD8C6215C5B /* Assets.xcassets */; };
 		A4F54B5F314F2FF8E40B46D2 /* clouds.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F112CC7035E04A18029EC82 /* clouds.png */; };
 		ACA43E523546E460FF425CF2 /* HeaderBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA7879AE04880FB01A49C3C /* HeaderBar.swift */; };
@@ -76,7 +77,9 @@
 		DA022CE2410220BBEB0EFC55 /* SkyBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F1CE437AADFB2D399B4E4CD /* SkyBackgroundView.swift */; };
 		EE5AF52C3094005B17EF5118 /* HexGridLayoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3288B67D55E1FF065382E8E9 /* HexGridLayoutManager.swift */; };
 		EFEC044BD16A58AABFD1B820 /* app_options.json in Resources */ = {isa = PBXBuildFile; fileRef = ADF713ED6242175766746424 /* app_options.json */; };
+		F43F0DB96E684DCD9C882CCA /* StoryJourneyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B704A1191FB290B8C1CCCB4F /* StoryJourneyView.swift */; };
 		F4B56F9A3A941A0C2EBDADE7 /* AuthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 931B0AF1A32A039B27B089E5 /* AuthStore.swift */; };
+		F686B97CC31083BC1D8789D2 /* StoryMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B867E88F2A9F5164AF701AF5 /* StoryMode.swift */; };
 		F7CE98EF49A4DE02A3635406 /* Coolvetica Rg.otf in Resources */ = {isa = PBXBuildFile; fileRef = E061A1FE54985A17E5E84E2E /* Coolvetica Rg.otf */; };
 /* End PBXBuildFile section */
 
@@ -105,6 +108,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		04B4EC3C0F908E65D671403F /* AppOptionArcs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOptionArcs.swift; sourceTree = "<group>"; };
+		04C4502521522E3E2BE93F73 /* AppCluster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCluster.swift; sourceTree = "<group>"; };
 		102A00000000000000000002 /* RinklerTunnel.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RinklerTunnel.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		102A00000000000000000004 /* PacketTunnelProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PacketTunnelProvider.swift; sourceTree = "<group>"; };
 		102A00000000000000000006 /* ReelsBlockFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReelsBlockFilter.swift; sourceTree = "<group>"; };
@@ -119,8 +124,6 @@
 		102A00000000000000000025 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		102A00000000000000000027 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		102A00000000000000000029 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		04B4EC3C0F908E65D671403F /* AppOptionArcs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOptionArcs.swift; sourceTree = "<group>"; };
-		04C4502521522E3E2BE93F73 /* AppCluster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCluster.swift; sourceTree = "<group>"; };
 		106E25D023D63E8571E5D893 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		10B73DFB24FA4518541EBD14 /* HexGridOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexGridOverlay.swift; sourceTree = "<group>"; };
 		11372BC005F536F03A206A0C /* SVGView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGView.swift; sourceTree = "<group>"; };
@@ -133,12 +136,8 @@
 		3288B67D55E1FF065382E8E9 /* HexGridLayoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexGridLayoutManager.swift; sourceTree = "<group>"; };
 		3A500B91AAD8FCE188E83A9D /* AppOptionsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOptionsService.swift; sourceTree = "<group>"; };
 		4F5A0931BEF4F3F4B1BF8741 /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
-		A1F0C0DE0000000000000201 /* FocusSessionFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSessionFlow.swift; sourceTree = "<group>"; };
-		A1F0C0DE0000000000000202 /* FocusSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSessionStore.swift; sourceTree = "<group>"; };
 		4FCEA58022A4F0F927779C3E /* settings.local.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = settings.local.json; sourceTree = "<group>"; };
 		51B12D2A976C53EEB139FC50 /* RinklerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RinklerApp.swift; sourceTree = "<group>"; };
-		9A1B3C4D5E6F708192A3B4C5 /* RinklerConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RinklerConstants.swift; sourceTree = "<group>"; };
-		9B1C3D4E5F60718293A4B5C6 /* DomainThresholdsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainThresholdsStore.swift; sourceTree = "<group>"; };
 		54C6C8C64B29A95223064A2A /* clouds_continous.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clouds_continous.png; sourceTree = "<group>"; };
 		5E46F6CBC4504443A3E050DE /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
 		5F0388BBA774E17DCA5497C6 /* RinklerFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RinklerFonts.swift; sourceTree = "<group>"; };
@@ -152,29 +151,36 @@
 		8240EBF328085BD8C6215C5B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		884244700EF00F59FE7F49D1 /* RinklerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RinklerButton.swift; sourceTree = "<group>"; };
 		8A1AF9CB0269E85989CE0DC6 /* AppIconCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconCircle.swift; sourceTree = "<group>"; };
+		8EA8D55716FCC928B541F589 /* StoryIntroView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StoryIntroView.swift; sourceTree = "<group>"; };
 		91196A152CB612FF5D9144D3 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		931B0AF1A32A039B27B089E5 /* AuthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStore.swift; sourceTree = "<group>"; };
 		9432F97BCE16A023A0A8E1EC /* HexCoordinate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexCoordinate.swift; sourceTree = "<group>"; };
 		97236875B7F5FA2B9FE201A3 /* HomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreen.swift; sourceTree = "<group>"; };
+		9A1B3C4D5E6F708192A3B4C5 /* RinklerConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RinklerConstants.swift; sourceTree = "<group>"; };
+		9B1C3D4E5F60718293A4B5C6 /* DomainThresholdsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainThresholdsStore.swift; sourceTree = "<group>"; };
 		9C2D4E5F60718293A4B5C6D7 /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
 		9D3E5F60718293A4B5C6D7E8 /* TrafficDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficDashboardView.swift; sourceTree = "<group>"; };
+		9D9EE6D24AD0B696F8DCB904 /* MagicSignInService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicSignInService.swift; sourceTree = "<group>"; };
+		9DE9069ED02F96B6B3BF4062 /* DialSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialSelector.swift; sourceTree = "<group>"; };
 		9E4F60718293A4B5C6D7E8F9 /* TrafficMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficMonitor.swift; sourceTree = "<group>"; };
 		9F50718293A4B5C6D7E8F901 /* TrafficStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficStats.swift; sourceTree = "<group>"; };
 		9F8E7D6C5B4A392817160504 /* TrafficSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficSyncService.swift; sourceTree = "<group>"; };
-		9D9EE6D24AD0B696F8DCB904 /* MagicSignInService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicSignInService.swift; sourceTree = "<group>"; };
-		9DE9069ED02F96B6B3BF4062 /* DialSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialSelector.swift; sourceTree = "<group>"; };
-		A30EEB2AB48FAE0B765F046C /* SVGCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGCache.swift; sourceTree = "<group>"; };
 		A0618293A4B5C6D7E8F90123 /* VPNManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VPNManager.swift; sourceTree = "<group>"; };
-		A3FA39A10AAC758E79448541 /* SK Pupok Solid 400.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SK Pupok Solid 400.ttf"; sourceTree = "<group>"; };
+		A1F0C0DE0000000000000201 /* FocusSessionFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSessionFlow.swift; sourceTree = "<group>"; };
+		A1F0C0DE0000000000000202 /* FocusSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSessionStore.swift; sourceTree = "<group>"; };
 		A1F0C0DE0000000000000F11 /* Geist-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Geist-Regular.ttf"; sourceTree = "<group>"; };
 		A1F0C0DE0000000000000F12 /* Geist-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Geist-Medium.ttf"; sourceTree = "<group>"; };
 		A1F0C0DE0000000000000F13 /* Geist-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Geist-SemiBold.ttf"; sourceTree = "<group>"; };
 		A1F0C0DE0000000000000F14 /* Geist-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Geist-Bold.ttf"; sourceTree = "<group>"; };
 		A1F0C0DE0000000000000F15 /* GeistMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GeistMono-Regular.ttf"; sourceTree = "<group>"; };
 		A1F0C0DE0000000000000F16 /* GeistMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GeistMono-Medium.ttf"; sourceTree = "<group>"; };
+		A30EEB2AB48FAE0B765F046C /* SVGCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGCache.swift; sourceTree = "<group>"; };
+		A3FA39A10AAC758E79448541 /* SK Pupok Solid 400.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SK Pupok Solid 400.ttf"; sourceTree = "<group>"; };
 		ADF713ED6242175766746424 /* app_options.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = app_options.json; sourceTree = "<group>"; };
 		AEA7879AE04880FB01A49C3C /* HeaderBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderBar.swift; sourceTree = "<group>"; };
 		B033FC1D06B6F626D38BA842 /* Coolvetica Rg It.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Coolvetica Rg It.otf"; sourceTree = "<group>"; };
+		B704A1191FB290B8C1CCCB4F /* StoryJourneyView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StoryJourneyView.swift; sourceTree = "<group>"; };
+		B867E88F2A9F5164AF701AF5 /* StoryMode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StoryMode.swift; sourceTree = "<group>"; };
 		BB94751122DA9ADC81F89EE3 /* Rinkler.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Rinkler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C8F7AEAFA028F049E6650638 /* instagram.svg */ = {isa = PBXFileReference; path = instagram.svg; sourceTree = "<group>"; };
 		E061A1FE54985A17E5E84E2E /* Coolvetica Rg.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Coolvetica Rg.otf"; sourceTree = "<group>"; };
@@ -186,20 +192,20 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		AB99948DC644C5E05FC587CE /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				102A00000000000000000024 /* Security.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		102A00000000000000000018 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				102A00000000000000000011 /* NetworkExtension.framework in Frameworks */,
 				102A0000000000000000000F /* Tun2SocksKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AB99948DC644C5E05FC587CE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				102A00000000000000000024 /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -250,6 +256,8 @@
 				6E171A52D23611FA571259FA /* MagicSignInScreen.swift */,
 				9C2D4E5F60718293A4B5C6D7 /* SettingsScreen.swift */,
 				9D3E5F60718293A4B5C6D7E8 /* TrafficDashboardView.swift */,
+				8EA8D55716FCC928B541F589 /* StoryIntroView.swift */,
+				B704A1191FB290B8C1CCCB4F /* StoryJourneyView.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -293,6 +301,7 @@
 				9D9EE6D24AD0B696F8DCB904 /* MagicSignInService.swift */,
 				4F5A0931BEF4F3F4B1BF8741 /* Route.swift */,
 				E3EF496D1E6382443B39705A /* SupabaseAuthClient.swift */,
+				B867E88F2A9F5164AF701AF5 /* StoryMode.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -398,27 +407,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		5F328EFB19593AB5BC7429F3 /* Rinkler */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 0237DBB2D309EB216C11208C /* Build configuration list for PBXNativeTarget "Rinkler" */;
-			buildPhases = (
-				BA386D7A56178599483A405D /* Sources */,
-				7ED6C886919E610BC9322D6C /* Resources */,
-				AB99948DC644C5E05FC587CE /* Frameworks */,
-				102A00000000000000000015 /* Embed App Extensions */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				102A0000000000000000001B /* PBXTargetDependency */,
-			);
-			name = Rinkler;
-			packageProductDependencies = (
-			);
-			productName = Rinkler;
-			productReference = BB94751122DA9ADC81F89EE3 /* Rinkler.app */;
-			productType = "com.apple.product-type.application";
-		};
 		102A00000000000000000014 /* RinklerTunnel */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 102A0000000000000000001C /* Build configuration list for PBXNativeTarget "RinklerTunnel" */;
@@ -439,6 +427,25 @@
 			productReference = 102A00000000000000000002 /* RinklerTunnel.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		5F328EFB19593AB5BC7429F3 /* Rinkler */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0237DBB2D309EB216C11208C /* Build configuration list for PBXNativeTarget "Rinkler" */;
+			buildPhases = (
+				BA386D7A56178599483A405D /* Sources */,
+				7ED6C886919E610BC9322D6C /* Resources */,
+				AB99948DC644C5E05FC587CE /* Frameworks */,
+				102A00000000000000000015 /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				102A0000000000000000001B /* PBXTargetDependency */,
+			);
+			name = Rinkler;
+			productName = Rinkler;
+			productReference = BB94751122DA9ADC81F89EE3 /* Rinkler.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -448,10 +455,10 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
-					5F328EFB19593AB5BC7429F3 = {
+					102A00000000000000000014 = {
 						DevelopmentTeam = "";
 					};
-					102A00000000000000000014 = {
+					5F328EFB19593AB5BC7429F3 = {
 						DevelopmentTeam = "";
 					};
 				};
@@ -470,6 +477,7 @@
 				102A0000000000000000001F /* XCRemoteSwiftPackageReference "Tun2SocksKit" */,
 			);
 			preferredProjectObjectVersion = 77;
+			productRefGroup = 62B9B96E3C62769CA4B70E8B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -480,6 +488,14 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		102A0000000000000000001E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				102A00000000000000000026 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7ED6C886919E610BC9322D6C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -504,17 +520,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		102A0000000000000000001E /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				102A00000000000000000026 /* PrivacyInfo.xcprivacy in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		102A0000000000000000001D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				102A0000000000000000000D /* RinklerConstants.swift in Sources */,
+				102A00000000000000000003 /* PacketTunnelProvider.swift in Sources */,
+				102A00000000000000000005 /* ReelsBlockFilter.swift in Sources */,
+				102A00000000000000000007 /* SOCKSProxyServer.swift in Sources */,
+				102A00000000000000000009 /* TrafficStats.swift in Sources */,
+				102A0000000000000000000B /* TunnelLogger.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BA386D7A56178599483A405D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -562,19 +583,9 @@
 				6D7E8F90123456789ABCDEF0 /* TrafficSyncService.swift in Sources */,
 				102A00000000000000000022 /* TunnelLogReader.swift in Sources */,
 				6E5F708192A3B4C5D6E7F809 /* VPNManager.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		102A0000000000000000001D /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				102A0000000000000000000D /* RinklerConstants.swift in Sources */,
-				102A00000000000000000003 /* PacketTunnelProvider.swift in Sources */,
-				102A00000000000000000005 /* ReelsBlockFilter.swift in Sources */,
-				102A00000000000000000007 /* SOCKSProxyServer.swift in Sources */,
-				102A00000000000000000009 /* TrafficStats.swift in Sources */,
-				102A0000000000000000000B /* TunnelLogger.swift in Sources */,
+				F686B97CC31083BC1D8789D2 /* StoryMode.swift in Sources */,
+				41CD2956B4F6D87F3DEC4BB0 /* StoryIntroView.swift in Sources */,
+				F43F0DB96E684DCD9C882CCA /* StoryJourneyView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -589,6 +600,55 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		102A00000000000000000020 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = RinklerTunnel/RinklerTunnel.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = RinklerTunnel/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.rinkler.app.tunnel;
+				PRODUCT_NAME = RinklerTunnel;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		102A00000000000000000021 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = RinklerTunnel/RinklerTunnel.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = RinklerTunnel/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.rinkler.app.tunnel;
+				PRODUCT_NAME = RinklerTunnel;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 		15DA1B8466F8B1F076243B95 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 91196A152CB612FF5D9144D3 /* Secrets.xcconfig */;
@@ -650,8 +710,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_ENTITLEMENTS = Rinkler/Rinkler.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Rinkler/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -734,8 +794,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_ENTITLEMENTS = Rinkler/Rinkler.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Rinkler/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -749,55 +809,6 @@
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
-		};
-		102A00000000000000000020 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
-				CODE_SIGN_ENTITLEMENTS = RinklerTunnel/RinklerTunnel.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
-				INFOPLIST_FILE = RinklerTunnel/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.rinkler.app.tunnel;
-				PRODUCT_NAME = RinklerTunnel;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Debug;
-		};
-		102A00000000000000000021 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
-				CODE_SIGN_ENTITLEMENTS = RinklerTunnel/RinklerTunnel.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = "";
-				INFOPLIST_FILE = RinklerTunnel/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.rinkler.app.tunnel;
-				PRODUCT_NAME = RinklerTunnel;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -849,7 +860,6 @@
 			productName = Tun2SocksKit;
 		};
 /* End XCSwiftPackageProductDependency section */
-
 	};
 	rootObject = B741CA0B5636C16D2FF1843B /* Project object */;
 }

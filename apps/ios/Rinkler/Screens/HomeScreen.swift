@@ -10,10 +10,11 @@ struct HomeScreen: View {
     var onTrafficDashboard: (() -> Void)? = nil
     var onStartSession: (() -> Void)? = nil
     var onResumeSession: (() -> Void)? = nil
+    var onJourney: (() -> Void)? = nil
 
     var body: some View {
         ZStack {
-            SkyBackgroundView(clarity: sessions.skyClarity)
+            SkyBackgroundView(clarity: sessions.storyClarity)
 
             ScrollView {
                 VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
@@ -24,6 +25,7 @@ struct HomeScreen: View {
                     } else {
                         AuroraButton(title: "START FOCUS SESSION") { onStartSession?() }
                     }
+                    journeyCard
                     protectionCard
                     accountRow
                 }
@@ -125,6 +127,43 @@ struct HomeScreen: View {
             .overlay(
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
                     .strokeBorder(RinklerColors.auroraCyan.opacity(0.4), lineWidth: 1)
+            )
+        }
+    }
+
+    // MARK: Story Mode — journey entry
+
+    private var journeyCard: some View {
+        let progress = sessions.storyProgress
+        let current = Story.currentChapter(progress)
+        let next = Story.nextChapter(progress)
+        return Button { onJourney?() } label: {
+            HStack(spacing: RinklerSpacing.md) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundStyle(RinklerColors.auroraCyan)
+                    .frame(width: 44, height: 44)
+                    .background(RinklerColors.surfaceRaised)
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(current?.title ?? "Begin your journey")
+                        .font(RinklerFonts.coolvetica(size: 17))
+                        .foregroundStyle(.white)
+                    Text(next.map { "Next: \($0.goal.requirementText)" } ?? "The sky is clear — final chapter reached.")
+                        .font(RinklerFonts.caption)
+                        .foregroundStyle(RinklerColors.white60)
+                        .lineLimit(1)
+                }
+                Spacer(minLength: RinklerSpacing.sm)
+                Image(systemName: "chevron.right")
+                    .foregroundStyle(RinklerColors.white40)
+            }
+            .padding(RinklerSpacing.md)
+            .background(RinklerColors.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .strokeBorder(RinklerColors.hairline, lineWidth: 1)
             )
         }
     }

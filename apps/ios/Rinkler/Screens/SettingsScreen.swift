@@ -5,6 +5,8 @@ struct SettingsScreen: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var vpnManager: VPNManager
 
+    var onReplayIntro: (() -> Void)? = nil
+
     @AppStorage(RinklerConstants.blockInstagramShortVideoEnabledKey,
                 store: UserDefaults(suiteName: RinklerConstants.appGroupID))
     private var blockInstagramShortVideo: Bool = true
@@ -31,6 +33,9 @@ struct SettingsScreen: View {
 
                     // Short-form filter toggles
                     shortVideoFiltersSection
+
+                    // Story Mode
+                    storyModeSection
 
                     // Domain Thresholds
                     if hasActiveShortVideoFilter {
@@ -139,6 +144,35 @@ struct SettingsScreen: View {
 
     private var hasActiveShortVideoFilter: Bool {
         blockInstagramShortVideo || blockTikTokShortVideo
+    }
+
+    // MARK: - Story Mode
+
+    private var storyModeSection: some View {
+        VStack(alignment: .leading, spacing: RinklerSpacing.sm) {
+            Text("Story Mode")
+                .font(RinklerFonts.coolvetica(size: 18))
+                .foregroundColor(.white)
+
+            Button {
+                Story.hasSeenIntro = false
+                onReplayIntro?()
+            } label: {
+                HStack {
+                    Image(systemName: "play.circle")
+                        .foregroundColor(RinklerColors.auroraCyan)
+                    Text("Replay the intro")
+                        .font(RinklerFonts.coolvetica(size: 16))
+                        .foregroundColor(RinklerColors.white60)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(RinklerColors.white40)
+                }
+            }
+        }
+        .padding(RinklerSpacing.md)
+        .background(Color.white.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
     // MARK: - Domain Thresholds
