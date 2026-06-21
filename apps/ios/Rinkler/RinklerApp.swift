@@ -24,7 +24,7 @@ struct RinklerApp: App {
                 NavigationStack(path: $path) {
                 LandingPage(onGo: {
                     if authStore.isLoggedIn {
-                        path.append(Route.home)
+                        path.append(Route.today)
                     } else {
                         path.append(Route.magicSignIn)
                     }
@@ -32,7 +32,7 @@ struct RinklerApp: App {
                 .navigationDestination(for: Route.self) { route in
                     switch route {
                     case .today:
-                        TodayDashboard(
+                        MainTabView(
                             onSettings: { path.append(Route.settings) },
                             onStartSession: { path.append(Route.focusSetup) },
                             onTrafficDashboard: { path.append(Route.trafficDashboard) }
@@ -69,9 +69,9 @@ struct RinklerApp: App {
                         })
                     case .sessionRecap:
                         SessionRecapScreen(onDone: {
-                            // Reset cleanly to a fresh home screen.
+                            // Reset cleanly back to the Today tab shell.
                             path = NavigationPath()
-                            path.append(Route.home)
+                            path.append(Route.today)
                         })
                     case .magicSignIn:
                         MagicSignInScreen(
@@ -80,13 +80,13 @@ struct RinklerApp: App {
                             },
                             onContinueOffline: {
                                 path = NavigationPath()
-                                path.append(Route.home)
+                                path.append(Route.today)
                             }
                         )
                     case .codeVerification(let email):
                         CodeVerificationScreen(email: email, onVerified: {
                             path = NavigationPath()
-                            path.append(Route.home)
+                            path.append(Route.today)
                         })
                     case .settings:
                         SettingsScreen()
