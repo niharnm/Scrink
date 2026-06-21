@@ -110,6 +110,8 @@ enum RinklerConstants {
     static let blockReelsEnabledKey = blockInstagramShortVideoEnabledKey
     static let domainThresholdsKey = "domainThresholds"
     static let optionStatesKey = "optionStates"
+    /// Compact schedule written by the app from the user's Focus System rules.
+    static let ruleScheduleKey = "ruleSchedule"
 
     static func filterEnabledKey(forTrackedDomain domain: String) -> String? {
         if instagramTrackedDomains.contains(domain) {

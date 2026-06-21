@@ -230,6 +230,7 @@ final class FocusSystemStore: ObservableObject {
         rules = []; signalScore = 50
         defaults?.set(false, forKey: Keys.completed)
         defaults?.removeObject(forKey: Keys.profile)
+        defaults?.removeObject(forKey: "ruleSchedule")
     }
 
     // MARK: Rule generation
@@ -311,6 +312,42 @@ final class FocusSystemStore: ObservableObject {
         )
         if let data = try? encoder.encode(profile) {
             defaults?.set(data, forKey: Keys.profile)
+        }
+        writeSchedule()
+    }
+
+    /// Compact schedule window the tunnel reads (keys must match `ScheduleWindow`
+    /// in the tunnel target).
+    private struct ScheduleWindowOut: Codable {
+        let start: Int
+        let end: Int
+        let ig: Bool
+        let tt: Bool
+        let th: Int
+    }
+
+    /// Translates the generated rules into the schedule the packet tunnel
+    /// evaluates so blocking holds on time without the app being open.
+    private func writeSchedule() {
+        let instagramSurfaces: Set<String> = ["Reels", "Explore"]
+        let windows: [ScheduleWindowOut] = rules.filter { $0.enabled }.map { rule in
+            let blocked = Set(rule.blocked)
+            let threshold: Int
+            switch rule.difficulty {
+            case .soft: threshold = 1_572_864   // 1.5 MB — only the heaviest
+            case .normal: threshold = 512 * 1024 // 0.5 MB
+            case .locked: threshold = 0          // block immediately
+            }
+            return ScheduleWindowOut(
+                start: rule.startMinute,
+                end: rule.endMinute,
+                ig: !blocked.isDisjoint(with: instagramSurfaces),
+                tt: blocked.contains("TikTok FYP"),
+                th: threshold
+            )
+        }
+        if let data = try? JSONEncoder().encode(windows) {
+            defaults?.set(data, forKey: "ruleSchedule")
         }
     }
 

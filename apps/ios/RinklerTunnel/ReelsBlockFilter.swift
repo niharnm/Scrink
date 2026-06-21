@@ -4,13 +4,15 @@ final class ReelsBlockFilter: ConnectionFilter {
 
     private let sharedDefaults: UserDefaults?
     private let ipStore = TrackedIPStore()
+    private let schedule = ScheduleStore()
 
     init(sharedDefaults: UserDefaults? = UserDefaults(suiteName: RinklerConstants.appGroupID)) {
         self.sharedDefaults = sharedDefaults
     }
 
     var isEnabled: Bool {
-        isFilterEnabled(forKey: RinklerConstants.blockInstagramShortVideoEnabledKey)
+        schedule.anyActive
+            || isFilterEnabled(forKey: RinklerConstants.blockInstagramShortVideoEnabledKey)
             || isFilterEnabled(forKey: RinklerConstants.blockTikTokShortVideoEnabledKey)
     }
 
@@ -26,10 +28,14 @@ final class ReelsBlockFilter: ConnectionFilter {
     /// Dropping these forces the apps to fall back to TCP/TLS, where the
     /// byte-threshold stream blocker can act.
     func shouldBlockUDP(host: String, port: UInt16) -> FilterDecision {
-        guard isEnabled, port == RinklerConstants.quicPort else { return .allow }
-        guard let appKey = ipStore.appKey(forIP: host),
-              isFilterEnabled(forKey: appKey) else { return .allow }
-        return .block
+        guard port == RinklerConstants.quicPort else { return .allow }
+        guard let appKey = ipStore.appKey(forIP: host) else { return .allow }
+        let ig = appKey == RinklerConstants.blockInstagramShortVideoEnabledKey
+        let tt = appKey == RinklerConstants.blockTikTokShortVideoEnabledKey
+        // Block if a schedule window is active for this app, or its manual
+        // toggle is on. Schedule takes precedence so rules hold on time.
+        let wantBlock = schedule.activeWindow(ig: ig, tt: tt) != nil || isFilterEnabled(forKey: appKey)
+        return wantBlock ? .block : .allow
     }
 
     /// Records hostname→IP mappings learned from a DNS response so that later
@@ -53,26 +59,33 @@ final class ReelsBlockFilter: ConnectionFilter {
     /// - Returns `0` to block immediately.
     /// - Returns `>0` to block after that many bytes.
     func streamBlockThreshold(for sni: String) -> Int? {
-        guard isEnabled else { return nil }
-
         let thresholds = loadDomainThresholds()
         let lower = sni.lowercased()
 
         // Match exact domains and subdomains only.
-        for (domain, threshold) in thresholds {
-            if matches(sni: lower, trackedDomain: domain) {
-                guard let enabledKey = RinklerConstants.filterEnabledKey(forTrackedDomain: domain),
-                      isFilterEnabled(forKey: enabledKey) else {
-                    continue
-                }
-                if threshold == RinklerConstants.noLimitThreshold {
-                    return nil // no limit for this domain
-                }
-                return threshold
+        for (domain, manualThreshold) in thresholds {
+            guard matches(sni: lower, trackedDomain: domain) else { continue }
+
+            let flags = appFlags(forDomain: domain)
+            // Schedule takes precedence: if a window is blocking this app now,
+            // apply its threshold (0 = block immediately).
+            if let window = schedule.activeWindow(ig: flags.ig, tt: flags.tt) {
+                return window.th == RinklerConstants.noLimitThreshold ? nil : window.th
             }
+
+            // Otherwise fall back to the manual toggle + per-domain threshold.
+            guard let enabledKey = RinklerConstants.filterEnabledKey(forTrackedDomain: domain),
+                  isFilterEnabled(forKey: enabledKey) else { continue }
+            return manualThreshold == RinklerConstants.noLimitThreshold ? nil : manualThreshold
         }
 
         return nil // no matching rule → allow
+    }
+
+    /// Whether a tracked domain belongs to Instagram and/or TikTok.
+    private func appFlags(forDomain domain: String) -> (ig: Bool, tt: Bool) {
+        (RinklerConstants.instagramTrackedDomains.contains(domain),
+         RinklerConstants.tiktokTrackedDomains.contains(domain))
     }
 
     func isStreamBlockTarget(_ domain: String) -> Bool {
@@ -82,13 +95,14 @@ final class ReelsBlockFilter: ConnectionFilter {
     // MARK: - Private
 
     /// Returns the tracked domain and its per-app enable key if `host` matches a
-    /// tracked short-video domain whose app filter is currently enabled.
+    /// tracked short-video domain.
     private func trackedMatch(forHost host: String) -> (domain: String, appKey: String)? {
         let lower = host.lowercased()
+        // Learn IPs for any tracked domain regardless of current enable state,
+        // so QUIC blocking is ready the moment a schedule window opens.
         for domain in RinklerConstants.trackedDomains {
             guard matches(sni: lower, trackedDomain: domain),
-                  let appKey = RinklerConstants.filterEnabledKey(forTrackedDomain: domain),
-                  isFilterEnabled(forKey: appKey) else { continue }
+                  let appKey = RinklerConstants.filterEnabledKey(forTrackedDomain: domain) else { continue }
             return (domain, appKey)
         }
         return nil

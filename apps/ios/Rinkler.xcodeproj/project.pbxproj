@@ -20,6 +20,7 @@
 		102A00000000000000000009 /* TrafficStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A0000000000000000000A /* TrafficStats.swift */; };
 		102A0000000000000000000B /* TunnelLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A0000000000000000000C /* TunnelLogger.swift */; };
 		102A000000000000000000A1 /* TrackedIPStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A000000000000000000A2 /* TrackedIPStore.swift */; };
+		102A000000000000000000A3 /* ScheduleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A000000000000000000A4 /* ScheduleStore.swift */; };
 		102A0000000000000000000D /* RinklerConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102A0000000000000000000E /* RinklerConstants.swift */; };
 		102A0000000000000000000F /* Tun2SocksKit in Frameworks */ = {isa = PBXBuildFile; productRef = 102A00000000000000000010 /* Tun2SocksKit */; };
 		102A00000000000000000011 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000012 /* NetworkExtension.framework */; };
@@ -116,6 +117,7 @@
 		102A0000000000000000000A /* TrafficStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficStats.swift; sourceTree = "<group>"; };
 		102A0000000000000000000C /* TunnelLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunnelLogger.swift; sourceTree = "<group>"; };
 		102A000000000000000000A2 /* TrackedIPStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackedIPStore.swift; sourceTree = "<group>"; };
+		102A000000000000000000A4 /* ScheduleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleStore.swift; sourceTree = "<group>"; };
 		102A0000000000000000000E /* RinklerConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RinklerConstants.swift; sourceTree = "<group>"; };
 		102A00000000000000000012 /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
 		102A00000000000000000016 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -226,6 +228,7 @@
 				102A00000000000000000008 /* SOCKSProxyServer.swift */,
 				102A0000000000000000000A /* TrafficStats.swift */,
 				102A000000000000000000A2 /* TrackedIPStore.swift */,
+				102A000000000000000000A4 /* ScheduleStore.swift */,
 				102A0000000000000000000C /* TunnelLogger.swift */,
 			);
 			path = RinklerTunnel;
@@ -591,6 +594,7 @@
 				102A00000000000000000009 /* TrafficStats.swift in Sources */,
 				102A0000000000000000000B /* TunnelLogger.swift in Sources */,
 				102A000000000000000000A1 /* TrackedIPStore.swift in Sources */,
+				102A000000000000000000A3 /* ScheduleStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
