@@ -1,16 +1,8 @@
-import { redirect } from "next/navigation";
-import { connection } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import Landing from "@/components/marketing/Landing";
 
-export default async function Home() {
-  await connection();
-
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-
-  if (!data?.claims) {
-    redirect("/login");
-  }
-
-  redirect("/dashboard");
+// The public marketing site. The dashboard lives at /dashboard (auth-gated);
+// the "Open dashboard" CTAs link there and the middleware sends signed-out
+// visitors to /login as needed.
+export default function Home() {
+  return <Landing />;
 }
