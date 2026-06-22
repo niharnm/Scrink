@@ -110,6 +110,27 @@ enum RinklerConstants {
     static let domainThresholdsKey = "domainThresholds"
     static let optionStatesKey = "optionStates"
 
+    // MARK: - Strict Mode (total lockdown) keys
+    static let strictModeEnabledKey = "strictModeEnabled"
+    static let strictModeStartEpochKey = "strictModeStartEpoch"
+    static let strictModeEndEpochKey = "strictModeEndEpoch"
+    static let strictModeLockAppRemovalKey = "strictModeLockAppRemoval"
+    static let strictModeAppSelectionKey = "strictModeAppSelection"
+    static let strictModeArmedReceiptsKey = "strictModeArmedReceipts"
+
+    // MARK: - Automatic (health-aware) Mode keys
+    static let autoModeEnabledKey = "autoMode.enabled"
+    static let autoModeSensitivityKey = "autoMode.sensitivity"        // soft/normal/strict
+    static let autoModeBaselineKey = "autoMode.baseline"             // JSON HealthBaseline
+    static let autoModeStateKey = "autoMode.lastState"               // JSON DerivedState
+    static let autoModeActiveSnapshotKey = "autoMode.activeSnapshot" // prior knobs while tightened
+    static let autoModeLogKey = "autoMode.transparencyLog"           // JSON [AutoModeLogEntry]
+    static let autoModeLastEvalKey = "autoMode.lastEvalAt"           // ISO date
+    static let autoModeConsecutiveKey = "autoMode.consecutive"       // hysteresis counter
+    static let autoModeShieldEnabledKey = "autoMode.shieldEnabled"   // Phase 2 gate
+    static let autoModeAppSelectionKey = "autoMode.appSelection"     // encoded FamilyActivitySelection
+    static let healthBgRefreshID = "com.rinkler.app.healthcheck"
+
     static func filterEnabledKey(forTrackedDomain domain: String) -> String? {
         if instagramTrackedDomains.contains(domain) {
             return blockInstagramShortVideoEnabledKey

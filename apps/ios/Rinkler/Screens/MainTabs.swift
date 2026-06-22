@@ -167,6 +167,8 @@ struct AppsScreen: View {
                 store: UserDefaults(suiteName: RinklerConstants.appGroupID))
     private var blockAdsTrackers = true
 
+    @EnvironmentObject private var strictMode: StrictModeStore
+
     var body: some View {
         ZStack {
             SignalBackground()
@@ -195,6 +197,7 @@ struct AppsScreen: View {
                         }
                         Spacer(minLength: RinklerSpacing.sm)
                         Toggle("", isOn: $blockAdsTrackers).labelsHidden().tint(RinklerColors.signalBlue)
+                            .disabled(strictMode.isActive)
                     }
                     .padding(RinklerSpacing.md)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -238,6 +241,7 @@ struct AppsScreen: View {
                     .foregroundStyle(RinklerColors.signalText)
                 Spacer()
                 Toggle("", isOn: isOn).labelsHidden().tint(RinklerColors.signalBlue)
+                    .disabled(strictMode.isActive)
             }
             chipRow("Allowed", allowed, color: RinklerColors.signalSuccess)
             chipRow("Blocked", [blockedFeature] + extraBlocked, color: RinklerColors.signalWarning)
@@ -306,6 +310,7 @@ struct FlowChipsPublic: View {
 /// surfaces it blocks / keeps. Saving re-emits the tunnel schedule.
 struct RuleEditorView: View {
     @EnvironmentObject private var focusSystem: FocusSystemStore
+    @EnvironmentObject private var strictMode: StrictModeStore
     @Environment(\.dismiss) private var dismiss
     @State private var draft: FocusRule
 
@@ -337,6 +342,7 @@ struct RuleEditorView: View {
                                 .foregroundStyle(RinklerColors.signalText)
                         }
                         .tint(RinklerColors.signalBlue)
+                        .disabled(strictMode.isActive)
 
                         group("WINDOW") {
                             HStack {
@@ -353,10 +359,17 @@ struct RuleEditorView: View {
                                 ForEach(Difficulty.allCases) { Text($0.title).tag($0) }
                             }
                             .pickerStyle(.segmented)
+                            .disabled(strictMode.isActive)
                         }
 
                         group("BLOCKS") { chips(blockedCatalog, list: \.blocked, color: RinklerColors.signalWarning) }
                         group("KEEPS OPEN") { chips(allowedCatalog, list: \.allowed, color: RinklerColors.signalSuccess) }
+
+                        if strictMode.isActive {
+                            Text("Strict Mode is on — rules are locked until the window ends.")
+                                .font(RinklerFonts.sans(12, .regular))
+                                .foregroundStyle(RinklerColors.signalTextDim)
+                        }
 
                         Button(role: .destructive) {
                             focusSystem.deleteRule(draft.id)
@@ -370,6 +383,7 @@ struct RuleEditorView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                         }
                         .buttonStyle(.plain)
+                        .disabled(strictMode.isActive)
                     }
                     .padding(RinklerSpacing.lg)
                 }
@@ -383,6 +397,7 @@ struct RuleEditorView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") { focusSystem.updateRule(draft); dismiss() }
                         .fontWeight(.semibold)
+                        .disabled(strictMode.isActive)
                 }
             }
             .preferredColorScheme(nil)

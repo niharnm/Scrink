@@ -22,6 +22,8 @@
 	<string>1</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Rinkler reads heart-rate variability, resting heart rate, and activity (Move, steps, exercise) on your device to spot stress and low-movement moments and tighten your limits automatically. This data never leaves your phone.</string>
 	<key>SUPABASE_KEY</key>
 	<string>$(SUPABASE_KEY)</string>
 	<key>SUPABASE_URL</key>

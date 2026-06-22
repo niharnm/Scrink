@@ -7,8 +7,13 @@ struct RinklerApp: App {
     @StateObject private var commitment = CommitmentStore()
     @StateObject private var focusSystem = FocusSystemStore()
     @StateObject private var appearance = AppearanceStore()
+    @StateObject private var screenTime = ScreenTimeManager()
+    @StateObject private var strictMode = StrictModeStore()
+    @StateObject private var health = HealthManager()
+    @StateObject private var autoMode = AutoModeEngine()
     @State private var path = NavigationPath()
     @State private var authStore = AuthStore()
+    @Environment(\.scenePhase) private var scenePhase
 
     /// DEBUG screenshot/dev deep-link, set from `-uiPreview <screen>`. nil in
     /// normal runs and in release builds.
@@ -58,6 +63,8 @@ struct RinklerApp: App {
                     LegalScreen(doc: LegalContent.privacy)
                 } else if previewScreen == "terms" {
                     LegalScreen(doc: LegalContent.terms)
+                } else if previewScreen == "strict" {
+                    NavigationStack { StrictModeSetupScreen() }
                 } else if focusSystem.hasCompletedOnboarding {
                     NavigationStack(path: $path) {
                         LandingPage(onGo: {
@@ -128,6 +135,8 @@ struct RinklerApp: App {
                                 })
                             case .settings:
                                 SettingsScreen()
+                            case .strictModeSetup:
+                                StrictModeSetupScreen()
                             case .trafficDashboard:
                                 TrafficDashboardView()
                             case .extensionLog:
@@ -148,12 +157,36 @@ struct RinklerApp: App {
             .environmentObject(commitment)
             .environmentObject(focusSystem)
             .environmentObject(appearance)
+            .environmentObject(screenTime)
+            .environmentObject(strictMode)
+            .environmentObject(health)
+            .environmentObject(autoMode)
             .preferredColorScheme(appearance.mode.colorScheme)
             .task {
                 SVGCache.shared.preload(svgNames: ["instagram"])
             }
             .task {
                 await authStore.listenForAuthChanges()
+            }
+            .task {
+                // Wire the new stores once the environment exists, re-derive any
+                // open Strict window, and start health-driven Automatic Mode.
+                strictMode.configure(vpn: vpnManager, commitment: commitment, screenTime: screenTime)
+                strictMode.tickIfExpired()
+                autoMode.configure(health: health, screenTime: screenTime)
+                health.refreshAvailability()
+                if health.isAuthorized {
+                    health.enableBackgroundDelivery {
+                        await autoMode.evaluate(trigger: .observer)
+                    }
+                    await autoMode.evaluate(trigger: .foreground)
+                }
+            }
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active {
+                    strictMode.tickIfExpired()
+                    Task { await autoMode.evaluate(trigger: .foreground) }
+                }
             }
             .onAppear {
                 vpnManager.setup()

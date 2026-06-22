@@ -14,6 +14,7 @@
 		50C1A1AC0000000000000021 /* BlockScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000020 /* BlockScreen.swift */; };
 		50C1A1AC0000000000000041 /* LegalContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000040 /* LegalContent.swift */; };
 		50C1A1AC0000000000000051 /* LegalScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000050 /* LegalScreen.swift */; };
+		50C1A1AC00000000000000D1 /* StrictModeSetupScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC00000000000000D0 /* StrictModeSetupScreen.swift */; };
 		50C1A1AC0000000000000061 /* AppearanceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000060 /* AppearanceStore.swift */; };
 		A1F0C0DE0000000000000105 /* Onboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000205 /* Onboarding.swift */; };
 		A1F0C0DE0000000000000106 /* MainTabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000206 /* MainTabs.swift */; };
@@ -55,6 +56,12 @@
 		55B0C1B5A6CF3AA8C6AEF432 /* AppOptionArcs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B4EC3C0F908E65D671403F /* AppOptionArcs.swift */; };
 		55B9C498EF03C4B9380E9BA0 /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E46F6CBC4504443A3E050DE /* AppStore.swift */; };
 		50C1A1AC0000000000000031 /* ScreenTimeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000030 /* ScreenTimeManager.swift */; };
+		50C1A1AC0000000000000071 /* StrictModeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000070 /* StrictModeStore.swift */; };
+		50C1A1AC0000000000000081 /* StrictModeShieldController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000080 /* StrictModeShieldController.swift */; };
+		50C1A1AC0000000000000091 /* StrictModeActivityScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000090 /* StrictModeActivityScheduler.swift */; };
+		50C1A1AC00000000000000A1 /* HealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC00000000000000A0 /* HealthManager.swift */; };
+		50C1A1AC00000000000000B1 /* AutoModeEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC00000000000000B0 /* AutoModeEngine.swift */; };
+		50C1A1AC00000000000000C1 /* ShieldController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC00000000000000C0 /* ShieldController.swift */; };
 		50C1A1AC0000000000000002 /* SocialAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000001 /* SocialAuthService.swift */; };
 		63985968494496186AAAAE97 /* SocialMediaIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 221C01C91E8FC62806530668 /* SocialMediaIcon.swift */; };
 		63FA599ABB0F0D47230364C1 /* RinklerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884244700EF00F59FE7F49D1 /* RinklerButton.swift */; };
@@ -153,6 +160,7 @@
 		A1F0C0DE0000000000000203 /* CommitmentMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitmentMode.swift; sourceTree = "<group>"; };
 		50C1A1AC0000000000000020 /* BlockScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockScreen.swift; sourceTree = "<group>"; };
 		50C1A1AC0000000000000050 /* LegalScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalScreen.swift; sourceTree = "<group>"; };
+		50C1A1AC00000000000000D0 /* StrictModeSetupScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrictModeSetupScreen.swift; sourceTree = "<group>"; };
 		A1F0C0DE0000000000000205 /* Onboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding.swift; sourceTree = "<group>"; };
 		A1F0C0DE0000000000000206 /* MainTabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabs.swift; sourceTree = "<group>"; };
 		4FCEA58022A4F0F927779C3E /* settings.local.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = settings.local.json; sourceTree = "<group>"; };
@@ -164,6 +172,12 @@
 		50C1A1AC0000000000000030 /* ScreenTimeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeManager.swift; sourceTree = "<group>"; };
 		50C1A1AC0000000000000040 /* LegalContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalContent.swift; sourceTree = "<group>"; };
 		50C1A1AC0000000000000060 /* AppearanceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceStore.swift; sourceTree = "<group>"; };
+		50C1A1AC0000000000000070 /* StrictModeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrictModeStore.swift; sourceTree = "<group>"; };
+		50C1A1AC0000000000000080 /* StrictModeShieldController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrictModeShieldController.swift; sourceTree = "<group>"; };
+		50C1A1AC0000000000000090 /* StrictModeActivityScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrictModeActivityScheduler.swift; sourceTree = "<group>"; };
+		50C1A1AC00000000000000A0 /* HealthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthManager.swift; sourceTree = "<group>"; };
+		50C1A1AC00000000000000B0 /* AutoModeEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoModeEngine.swift; sourceTree = "<group>"; };
+		50C1A1AC00000000000000C0 /* ShieldController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShieldController.swift; sourceTree = "<group>"; };
 		50C1A1AC0000000000000001 /* SocialAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialAuthService.swift; sourceTree = "<group>"; };
 		5F0388BBA774E17DCA5497C6 /* RinklerFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RinklerFonts.swift; sourceTree = "<group>"; };
 		5F112CC7035E04A18029EC82 /* clouds.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clouds.png; sourceTree = "<group>"; };
@@ -274,6 +288,7 @@
 				A1F0C0DE0000000000000203 /* CommitmentMode.swift */,
 				50C1A1AC0000000000000020 /* BlockScreen.swift */,
 				50C1A1AC0000000000000050 /* LegalScreen.swift */,
+				50C1A1AC00000000000000D0 /* StrictModeSetupScreen.swift */,
 				A1F0C0DE0000000000000205 /* Onboarding.swift */,
 				A1F0C0DE0000000000000206 /* MainTabs.swift */,
 				97236875B7F5FA2B9FE201A3 /* HomeScreen.swift */,
@@ -318,6 +333,12 @@
 				50C1A1AC0000000000000030 /* ScreenTimeManager.swift */,
 				50C1A1AC0000000000000040 /* LegalContent.swift */,
 				50C1A1AC0000000000000060 /* AppearanceStore.swift */,
+				50C1A1AC0000000000000070 /* StrictModeStore.swift */,
+				50C1A1AC0000000000000080 /* StrictModeShieldController.swift */,
+				50C1A1AC0000000000000090 /* StrictModeActivityScheduler.swift */,
+				50C1A1AC00000000000000A0 /* HealthManager.swift */,
+				50C1A1AC00000000000000B0 /* AutoModeEngine.swift */,
+				50C1A1AC00000000000000C0 /* ShieldController.swift */,
 				50C1A1AC0000000000000001 /* SocialAuthService.swift */,
 				931B0AF1A32A039B27B089E5 /* AuthStore.swift */,
 				64DB7E7C0A427B4897386603 /* BlockedApp.swift */,
@@ -563,6 +584,12 @@
 				50C1A1AC0000000000000031 /* ScreenTimeManager.swift in Sources */,
 				50C1A1AC0000000000000041 /* LegalContent.swift in Sources */,
 				50C1A1AC0000000000000061 /* AppearanceStore.swift in Sources */,
+				50C1A1AC0000000000000071 /* StrictModeStore.swift in Sources */,
+				50C1A1AC0000000000000081 /* StrictModeShieldController.swift in Sources */,
+				50C1A1AC0000000000000091 /* StrictModeActivityScheduler.swift in Sources */,
+				50C1A1AC00000000000000A1 /* HealthManager.swift in Sources */,
+				50C1A1AC00000000000000B1 /* AutoModeEngine.swift in Sources */,
+				50C1A1AC00000000000000C1 /* ShieldController.swift in Sources */,
 				50C1A1AC0000000000000002 /* SocialAuthService.swift in Sources */,
 				F4B56F9A3A941A0C2EBDADE7 /* AuthStore.swift in Sources */,
 				9549542D2E57B4C55511D581 /* BackArrowView.swift in Sources */,
@@ -593,6 +620,7 @@
 				A1F0C0DE0000000000000103 /* CommitmentMode.swift in Sources */,
 				50C1A1AC0000000000000021 /* BlockScreen.swift in Sources */,
 				50C1A1AC0000000000000051 /* LegalScreen.swift in Sources */,
+				50C1A1AC00000000000000D1 /* StrictModeSetupScreen.swift in Sources */,
 				A1F0C0DE0000000000000105 /* Onboarding.swift in Sources */,
 				A1F0C0DE0000000000000106 /* MainTabs.swift in Sources */,
 				4CBD13A9A63EB6FFDE23B67B /* SVGCache.swift in Sources */,

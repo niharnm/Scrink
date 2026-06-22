@@ -9,6 +9,10 @@ struct SettingsScreen: View {
     @EnvironmentObject private var commitment: CommitmentStore
     @EnvironmentObject private var focusSystem: FocusSystemStore
     @EnvironmentObject private var appearance: AppearanceStore
+    @EnvironmentObject private var screenTime: ScreenTimeManager
+    @EnvironmentObject private var strictMode: StrictModeStore
+    @EnvironmentObject private var autoMode: AutoModeEngine
+    @EnvironmentObject private var health: HealthManager
 
     @State private var showResetOnboarding = false
     @State private var legalDoc: LegalContent.Doc?
@@ -22,7 +26,6 @@ struct SettingsScreen: View {
     private var blockTikTokShortVideo: Bool = true
 
     @StateObject private var domainThresholds = DomainThresholdsStore()
-    @StateObject private var screenTime = ScreenTimeManager()
 
     @State private var showExtensionLog = false
 
@@ -37,6 +40,12 @@ struct SettingsScreen: View {
 
                     // VPN Toggle Button
                     vpnToggleButton
+
+                    // Strict Mode (total lockdown)
+                    strictModeSection
+
+                    // Automatic, health-aware tightening
+                    automaticModeSection
 
                     // Permissions the app needs (Screen Time access, etc.)
                     permissionsSection
@@ -118,6 +127,150 @@ struct SettingsScreen: View {
                 }
             }
         }
+    }
+
+    // MARK: - Strict Mode
+
+    private var strictModeSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("STRICT MODE")
+                .font(RinklerFonts.sans(12, .semibold))
+                .foregroundStyle(RinklerColors.signalTextDim)
+
+            if strictMode.isActive {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "lock.fill").foregroundStyle(RinklerColors.signalBlue)
+                        Text("Locked — \(strictMode.remainingLabel)")
+                            .font(RinklerFonts.sans(16, .semibold))
+                            .foregroundStyle(RinklerColors.signalText)
+                    }
+                    Text("Your controls are locked until \(strictMode.endLabel). The only way out before then is iOS Settings → Screen Time.")
+                        .font(RinklerFonts.sans(12, .regular))
+                        .foregroundStyle(RinklerColors.signalTextDim)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(RinklerSpacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .signalCard(cornerRadius: 16)
+            } else {
+                NavigationLink(value: Route.strictModeSetup) {
+                    HStack(spacing: RinklerSpacing.md) {
+                        Image(systemName: "lock.shield.fill")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(RinklerColors.signalBlue)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Arm Strict Mode")
+                                .font(RinklerFonts.sans(16, .semibold))
+                                .foregroundStyle(RinklerColors.signalText)
+                            Text("Lock your limits for a set window. No in-app off switch.")
+                                .font(RinklerFonts.sans(12, .regular))
+                                .foregroundStyle(RinklerColors.signalTextDim)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        Spacer(minLength: RinklerSpacing.sm)
+                        Image(systemName: "chevron.right").foregroundStyle(RinklerColors.signalTextFaint)
+                    }
+                    .padding(RinklerSpacing.md)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .signalCard(cornerRadius: 16)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    // MARK: - Automatic (health-aware) Mode
+
+    private var automaticModeSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("AUTOMATIC MODE")
+                .font(RinklerFonts.sans(12, .semibold))
+                .foregroundStyle(RinklerColors.signalTextDim)
+
+            VStack(alignment: .leading, spacing: RinklerSpacing.sm) {
+                HStack(spacing: RinklerSpacing.md) {
+                    Image(systemName: "heart.text.square.fill")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(RinklerColors.signalBlue)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Health-aware tightening")
+                            .font(RinklerFonts.sans(16, .semibold))
+                            .foregroundStyle(RinklerColors.signalText)
+                        Text("When stress is up or you've barely moved, Rinkler tightens limits on its own. A read on your trends — not a medical reading. Stays on your phone.")
+                            .font(RinklerFonts.sans(12, .regular))
+                            .foregroundStyle(RinklerColors.signalTextDim)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    Spacer(minLength: RinklerSpacing.sm)
+                    Toggle("", isOn: $autoMode.enabled)
+                        .labelsHidden().tint(RinklerColors.signalBlue)
+                        .disabled(!health.isAuthorized || strictMode.isActive)
+                }
+
+                if health.isAvailable && !health.isAuthorized {
+                    Button { Task { await connectHealth() } } label: {
+                        Text("Connect Apple Health")
+                            .font(RinklerFonts.sans(14, .semibold))
+                            .foregroundStyle(RinklerColors.signalBlue)
+                    }
+                } else if !health.isAvailable {
+                    Text("Health data isn't available on this device.")
+                        .font(RinklerFonts.sans(12, .regular))
+                        .foregroundStyle(RinklerColors.signalTextFaint)
+                }
+
+                if autoMode.enabled {
+                    Divider().overlay(RinklerColors.signalBorder)
+                    Text("SENSITIVITY")
+                        .font(RinklerFonts.sans(11, .semibold))
+                        .foregroundStyle(RinklerColors.signalTextDim)
+                    Picker("Sensitivity", selection: $autoMode.sensitivity) {
+                        ForEach(AutoSensitivity.allCases) { Text($0.title).tag($0) }
+                    }
+                    .pickerStyle(.segmented)
+                    if let reason = autoMode.lastState.reasons.first {
+                        Text("Now: \(autoMode.lastState.tier.rawValue) — \(reason)")
+                            .font(RinklerFonts.mono(11, .regular))
+                            .foregroundStyle(RinklerColors.signalTextDim)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+            .padding(RinklerSpacing.md)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .signalCard(cornerRadius: 16)
+
+            if autoMode.enabled && !autoMode.log.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("RECENT")
+                        .font(RinklerFonts.sans(11, .semibold))
+                        .foregroundStyle(RinklerColors.signalTextDim)
+                    ForEach(autoMode.log.prefix(6)) { entry in
+                        Text("\(autoLogTime(entry.at))  \(entry.action) — \(entry.reasons.joined(separator: ", "))")
+                            .font(RinklerFonts.mono(11, .regular))
+                            .foregroundStyle(RinklerColors.signalTextDim)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                .padding(RinklerSpacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .signalCard(cornerRadius: 16)
+            }
+        }
+    }
+
+    private func connectHealth() async {
+        let ok = await health.requestAuthorization()
+        if ok {
+            autoMode.enabled = true
+            health.enableBackgroundDelivery { await autoMode.evaluate(trigger: .observer) }
+            await autoMode.evaluate(trigger: .manual)
+        }
+    }
+
+    private func autoLogTime(_ d: Date) -> String {
+        let f = DateFormatter(); f.dateFormat = "MMM d, h:mm a"; return f.string(from: d)
     }
 
     // MARK: - About & legal
@@ -226,7 +379,7 @@ struct SettingsScreen: View {
                         .strokeBorder(Color.white, lineWidth: 1)
                 )
         }
-        .disabled(vpnManager.isPreparingProfile)
+        .disabled(vpnManager.isPreparingProfile || strictMode.isActive)
     }
 
     private var vpnButtonTitle: String {
@@ -326,6 +479,7 @@ struct SettingsScreen: View {
                     .foregroundColor(RinklerColors.signalWarning)
             }
             .padding(.top, RinklerSpacing.xs)
+            .disabled(strictMode.isActive)
         }
         .padding(RinklerSpacing.md)
         .background(RinklerColors.signalCard)
@@ -358,6 +512,7 @@ struct SettingsScreen: View {
                 Spacer()
                 Toggle("", isOn: $commitment.isEnabled)
                     .labelsHidden()
+                    .disabled(strictMode.isActive)
             }
 
             if commitment.isEnabled {
@@ -373,6 +528,7 @@ struct SettingsScreen: View {
                     }
                 }
                 .pickerStyle(.segmented)
+                .disabled(strictMode.isActive)
 
                 Text("When protection is on, stopping it asks you to wait out this pause and type \(CommitmentStore.unlockWord). iOS Settings can still switch the VPN off — this only adds friction inside Rinkler.")
                     .font(RinklerFonts.coolvetica(size: 12))
@@ -417,6 +573,7 @@ struct SettingsScreen: View {
             Spacer()
             Toggle("", isOn: isOn)
                 .labelsHidden()
+                .disabled(strictMode.isActive)
         }
     }
 
@@ -444,7 +601,8 @@ struct SettingsScreen: View {
                     ForEach(group.domains, id: \.self) { domain in
                         DomainThresholdRow(
                             domain: domain,
-                            threshold: domainThresholds.binding(for: domain)
+                            threshold: domainThresholds.binding(for: domain),
+                            isLocked: strictMode.isActive
                         )
                     }
                 }

@@ -36,9 +36,10 @@ targets:
           - Geist-Bold.ttf
           - GeistMono-Regular.ttf
           - GeistMono-Medium.ttf
-        UIViewControllerBasedStatusBarAppearance: false
-        UIStatusBarStyle: UIStatusBarStyleLightContent
+        UIViewControllerBasedStatusBarAppearance: true
         UILaunchScreen: {}
+        ITSAppUsesNonExemptEncryption: false
+        NSHealthShareUsageDescription: "Rinkler reads heart-rate variability, resting heart rate, and activity (Move, steps, exercise) on your device to spot stress and low-movement moments and tighten your limits automatically. This data never leaves your phone."
         SUPABASE_URL: $(SUPABASE_URL)
         SUPABASE_KEY: $(SUPABASE_KEY)
         CFBundleURLTypes:

@@ -11,4 +11,5 @@ enum Route: Hashable {
     case focusSetup
     case activeSession
     case sessionRecap
+    case strictModeSetup
 }

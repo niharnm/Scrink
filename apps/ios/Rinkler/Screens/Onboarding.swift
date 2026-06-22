@@ -235,6 +235,7 @@ final class FocusSystemStore: ObservableObject {
     /// Clears the auto-generated presets so the user can start from a blank slate
     /// and build their own rules. Used by the post-reveal "pick my own" option.
     func clearRules() {
+        guard !StrictModeStore.isActivePersisted else { return }
         rules = []
         signalScore = 50
         persist()
@@ -242,6 +243,7 @@ final class FocusSystemStore: ObservableObject {
 
     /// Resets onboarding (Settings → for testing). Clears the saved profile.
     func resetOnboarding() {
+        guard !StrictModeStore.isActivePersisted else { return }
         hasCompletedOnboarding = false
         chapter = 0
         traps = []; keeps = []; goals = []; dangerTimes = []; difficulty = .normal
@@ -315,6 +317,7 @@ final class FocusSystemStore: ObservableObject {
     /// Replaces a rule (matched by id), or appends it if new. Re-persists and
     /// re-emits the tunnel schedule.
     func updateRule(_ rule: FocusRule) {
+        guard !StrictModeStore.isActivePersisted else { return }
         if let idx = rules.firstIndex(where: { $0.id == rule.id }) {
             rules[idx] = rule
         } else {
@@ -324,6 +327,7 @@ final class FocusSystemStore: ObservableObject {
     }
 
     func deleteRule(_ id: UUID) {
+        guard !StrictModeStore.isActivePersisted else { return }
         rules.removeAll { $0.id == id }
         persist()
     }
@@ -1123,6 +1127,7 @@ struct OnboardingFlow: View {
 struct TodayDashboard: View {
     @EnvironmentObject private var focusSystem: FocusSystemStore
     @EnvironmentObject private var vpnManager: VPNManager
+    @EnvironmentObject private var strictMode: StrictModeStore
 
     var onSettings: (() -> Void)? = nil
     var onStartSession: (() -> Void)? = nil
@@ -1312,7 +1317,7 @@ struct TodayDashboard: View {
                     .clipShape(Capsule())
             }
             .buttonStyle(.plain)
-            .disabled(vpnManager.isPreparingProfile)
+            .disabled(vpnManager.isPreparingProfile || strictMode.isActive)
         }
         .padding(RinklerSpacing.md)
         .background(RinklerColors.signalCard)
