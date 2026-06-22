@@ -253,9 +253,11 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
   );
 }
 
-// "endless scroll" that literally scrolls vertically, forever.
+// "endless scroll" that literally scrolls vertically. A long stack of copies
+// keeps it going continuously — the loop point is ~2 minutes away and seamless
+// (every copy is identical), so it never visibly breaks.
 function EndlessScroll() {
-  const phrases = ["endless scroll", "endless scroll"]; // duplicated for a seamless loop
+  const phrases = Array.from({ length: 100 }, () => "endless scroll");
   return (
     <span style={vWrap}>
       <span style={vInner} className="vscroll">
@@ -414,7 +416,7 @@ const css = `
   .reveal-content { animation: contentIn 0.9s cubic-bezier(0.22,1,0.36,1) both; }
   @keyframes contentIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) { .reveal-content { animation: none; } }
-  .vscroll { animation: vscroll 2.6s linear infinite; }
+  .vscroll { animation: vscroll 130s linear infinite; }
   @keyframes vscroll { from { transform: translateY(0); } to { transform: translateY(-50%); } }
   @media (prefers-reduced-motion: reduce) { .vscroll { animation: none; } }
   .light-btn { transition: opacity 0.15s ease; }
