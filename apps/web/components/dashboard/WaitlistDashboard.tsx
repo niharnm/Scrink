@@ -45,7 +45,7 @@ export default function WaitlistDashboard({ email }: { email: string }) {
         </div>
         <h1 style={h1}>your dashboard is coming soon</h1>
         <p style={body}>
-          this is a peek at what lands when rinkler drops. once the app is live,
+          this is a peek at what lands when Rinkler drops. once the app is live,
           real numbers from your phone show up right here. we&apos;ll email
           {" "}
           <span style={{ color: signal.text }}>{email}</span> the moment it&apos;s ready.

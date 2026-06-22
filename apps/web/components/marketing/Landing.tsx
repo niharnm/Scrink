@@ -89,8 +89,8 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
               <span style={{ color: signal.textFaint }}>the feed is.</span>
             </h1>
             <p style={{ ...lede, marginTop: 28 }}>
-              rinkler cuts the endless reels and tiktoks that eat your night, and
-              leaves the stuff you actually opened the app for. dms, search,
+              Rinkler cuts the endless Reels and TikToks that eat your night, and
+              leaves the stuff you actually opened the app for. DMs, search,
               messages, all still there.
             </p>
             <div style={ctaRow}>
@@ -113,14 +113,14 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
           <section style={section}>
             <h2 style={h2}>youre not weak. its rigged.</h2>
             <p style={statement}>
-              you open instagram to answer one text. forty minutes later youre
+              you open Instagram to answer one text. forty minutes later youre
               watching some guy fix a rusted wrench and you dont even know how you
               got there. thats not you being lazy. the feed is built by hundreds of
               engineers testing every pixel to keep you swiping. you were never
               gonna beat that with willpower.
             </p>
             <p style={{ ...statement, color: signal.text, marginTop: 20 }}>
-              rinkler evens it out, at the one spot the feed cant talk you out of.
+              Rinkler evens it out, at the one spot the feed cant talk you out of.
             </p>
           </section>
         </Reveal>
@@ -132,9 +132,9 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
           <section id="difference" style={section}>
             <h2 style={h2}>it cuts the feed, not the whole app.</h2>
             <p style={{ ...lede, maxWidth: 680, marginTop: 20 }}>
-              most blockers are all or nothing. you block instagram, then unblock
+              most blockers are all or nothing. you block Instagram, then unblock
               it to send one dm, and youre right back in the feed. thats why people
-              delete them in a week. rinkler only cuts the short video feed and
+              delete them in a week. Rinkler only cuts the short video feed and
               leaves everything else working. theres nothing to ragequit.
             </p>
             <div style={compareGrid} className="compare">
@@ -158,9 +158,9 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
             <h2 style={h2}>your one screen time app.</h2>
             <p style={statement}>
               every other screen time app can do one thing: block a whole app.
-              block instagram and you lose your dms too. rinkler does that when
+              block Instagram and you lose your DMs too. Rinkler does that when
               you want it, but it also reaches inside the apps and kills just the
-              parts that hook you, like reels and the for you page, while your
+              parts that hook you, like Reels and the For You page, while your
               messages, search and posts keep working.
             </p>
             <p style={{ ...statement, color: signal.text, marginTop: 18 }}>
@@ -244,7 +244,7 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
         <Reveal>
           <section style={{ ...section, paddingTop: "clamp(80px, 13vh, 160px)", paddingBottom: "clamp(80px, 13vh, 160px)" }}>
             <h2 style={{ ...h2, fontSize: "clamp(34px, 6vw, 64px)" }}>get your time back.</h2>
-            <p style={{ ...lede, marginTop: 18 }}>launching july 10. get early access and win your first ten quiet minutes.</p>
+            <p style={{ ...lede, marginTop: 18 }}>launching July 10. get early access and win your first ten quiet minutes.</p>
             <div style={{ ...ctaRow, marginTop: 32 }}>
               <Link href={ctaHref} style={lightBtn} className="light-btn">{ctaLabel}</Link>
             </div>
@@ -315,19 +315,19 @@ function CompareRow({ text, good }: { text: string; good: boolean }) {
 }
 
 const compareBad = [
-  "blocks the whole app, dms and all",
+  "blocks the whole app, DMs and all",
   "you unlock it for a sec and fall back in",
   "guilt trips and lockouts you hate",
   "deleted within a week",
 ];
 const compareGood = [
   "only cuts the short video feed",
-  "dms, search and posts still work",
+  "DMs, search and posts still work",
   "no shame, just real numbers",
   "sticks, theres nothing to ragequit",
 ];
 const howSteps = [
-  { title: "build your setup", body: "answer a few questions when you first open the app and rinkler makes the rules for you. homework mode, night lock, a clean morning. you dont touch a single setting." },
+  { title: "build your setup", body: "answer a few questions when you first open the app and Rinkler makes the rules for you. Homework Mode, Night Lock, a clean morning. you dont touch a single setting." },
   { title: "start a session", body: "one tap. pick how strict you want it, from chill to a locked deep session you cant quit early. it runs on a schedule too, so it kicks in even when the app is closed." },
   { title: "watch it stack up", body: "real focused time and blocked feeds add up. build a streak and see exactly how much scroll you cut. its all real, nothing made up." },
 ];
