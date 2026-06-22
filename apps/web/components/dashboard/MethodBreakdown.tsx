@@ -10,11 +10,11 @@ interface MethodBreakdownProps {
 }
 
 const COLORS = [
-  "rgba(255,255,255,0.8)",
-  "rgba(255,255,255,0.5)",
-  "rgba(255,255,255,0.3)",
-  "rgba(255,255,255,0.18)",
-  "rgba(255,255,255,0.1)",
+  "#5B7CFF", // signal blue
+  "#8B5CF6", // violet
+  "#63D297", // success
+  "#FFB454", // warning
+  "rgba(255,255,255,0.22)",
 ];
 
 export default function MethodBreakdown({ methods }: MethodBreakdownProps) {
@@ -67,7 +67,7 @@ export default function MethodBreakdown({ methods }: MethodBreakdownProps) {
           </Pie>
           <Tooltip
             contentStyle={{
-              background: "rgba(26,95,170,0.95)",
+              background: "rgba(20,22,26,0.97)",
               border: `1px solid ${theme.colors.white30}`,
               borderRadius: 12,
               fontFamily: theme.fonts.body,

@@ -49,8 +49,8 @@ export default function UsageChart({
         <AreaChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
           <defs>
             <linearGradient id="gradAllowed" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={theme.colors.white} stopOpacity={0.4} />
-              <stop offset="95%" stopColor={theme.colors.white} stopOpacity={0.05} />
+              <stop offset="5%" stopColor={theme.colors.skyBlue} stopOpacity={0.45} />
+              <stop offset="95%" stopColor={theme.colors.skyBlue} stopOpacity={0.04} />
             </linearGradient>
             <linearGradient id="gradBlocked" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#FF6B6B" stopOpacity={0.4} />
@@ -75,7 +75,7 @@ export default function UsageChart({
           />
           <Tooltip
             contentStyle={{
-              background: "rgba(26,95,170,0.95)",
+              background: "rgba(20,22,26,0.97)",
               border: `1px solid ${theme.colors.white30}`,
               borderRadius: 12,
               fontFamily: theme.fonts.body,
@@ -94,7 +94,7 @@ export default function UsageChart({
           <Area
             type="monotone"
             dataKey="allowed"
-            stroke={theme.colors.white}
+            stroke={theme.colors.skyBlue}
             strokeWidth={2}
             fill="url(#gradAllowed)"
             name="Allowed"
