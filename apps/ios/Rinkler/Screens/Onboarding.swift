@@ -478,7 +478,7 @@ private struct SelectChip: View {
 /// A lightweight "G" mark for the Google button. Drop the official multicolor
 /// asset in `Assets.xcassets` (named "google-logo") and swap this for an
 /// `Image("google-logo")` when brand assets are available.
-private struct GoogleGlyph: View {
+struct GoogleGlyph: View {
     var body: some View {
         Text("G")
             .font(.system(size: 18, weight: .bold, design: .rounded))
@@ -892,55 +892,13 @@ struct OnboardingFlow: View {
 
             savedSystemPreview
 
-            VStack(spacing: 12) {
-                SignInWithAppleButton(.continue) { request in
-                    social.configureAppleRequest(request)
-                } onCompletion: { result in
-                    Task { if await social.handleApple(result) { onAuthSuccess() } }
+            AuthOptionsView(onSuccess: onAuthSuccess)
+                .opacity(authButtonsShown ? 1 : 0)
+                .offset(y: authButtonsShown ? 0 : 18)
+                .onAppear {
+                    authButtonsShown = false
+                    withAnimation(.easeOut(duration: 0.45).delay(0.12)) { authButtonsShown = true }
                 }
-                .signInWithAppleButtonStyle(.white)
-                .frame(height: 54)
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .disabled(social.isLoading)
-
-                Button {
-                    Task { if await social.signInWithGoogle() { onAuthSuccess() } }
-                } label: {
-                    HStack(spacing: 10) {
-                        GoogleGlyph()
-                        Text("Continue with Google")
-                            .font(RinklerFonts.sans(17, .semibold))
-                            .foregroundStyle(.black)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 54)
-                    .background(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                }
-                .buttonStyle(.plain)
-                .disabled(social.isLoading)
-
-                if social.isLoading {
-                    ProgressView()
-                        .tint(RinklerColors.signalTextDim)
-                        .padding(.top, 2)
-                }
-
-                if let error = social.errorMessage {
-                    Text(error)
-                        .font(RinklerFonts.sans(13, .regular))
-                        .foregroundStyle(RinklerColors.signalWarning)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .transition(.opacity)
-                }
-            }
-            .opacity(authButtonsShown ? 1 : 0)
-            .offset(y: authButtonsShown ? 0 : 18)
-            .animation(.easeOut(duration: 0.2), value: social.errorMessage)
-            .onAppear {
-                authButtonsShown = false
-                withAnimation(.easeOut(duration: 0.45).delay(0.12)) { authButtonsShown = true }
-            }
 
             Text("Rinkler never posts on your behalf or reads your messages. Sign-in only secures your settings.")
                 .font(RinklerFonts.sans(12, .regular))

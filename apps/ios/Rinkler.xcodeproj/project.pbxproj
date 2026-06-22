@@ -50,6 +50,7 @@
 		50C1A1AC0000000000000107 /* RuleRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000106 /* RuleRegistry.swift */; };
 		50C1A1AC0000000000000109 /* FriendControlStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000108 /* FriendControlStore.swift */; };
 		50C1A1AC000000000000010B /* FriendControlScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC000000000000010A /* FriendControlScreen.swift */; };
+		50C1A1AC0000000000000113 /* AuthOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000112 /* AuthOptionsView.swift */; };
 		50C1A1AC0000000000000081 /* StrictModeShieldController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000080 /* StrictModeShieldController.swift */; };
 		50C1A1AC0000000000000091 /* StrictModeActivityScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000090 /* StrictModeActivityScheduler.swift */; };
 		50C1A1AC00000000000000A1 /* HealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC00000000000000A0 /* HealthManager.swift */; };
@@ -73,6 +74,7 @@
 		8050EE548DB56DDCA4FB2A2A /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = EFBD2984D0510752BD1D03BD /* background.png */; };
 		88E96BE752A5DBCDD02D793B /* RinklerColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74330F9AFC4182AB67F02F83 /* RinklerColors.swift */; };
 		50C1A1AC00000000000000F1 /* RinklerUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC00000000000000F0 /* RinklerUI.swift */; };
+		50C1A1AC0000000000000111 /* RinklerLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000110 /* RinklerLogo.swift */; };
 		8CC77FCD2AFCCE05480781D9 /* icon_rect.png in Resources */ = {isa = PBXBuildFile; fileRef = 6A14727AF55B2D6A666F3D1B /* icon_rect.png */; };
 		8F0D57C9A6E3045BBE001928 /* AppOptionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A500B91AAD8FCE188E83A9D /* AppOptionsService.swift */; };
 		9549542D2E57B4C55511D581 /* BackArrowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E7DF720D3EB9EAC56B49CB /* BackArrowView.swift */; };
@@ -175,6 +177,7 @@
 		50C1A1AC0000000000000106 /* RuleRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleRegistry.swift; sourceTree = "<group>"; };
 		50C1A1AC0000000000000108 /* FriendControlStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendControlStore.swift; sourceTree = "<group>"; };
 		50C1A1AC000000000000010A /* FriendControlScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendControlScreen.swift; sourceTree = "<group>"; };
+		50C1A1AC0000000000000112 /* AuthOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthOptionsView.swift; sourceTree = "<group>"; };
 		50C1A1AC0000000000000080 /* StrictModeShieldController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrictModeShieldController.swift; sourceTree = "<group>"; };
 		50C1A1AC0000000000000090 /* StrictModeActivityScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrictModeActivityScheduler.swift; sourceTree = "<group>"; };
 		50C1A1AC00000000000000A0 /* HealthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthManager.swift; sourceTree = "<group>"; };
@@ -193,6 +196,7 @@
 		6E171A52D23611FA571259FA /* MagicSignInScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicSignInScreen.swift; sourceTree = "<group>"; };
 		74330F9AFC4182AB67F02F83 /* RinklerColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RinklerColors.swift; sourceTree = "<group>"; };
 		50C1A1AC00000000000000F0 /* RinklerUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RinklerUI.swift; sourceTree = "<group>"; };
+		50C1A1AC0000000000000110 /* RinklerLogo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RinklerLogo.swift; sourceTree = "<group>"; };
 		7EB2E25C599188EFFAA656AA /* BlockingOptionsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockingOptionsScreen.swift; sourceTree = "<group>"; };
 		8240EBF328085BD8C6215C5B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		884244700EF00F59FE7F49D1 /* RinklerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RinklerButton.swift; sourceTree = "<group>"; };
@@ -305,6 +309,7 @@
 				50C1A1AC00000000000000D0 /* StrictModeSetupScreen.swift */,
 				50C1A1AC00000000000000E0 /* SplashView.swift */,
 				50C1A1AC000000000000010A /* FriendControlScreen.swift */,
+				50C1A1AC0000000000000112 /* AuthOptionsView.swift */,
 				A1F0C0DE0000000000000205 /* Onboarding.swift */,
 				A1F0C0DE0000000000000206 /* MainTabs.swift */,
 				97236875B7F5FA2B9FE201A3 /* HomeScreen.swift */,
@@ -434,6 +439,7 @@
 			children = (
 				74330F9AFC4182AB67F02F83 /* RinklerColors.swift */,
 				50C1A1AC00000000000000F0 /* RinklerUI.swift */,
+				50C1A1AC0000000000000110 /* RinklerLogo.swift */,
 				5F0388BBA774E17DCA5497C6 /* RinklerFonts.swift */,
 				2657A23991F8E73241EC8D2A /* RinklerSpacing.swift */,
 			);
@@ -625,6 +631,7 @@
 				50C1A1AC0000000000000107 /* RuleRegistry.swift in Sources */,
 				50C1A1AC0000000000000109 /* FriendControlStore.swift in Sources */,
 				50C1A1AC000000000000010B /* FriendControlScreen.swift in Sources */,
+				50C1A1AC0000000000000113 /* AuthOptionsView.swift in Sources */,
 				50C1A1AC0000000000000081 /* StrictModeShieldController.swift in Sources */,
 				50C1A1AC0000000000000091 /* StrictModeActivityScheduler.swift in Sources */,
 				50C1A1AC00000000000000A1 /* HealthManager.swift in Sources */,
@@ -640,6 +647,7 @@
 				63FA599ABB0F0D47230364C1 /* RinklerButton.swift in Sources */,
 				88E96BE752A5DBCDD02D793B /* RinklerColors.swift in Sources */,
 				50C1A1AC00000000000000F1 /* RinklerUI.swift in Sources */,
+				50C1A1AC0000000000000111 /* RinklerLogo.swift in Sources */,
 				287F80E9B726B8336D5110D2 /* RinklerFonts.swift in Sources */,
 				3EBF87D830A1629BCEB7B827 /* RinklerSpacing.swift in Sources */,
 				9DEA878857BBF38484E29279 /* CodeVerificationScreen.swift in Sources */,

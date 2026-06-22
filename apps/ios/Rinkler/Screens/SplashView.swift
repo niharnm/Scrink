@@ -1,22 +1,22 @@
 import SwiftUI
 
-/// The opening animation — it acts out what Rinkler does, in ~3.6s:
+/// The opening animation — acts out what Rinkler does, in ~3.2s:
 /// 1. a feed doomscrolls upward, accelerating (the trap),
 /// 2. a blue line cuts across and the feed dims out (Rinkler interrupts it),
-/// 3. the signal ring draws in around the pause-bars mark + wordmark (calm).
+/// 3. the cut resolves INTO the Rinkler logo — the control ring draws on around
+///    the cut, then the phone + pause bars settle, then the wordmark.
 /// Then it hands off straight into the app — no tap.
 struct SplashView: View {
     var onFinished: () -> Void
 
     @State private var scrollY: CGFloat = 80
     @State private var feedOpacity: Double = 1
-    @State private var cutScale: CGFloat = 0      // 0 → 1 sweeps the cut line across
+    @State private var cutScale: CGFloat = 0
     @State private var cutOpacity: Double = 0
-    @State private var ringProgress: CGFloat = 0
-    @State private var ringScale: CGFloat = 0.7
-    @State private var brandAppear = false
+    @State private var ringTrim: CGFloat = 0
+    @State private var partsReveal: CGFloat = 0
+    @State private var brandText = false
 
-    // Repeated heights so the stream always has content while it races.
     private let heights: [CGFloat] = [128, 92, 156, 84, 134, 104, 168, 96, 140, 112,
                                       128, 92, 156, 84, 134, 104, 168, 96, 140, 112]
 
@@ -27,15 +27,11 @@ struct SplashView: View {
             // 1) The doomscroll.
             feed
                 .opacity(feedOpacity)
-                .mask(
-                    LinearGradient(
-                        colors: [.clear, .black, .black, .black, .clear],
-                        startPoint: .top, endPoint: .bottom
-                    )
-                )
+                .mask(LinearGradient(colors: [.clear, .black, .black, .black, .clear],
+                                     startPoint: .top, endPoint: .bottom))
                 .allowsHitTesting(false)
 
-            // 2) The cut — a blue line that slices across the screen.
+            // 2) The cut — a blue line that slices across, then becomes the ring.
             Rectangle()
                 .fill(RinklerColors.signalBlue)
                 .frame(height: 2.5)
@@ -43,18 +39,9 @@ struct SplashView: View {
                 .opacity(cutOpacity)
                 .padding(.horizontal, 28)
 
-            // 3) The brand resolves out of the quiet.
+            // 3) The logo resolves out of the cut, then the wordmark.
             VStack(spacing: RinklerSpacing.lg) {
-                SignalRing(progress: ringProgress, lineWidth: 9) {
-                    HStack(spacing: 8) {
-                        Capsule().fill(RinklerColors.signalBlue).frame(width: 9, height: 32)
-                        Capsule().fill(RinklerColors.signalBlue).frame(width: 9, height: 32)
-                    }
-                    .opacity(brandAppear ? 1 : 0)
-                }
-                .frame(width: 150, height: 150)
-                .scaleEffect(ringScale)
-                .opacity(brandAppear ? 1 : 0)
+                RinklerLogo(size: 150, ringTrim: ringTrim, partsReveal: partsReveal)
 
                 VStack(spacing: 6) {
                     Text("RINKLER")
@@ -65,8 +52,8 @@ struct SplashView: View {
                         .font(RinklerFonts.sans(12, .medium))
                         .foregroundStyle(RinklerColors.signalTextDim)
                 }
-                .opacity(brandAppear ? 1 : 0)
-                .offset(y: brandAppear ? 0 : 10)
+                .opacity(brandText ? 1 : 0)
+                .offset(y: brandText ? 0 : 10)
             }
         }
         .onAppear(perform: run)
@@ -84,10 +71,8 @@ struct SplashView: View {
     private func feedCard(height: CGFloat, accent: Bool) -> some View {
         RoundedRectangle(cornerRadius: 20, style: .continuous)
             .fill(RinklerColors.signalCard)
-            .overlay(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .strokeBorder(RinklerColors.signalBorder, lineWidth: 1)
-            )
+            .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
             .overlay(
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(spacing: 8) {
@@ -110,26 +95,25 @@ struct SplashView: View {
 
     private func run() {
         // Phase 1 — the feed races upward, accelerating.
-        withAnimation(.easeIn(duration: 1.9)) { scrollY = -1700 }
+        withAnimation(.easeIn(duration: 1.7)) { scrollY = -1700 }
 
         // Phase 2 — Rinkler cuts in: the line sweeps, the feed goes quiet.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.55) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.35) {
             withAnimation(.easeInOut(duration: 0.2)) { cutOpacity = 1 }
-            withAnimation(.easeOut(duration: 0.45)) { cutScale = 1 }
-            withAnimation(.easeOut(duration: 0.55).delay(0.15)) { feedOpacity = 0 }
+            withAnimation(.easeOut(duration: 0.4)) { cutScale = 1 }
+            withAnimation(.easeOut(duration: 0.5).delay(0.15)) { feedOpacity = 0 }
         }
 
-        // Phase 3 — the brand resolves out of the quiet.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.25) {
+        // Phase 3 — the cut becomes the logo: ring draws on, parts settle, wordmark.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.9) {
             withAnimation(.easeInOut(duration: 0.5)) { cutOpacity = 0 }
-            withAnimation(.spring(response: 0.7, dampingFraction: 0.72)) {
-                ringScale = 1; brandAppear = true
-            }
-            withAnimation(.easeInOut(duration: 1.1)) { ringProgress = 0.8 }
+            withAnimation(.easeInOut(duration: 1.0)) { ringTrim = 1 }
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.35)) { partsReveal = 1 }
+            withAnimation(.easeOut(duration: 0.5).delay(0.55)) { brandText = true }
         }
 
-        // Hand off into the app.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.7) { onFinished() }
+        // Hand off into the app (~0.4s shorter than before).
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.3) { onFinished() }
     }
 }
 

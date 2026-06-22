@@ -74,6 +74,8 @@ struct RinklerApp: App {
                     NavigationStack { AppsScreen() }
                 } else if previewScreen == "friend" {
                     NavigationStack { FriendControlScreen() }
+                } else if previewScreen == "signin" {
+                    NavigationStack { MagicSignInScreen() }
                 } else if focusSystem.hasCompletedOnboarding {
                     NavigationStack(path: $path) {
                         LandingPage(onGo: {
@@ -128,15 +130,10 @@ struct RinklerApp: App {
                                     path.append(Route.today)
                                 })
                             case .magicSignIn:
-                                MagicSignInScreen(
-                                    onCodeSent: { email in
-                                        path.append(Route.codeVerification(email: email))
-                                    },
-                                    onContinueOffline: {
-                                        path = NavigationPath()
-                                        path.append(Route.today)
-                                    }
-                                )
+                                MagicSignInScreen(onSignedIn: {
+                                    path = NavigationPath()
+                                    path.append(Route.today)
+                                })
                             case .codeVerification(let email):
                                 CodeVerificationScreen(email: email, onVerified: {
                                     path = NavigationPath()
