@@ -45,6 +45,8 @@
 		50C1A1AC0000000000000051 /* LegalScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000050 /* LegalScreen.swift */; };
 		50C1A1AC0000000000000061 /* AppearanceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000060 /* AppearanceStore.swift */; };
 		50C1A1AC0000000000000071 /* StrictModeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000070 /* StrictModeStore.swift */; };
+		50C1A1AC0000000000000103 /* BlockCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000102 /* BlockCatalog.swift */; };
+		50C1A1AC0000000000000105 /* BlockSelectionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000104 /* BlockSelectionStore.swift */; };
 		50C1A1AC0000000000000081 /* StrictModeShieldController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000080 /* StrictModeShieldController.swift */; };
 		50C1A1AC0000000000000091 /* StrictModeActivityScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000090 /* StrictModeActivityScheduler.swift */; };
 		50C1A1AC00000000000000A1 /* HealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC00000000000000A0 /* HealthManager.swift */; };
@@ -165,6 +167,8 @@
 		50C1A1AC0000000000000050 /* LegalScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalScreen.swift; sourceTree = "<group>"; };
 		50C1A1AC0000000000000060 /* AppearanceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceStore.swift; sourceTree = "<group>"; };
 		50C1A1AC0000000000000070 /* StrictModeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrictModeStore.swift; sourceTree = "<group>"; };
+		50C1A1AC0000000000000102 /* BlockCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockCatalog.swift; sourceTree = "<group>"; };
+		50C1A1AC0000000000000104 /* BlockSelectionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockSelectionStore.swift; sourceTree = "<group>"; };
 		50C1A1AC0000000000000080 /* StrictModeShieldController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrictModeShieldController.swift; sourceTree = "<group>"; };
 		50C1A1AC0000000000000090 /* StrictModeActivityScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrictModeActivityScheduler.swift; sourceTree = "<group>"; };
 		50C1A1AC00000000000000A0 /* HealthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthManager.swift; sourceTree = "<group>"; };
@@ -339,6 +343,8 @@
 				50C1A1AC0000000000000040 /* LegalContent.swift */,
 				50C1A1AC0000000000000060 /* AppearanceStore.swift */,
 				50C1A1AC0000000000000070 /* StrictModeStore.swift */,
+				50C1A1AC0000000000000102 /* BlockCatalog.swift */,
+				50C1A1AC0000000000000104 /* BlockSelectionStore.swift */,
 				50C1A1AC0000000000000080 /* StrictModeShieldController.swift */,
 				50C1A1AC0000000000000090 /* StrictModeActivityScheduler.swift */,
 				50C1A1AC00000000000000A0 /* HealthManager.swift */,
@@ -605,6 +611,8 @@
 				50C1A1AC0000000000000041 /* LegalContent.swift in Sources */,
 				50C1A1AC0000000000000061 /* AppearanceStore.swift in Sources */,
 				50C1A1AC0000000000000071 /* StrictModeStore.swift in Sources */,
+				50C1A1AC0000000000000103 /* BlockCatalog.swift in Sources */,
+				50C1A1AC0000000000000105 /* BlockSelectionStore.swift in Sources */,
 				50C1A1AC0000000000000081 /* StrictModeShieldController.swift in Sources */,
 				50C1A1AC0000000000000091 /* StrictModeActivityScheduler.swift in Sources */,
 				50C1A1AC00000000000000A1 /* HealthManager.swift in Sources */,

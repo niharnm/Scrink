@@ -109,6 +109,9 @@ enum RinklerConstants {
     static let blockAdsTrackersEnabledKey = "blockAdsTrackersEnabled"
     static let domainThresholdsKey = "domainThresholds"
     static let optionStatesKey = "optionStates"
+    /// Flat host set (suffix-matched) the tunnel hard-blocks at CONNECT, resolved
+    /// from the user's per-app feed selections (BlockCatalog / BlockSelectionStore).
+    static let blockedHostsKey = "blockedHosts"
 
     // MARK: - Strict Mode (total lockdown) keys
     static let strictModeEnabledKey = "strictModeEnabled"

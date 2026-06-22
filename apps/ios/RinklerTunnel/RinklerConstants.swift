@@ -144,6 +144,9 @@ enum RinklerConstants {
     static let optionStatesKey = "optionStates"
     /// Compact schedule written by the app from the user's Focus System rules.
     static let ruleScheduleKey = "ruleSchedule"
+    /// Flat host set (suffix-matched) the tunnel hard-blocks at CONNECT, resolved
+    /// from the user's per-app feed selections in the app.
+    static let blockedHostsKey = "blockedHosts"
 
     static func filterEnabledKey(forTrackedDomain domain: String) -> String? {
         if instagramTrackedDomains.contains(domain) {

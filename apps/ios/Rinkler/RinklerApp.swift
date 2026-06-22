@@ -69,6 +69,8 @@ struct RinklerApp: App {
                     NavigationStack { StrictModeSetupScreen() }
                 } else if previewScreen == "control" {
                     NavigationStack { ControlScreen() }
+                } else if previewScreen == "apps" {
+                    NavigationStack { AppsScreen() }
                 } else if focusSystem.hasCompletedOnboarding {
                     NavigationStack(path: $path) {
                         LandingPage(onGo: {

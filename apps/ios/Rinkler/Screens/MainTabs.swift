@@ -243,131 +243,130 @@ private struct FlowChips: View {
 /// that map to a real tunnel filter key actually take effect; others are honest
 /// previews until per-feature path control ships.
 struct AppsScreen: View {
-    @AppStorage(RinklerConstants.blockInstagramShortVideoEnabledKey,
-                store: UserDefaults(suiteName: RinklerConstants.appGroupID))
-    private var blockInstagram = true
-
-    @AppStorage(RinklerConstants.blockTikTokShortVideoEnabledKey,
-                store: UserDefaults(suiteName: RinklerConstants.appGroupID))
-    private var blockTikTok = true
-
     @AppStorage(RinklerConstants.blockAdsTrackersEnabledKey,
                 store: UserDefaults(suiteName: RinklerConstants.appGroupID))
     private var blockAdsTrackers = true
 
+    @StateObject private var selection = BlockSelectionStore()
     @EnvironmentObject private var strictMode: StrictModeStore
 
     var body: some View {
         ZStack {
             SignalBackground()
             ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
-                    Text("Apps")
-                        .font(RinklerFonts.sans(26, .bold))
-                        .foregroundStyle(RinklerColors.signalText)
-                    Text("Keep the parts you actually use. Kill the endless scroll.")
-                        .font(RinklerFonts.sans(14, .regular))
-                        .foregroundStyle(RinklerColors.signalTextDim)
+                VStack(alignment: .leading, spacing: RinklerSpacing.md) {
+                    SectionHeader(title: "Apps", subtitle: "Kill the addictive feeds. Keep the useful parts.")
 
-                    // Ads & trackers — applies across every app while protected.
-                    HStack(spacing: RinklerSpacing.md) {
-                        Image(systemName: "hand.raised.slash.fill")
-                            .font(.system(size: 18, weight: .semibold))
-                            .foregroundStyle(RinklerColors.signalBlue)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Ads & trackers")
-                                .font(RinklerFonts.sans(17, .semibold))
-                                .foregroundStyle(RinklerColors.signalText)
-                            Text("Blocked across every app while protection's on.")
-                                .font(RinklerFonts.sans(12, .regular))
-                                .foregroundStyle(RinklerColors.signalTextDim)
-                                .fixedSize(horizontal: false, vertical: true)
+                    adsCard
+
+                    NavigationLink(value: Route.strictModeSetup) {
+                        HStack(spacing: RinklerSpacing.md) {
+                            Image(systemName: "lock.shield.fill")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundStyle(RinklerColors.signalBlue)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Lock whole apps")
+                                    .font(RinklerFonts.sans(16, .semibold))
+                                    .foregroundStyle(RinklerColors.signalText)
+                                Text("The hard block that actually holds — pick any apps in Strict Mode.")
+                                    .font(RinklerFonts.sans(12, .regular))
+                                    .foregroundStyle(RinklerColors.signalTextDim)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            Spacer(minLength: RinklerSpacing.sm)
+                            Image(systemName: "chevron.right").foregroundStyle(RinklerColors.signalTextFaint)
                         }
-                        Spacer(minLength: RinklerSpacing.sm)
-                        Toggle("", isOn: $blockAdsTrackers).labelsHidden().tint(RinklerColors.signalBlue)
-                            .disabled(strictMode.isActive)
+                        .padding(RinklerSpacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .signalCard(cornerRadius: 18)
                     }
-                    .padding(RinklerSpacing.md)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .signalCard(cornerRadius: 18)
+                    .buttonStyle(.plain)
 
-                    appCard("Instagram",
-                            allowed: ["DMs", "Camera", "Posting", "Search"],
-                            blockedFeature: "Reels & Explore video",
-                            extraBlocked: ["Explore", "Suggested posts"],
-                            isOn: $blockInstagram)
+                    HStack(alignment: .firstTextBaseline) {
+                        SectionHeader(title: "Block feeds", subtitle: "Keeps DMs, search & profiles where it can.")
+                        Spacer()
+                        StatusPill(text: "BETA", tone: RinklerColors.signalBlue)
+                    }
+                    .padding(.top, RinklerSpacing.sm)
 
-                    appCard("TikTok",
-                            allowed: ["Messages", "Profile", "Following"],
-                            blockedFeature: "For You feed",
-                            extraBlocked: [],
-                            isOn: $blockTikTok)
+                    ForEach(BlockCatalog.apps) { app in appCard(app) }
 
-                    // YouTube shares hosts between Shorts and normal playback at the
-                    // tunnel layer, so it is shown but not yet a live toggle.
-                    appCardStatic("YouTube",
-                                  allowed: ["Search", "Subscriptions", "Playlists"],
-                                  blocked: ["Shorts", "Home feed", "Recommended"])
-
-                    Text("Rinkler kills the heavy video feeds right on your phone. A few apps mix their feed in with the stuff you actually use, so those are previews for now while we tighten them up.")
+                    Text("Feed blocking runs on your phone — nothing leaves your device. Some apps blend the feed in with the useful stuff, so a few may block a bit more than just the feed; when that happens, lock the whole app instead. Precise per-feed blocking lands with iOS 26.")
                         .font(RinklerFonts.sans(12, .regular))
                         .foregroundStyle(RinklerColors.signalTextDim)
-                        .padding(.top, RinklerSpacing.sm)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.top, RinklerSpacing.xs)
                 }
                 .padding(RinklerSpacing.lg)
+                .padding(.bottom, 40)
             }
         }
         .preferredColorScheme(nil)
     }
 
-    private func appCard(_ name: String, allowed: [String], blockedFeature: String,
-                         extraBlocked: [String], isOn: Binding<Bool>) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text(name)
-                    .font(RinklerFonts.sans(19, .semibold))
+    private var adsCard: some View {
+        HStack(spacing: RinklerSpacing.md) {
+            Image(systemName: "hand.raised.slash.fill")
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(RinklerColors.signalBlue)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Ads & trackers")
+                    .font(RinklerFonts.sans(17, .semibold))
                     .foregroundStyle(RinklerColors.signalText)
-                Spacer()
-                Toggle("", isOn: isOn).labelsHidden().tint(RinklerColors.signalBlue)
-                    .disabled(strictMode.isActive)
-            }
-            chipRow("Allowed", allowed, color: RinklerColors.signalSuccess)
-            chipRow("Blocked", [blockedFeature] + extraBlocked, color: RinklerColors.signalWarning)
-        }
-        .padding(RinklerSpacing.md)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .signalCard(cornerRadius: 18)
-    }
-
-    private func appCardStatic(_ name: String, allowed: [String], blocked: [String]) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text(name)
-                    .font(RinklerFonts.sans(19, .semibold))
-                    .foregroundStyle(RinklerColors.signalText)
-                Spacer()
-                Text("Preview")
-                    .font(RinklerFonts.sans(11, .medium))
+                Text("Blocked across every app while protection's on.")
+                    .font(RinklerFonts.sans(12, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
-                    .padding(.horizontal, 8).padding(.vertical, 3)
-                    .background(RinklerColors.signalCardRaised)
-                    .clipShape(Capsule())
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            chipRow("Allowed", allowed, color: RinklerColors.signalSuccess)
-            chipRow("Blocked", blocked, color: RinklerColors.signalWarning)
+            Spacer(minLength: RinklerSpacing.sm)
+            Toggle("", isOn: $blockAdsTrackers).labelsHidden().tint(RinklerColors.signalBlue)
+                .disabled(strictMode.isActive)
         }
         .padding(RinklerSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
         .signalCard(cornerRadius: 18)
     }
 
-    private func chipRow(_ label: String, _ items: [String], color: Color) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(label)
-                .font(RinklerFonts.sans(11, .semibold))
-                .foregroundStyle(color.opacity(0.9))
-            FlowChipsPublic(items: items, color: color)
+    private func appCard(_ app: BlockApp) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 10) {
+                Image(systemName: app.symbol)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(RinklerColors.signalText)
+                    .frame(width: 24)
+                Text(app.name)
+                    .font(RinklerFonts.sans(18, .semibold))
+                    .foregroundStyle(RinklerColors.signalText)
+                Spacer()
+                if app.mostlyFeed {
+                    StatusPill(text: "MOSTLY FEED", tone: RinklerColors.signalWarning)
+                }
+            }
+            ForEach(app.features) { feature in
+                Divider().overlay(RinklerColors.signalBorder)
+                HStack(spacing: RinklerSpacing.md) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(feature.name)
+                            .font(RinklerFonts.sans(15, .medium))
+                            .foregroundStyle(RinklerColors.signalText)
+                        Text(feature.blurb)
+                            .font(RinklerFonts.sans(12, .regular))
+                            .foregroundStyle(RinklerColors.signalTextDim)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    Spacer(minLength: RinklerSpacing.sm)
+                    Toggle("", isOn: Binding(
+                        get: { selection.isOn(app.id, feature.id) },
+                        set: { _ in selection.toggle(app.id, feature.id) }
+                    ))
+                    .labelsHidden().tint(RinklerColors.signalBlue)
+                    .disabled(strictMode.isActive)
+                }
+            }
         }
+        .padding(RinklerSpacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .signalCard(cornerRadius: 18)
     }
 }
 
