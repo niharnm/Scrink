@@ -69,7 +69,7 @@ struct ControlScreen: View {
                     changesCard
                     quickLinks
                     startButton
-                    Text("Start it and these blocks kick in right on your phone — nothing leaves your device.")
+                    Text("Hit start and the blocks kick in right on your phone. Nothing leaves your device.")
                         .font(RinklerFonts.sans(12, .regular))
                         .foregroundStyle(RinklerColors.signalTextDim)
                         .multilineTextAlignment(.center)
@@ -91,7 +91,7 @@ struct ControlScreen: View {
                 .font(RinklerFonts.sans(13, .semibold))
                 .tracking(2)
                 .foregroundStyle(RinklerColors.signalTextDim)
-            Text("Set up a focus session")
+            Text("Build a focus session")
                 .font(RinklerFonts.sans(25, .bold))
                 .foregroundStyle(RinklerColors.signalText)
         }
@@ -171,8 +171,8 @@ struct ControlScreen: View {
 
     private var quickLinks: some View {
         HStack(spacing: 12) {
-            linkTile("Strict Mode", "Lock it for a window", icon: "lock.shield.fill", route: .strictModeSetup)
-            linkTile("Adjust limits", "Apps & thresholds", icon: "slider.horizontal.3", route: .settings)
+            linkTile("Strict Mode", "Lock it and mean it", icon: "lock.shield.fill", route: .strictModeSetup)
+            linkTile("Adjust limits", "Apps & cutoffs", icon: "slider.horizontal.3", route: .settings)
         }
     }
 
@@ -255,7 +255,7 @@ struct AppsScreen: View {
             SignalBackground()
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: RinklerSpacing.md) {
-                    SectionHeader(title: "Apps", subtitle: "Kill the addictive feeds. Keep the useful parts.")
+                    SectionHeader(title: "Apps", subtitle: "Kill the doomscroll, keep the useful bits.")
 
                     adsCard
 
@@ -268,7 +268,7 @@ struct AppsScreen: View {
                                 Text("Lock whole apps")
                                     .font(RinklerFonts.sans(16, .semibold))
                                     .foregroundStyle(RinklerColors.signalText)
-                                Text("The hard block that actually holds — pick any apps in Strict Mode.")
+                                Text("The hard block that actually holds. Pick any apps in Strict Mode.")
                                     .font(RinklerFonts.sans(12, .regular))
                                     .foregroundStyle(RinklerColors.signalTextDim)
                                     .fixedSize(horizontal: false, vertical: true)
@@ -313,7 +313,7 @@ struct AppsScreen: View {
                 Text("Ads & trackers")
                     .font(RinklerFonts.sans(17, .semibold))
                     .foregroundStyle(RinklerColors.signalText)
-                Text("Blocked across every app while protection's on.")
+                Text("Gone across every app while protection's on.")
                     .font(RinklerFonts.sans(12, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
                     .fixedSize(horizontal: false, vertical: true)
@@ -414,7 +414,7 @@ struct RuleEditorView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
                         group("NAME") {
-                            TextField("Rule name", text: $draft.name)
+                            TextField("Name this rule", text: $draft.name)
                                 .font(RinklerFonts.sans(17, .medium))
                                 .foregroundStyle(RinklerColors.signalText)
                                 .padding(12)
@@ -424,7 +424,7 @@ struct RuleEditorView: View {
                         }
 
                         Toggle(isOn: $draft.enabled) {
-                            Text("Rule enabled")
+                            Text("Rule's on")
                                 .font(RinklerFonts.sans(15, .medium))
                                 .foregroundStyle(RinklerColors.signalText)
                         }
@@ -554,7 +554,7 @@ struct ProgressScreen: View {
             SignalBackground()
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
-                    SectionHeader(title: "Scroll report", subtitle: "What you've held off lately")
+                    SectionHeader(title: "Scroll report", subtitle: "What you've dodged lately")
 
                     RinklerStatRow(stats: [
                         ("Pulls dodged", "\(noiseBlocked)", RinklerColors.signalBlue),
@@ -567,14 +567,14 @@ struct ProgressScreen: View {
 
                     if !weekPoints.allSatisfy({ $0.value == 0 }) {
                         VStack(alignment: .leading, spacing: RinklerSpacing.sm) {
-                            SectionHeader(title: "This week", subtitle: "Focused minutes per day")
+                            SectionHeader(title: "This week", subtitle: "Focused minutes, day by day")
                             SignalChart(points: weekPoints)
                         }
                         .padding(RinklerSpacing.md)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .signalCard(cornerRadius: 20)
                     } else {
-                        Text("Nothing here yet. Start a session and your blocked scrolls + time saved show up here.")
+                        Text("Empty for now. Start a session and your dodged scrolls + time saved land here.")
                             .font(RinklerFonts.sans(14, .regular))
                             .foregroundStyle(RinklerColors.signalTextDim)
                             .fixedSize(horizontal: false, vertical: true)
@@ -618,7 +618,7 @@ struct ProgressScreen: View {
 
     private let levels: [RingLevel] = [
         RingLevel(title: "First Signal", requirement: "Bank your first clean minutes"),
-        RingLevel(title: "Double Ring", requirement: "Block 10 scroll pulls"),
+        RingLevel(title: "Double Ring", requirement: "Dodge 10 scroll pulls"),
         RingLevel(title: "Pulse", requirement: "Hold a 3-day streak"),
         RingLevel(title: "Orbit", requirement: "Save 5 hours in a week"),
         RingLevel(title: "Halo", requirement: "Finish a Locked session"),

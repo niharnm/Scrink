@@ -103,9 +103,9 @@ enum Difficulty: String, Codable, CaseIterable, Identifiable {
     }
     var blurb: String {
         switch self {
-        case .soft: return "Remind me first — I can still get through."
-        case .normal: return "Block it, with short breaks if I really need them."
-        case .locked: return "No excuses during a session."
+        case .soft: return "Nudge me first. I can still get through if I mean it."
+        case .normal: return "Block it. Short breaks if I really need them."
+        case .locked: return "No way out mid-session. Don't even ask."
         }
     }
 }
@@ -530,11 +530,11 @@ struct OnboardingFlow: View {
             .padding(.vertical, RinklerSpacing.lg)
         }
         .preferredColorScheme(nil)
-        .alert("Skip personalization?", isPresented: $showSkipWarning) {
-            Button("Keep going", role: .cancel) {}
+        .alert("Skip the questions?", isPresented: $showSkipWarning) {
+            Button("Nah, keep going", role: .cancel) {}
             Button("Skip") { focusSystem.skipToReveal() }
         } message: {
-            Text("We'll set up safe defaults, but the system won't be tuned to you. You can always edit rules later.")
+            Text("You'll get safe defaults, just not tuned to you. You can mess with the rules later anyway.")
         }
         .onChange(of: focusSystem.chapter) { _, newValue in
             // One-time, right after the presets reveal: offer to clear them.
@@ -557,11 +557,11 @@ struct OnboardingFlow: View {
                 .onTapGesture { withAnimation { showPresetPopup = false } }
 
             VStack(spacing: RinklerSpacing.md) {
-                Text("Built from your answers")
+                Text("Made from your answers")
                     .font(RinklerFonts.sans(19, .bold))
                     .foregroundStyle(RinklerColors.signalText)
                     .multilineTextAlignment(.center)
-                Text("Not feeling these? Clear them and build your own from scratch — totally up to you.")
+                Text("Not feeling these? Wipe them and build your own. Your call.")
                     .font(RinklerFonts.sans(14, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
                     .multilineTextAlignment(.center)
@@ -569,7 +569,7 @@ struct OnboardingFlow: View {
 
                 VStack(spacing: 10) {
                     Button { withAnimation { showPresetPopup = false } } label: {
-                        Text("Use these")
+                        Text("These are good")
                             .font(RinklerFonts.sans(16, .semibold))
                             .foregroundStyle(RinklerColors.signalOnInk)
                             .frame(maxWidth: .infinity)
@@ -583,7 +583,7 @@ struct OnboardingFlow: View {
                         focusSystem.clearRules()
                         withAnimation { showPresetPopup = false }
                     } label: {
-                        Text("Clear & pick my own")
+                        Text("Nah, I'll build my own")
                             .font(RinklerFonts.sans(15, .medium))
                             .foregroundStyle(RinklerColors.signalTextDim)
                             .frame(maxWidth: .infinity)
@@ -621,7 +621,7 @@ struct OnboardingFlow: View {
             SignalRing(progress: focusSystem.progress, lineWidth: 4)
                 .frame(width: 34, height: 34)
 
-            Text("Chapter \(focusSystem.chapter + 1) of \(FocusSystemStore.chapterCount)")
+            Text("Step \(focusSystem.chapter + 1) of \(FocusSystemStore.chapterCount)")
                 .font(RinklerFonts.sans(13, .medium))
                 .foregroundStyle(RinklerColors.signalTextDim)
 
@@ -659,11 +659,11 @@ struct OnboardingFlow: View {
     private var hookChapter: some View {
         VStack(alignment: .leading, spacing: RinklerSpacing.md) {
             Spacer(minLength: RinklerSpacing.lg)
-            Text("Your phone isn't the problem.\nThe infinite scroll is.")
+            Text("Your phone's fine.\nThe infinite scroll isn't.")
                 .font(RinklerFonts.sans(34, .bold))
                 .foregroundStyle(RinklerColors.signalText)
                 .fixedSize(horizontal: false, vertical: true)
-            Text("Takes a minute. We'll figure out what's eating your time, then set things up so the endless feeds are gone but the stuff you actually use — DMs, search, all that — still works.")
+            Text("This takes a minute. We'll find what's eating your time, then kill the endless feeds while leaving the stuff you actually use — DMs, search, all that — alone.")
                 .font(RinklerFonts.sans(16, .regular))
                 .foregroundStyle(RinklerColors.signalTextDim)
                 .fixedSize(horizontal: false, vertical: true)
@@ -685,7 +685,7 @@ struct OnboardingFlow: View {
 
     private var trapsChapter: some View {
         chapterScaffold(title: "What sucks you in the most?",
-                        subtitle: "Pick whatever's true — these are the parts we'll cut.") {
+                        subtitle: "Pick whatever's true. These are the parts we kill.") {
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(Trap.allCases) { trap in
                     SelectChip(label: trap.title, selected: focusSystem.traps.contains(trap)) {
@@ -698,7 +698,7 @@ struct OnboardingFlow: View {
 
     private var keepChapter: some View {
         chapterScaffold(title: "What do you want to keep?",
-                        subtitle: "We're not nuking your apps — just the time-sink parts. The rest stays.") {
+                        subtitle: "We're not nuking your apps, just the time-sink parts. The rest stays.") {
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(KeepItem.allCases) { item in
                     SelectChip(label: item.title, selected: focusSystem.keeps.contains(item)) {
@@ -724,7 +724,7 @@ struct OnboardingFlow: View {
 
     private var dangerChapter: some View {
         chapterScaffold(title: "When do you usually fall in?",
-                        subtitle: "We'll lock things down automatically during these times.") {
+                        subtitle: "We'll lock these times down on their own, no thinking required.") {
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(DangerTime.allCases) { time in
                     SelectChip(label: time.title, selected: focusSystem.dangerTimes.contains(time)) {
@@ -737,7 +737,7 @@ struct OnboardingFlow: View {
 
     private var difficultyChapter: some View {
         chapterScaffold(title: "How hard should we go?",
-                        subtitle: "You can change this anytime.") {
+                        subtitle: "Change it whenever. No big deal.") {
             VStack(spacing: 12) {
                 ForEach(Difficulty.allCases) { level in
                     Button { focusSystem.difficulty = level } label: {
@@ -783,7 +783,7 @@ struct OnboardingFlow: View {
                 .frame(width: 150, height: 150)
                 .padding(.vertical, RinklerSpacing.md)
 
-                Text("Tap below, then hit Allow when iOS asks. That's the thing that lets Rinkler actually block stuff.")
+                Text("Tap below, then hit Allow when iOS asks. That's the part that lets Rinkler actually block stuff.")
                     .font(RinklerFonts.sans(14, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
                     .multilineTextAlignment(.center)
@@ -792,7 +792,7 @@ struct OnboardingFlow: View {
     }
 
     private var revealChapter: some View {
-        chapterScaffold(title: "Done — here's your setup.",
+        chapterScaffold(title: "Done. Here's your setup.",
                         subtitle: rulesSummaryLine) {
             VStack(spacing: RinklerSpacing.lg) {
                 SignalRing(progress: Double(focusSystem.signalScore) / 100.0, lineWidth: 12) {
@@ -832,10 +832,10 @@ struct OnboardingFlow: View {
             }
             .frame(width: 150, height: 150)
 
-            Text("Nice — first ring earned")
+            Text("Nice. First ring earned.")
                 .font(RinklerFonts.sans(22, .semibold))
                 .foregroundStyle(RinklerColors.signalText)
-            Text("Setup Complete. Start with 10 minutes and win your first ring.")
+            Text("You're set up. Do 10 minutes and grab your first ring.")
                 .font(RinklerFonts.sans(15, .regular))
                 .foregroundStyle(RinklerColors.signalTextDim)
                 .multilineTextAlignment(.center)
@@ -859,7 +859,7 @@ struct OnboardingFlow: View {
                 .padding(.vertical, RinklerSpacing.md)
 
                 Button { focusSystem.next() } label: {
-                    Text("Not now")
+                    Text("Maybe later")
                         .font(RinklerFonts.sans(15, .medium))
                         .foregroundStyle(RinklerColors.signalTextDim)
                         .frame(maxWidth: .infinity)
@@ -884,7 +884,7 @@ struct OnboardingFlow: View {
                     .font(RinklerFonts.sans(28, .bold))
                     .foregroundStyle(RinklerColors.signalText)
                     .fixedSize(horizontal: false, vertical: true)
-                Text("Create an account so your rules, streak, and Signal Score follow you across devices — and so a weak moment can't wipe them.")
+                Text("Make an account so your rules, streak, and Signal Score follow you across devices — and so a weak moment can't wipe them.")
                     .font(RinklerFonts.sans(15, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
                     .fixedSize(horizontal: false, vertical: true)
@@ -1103,9 +1103,9 @@ struct OnboardingFlow: View {
         let cuts = (focusSystem.traps.isEmpty ? ["Reels", "TikTok FYP"] : focusSystem.traps.prefix(3).map(\.title))
         let n = focusSystem.rules.count
         if n == 0 {
-            return "Cleared. Add your own rules whenever you're ready."
+            return "All clear. Add your own rules whenever."
         }
-        return "Keeping \(keeps.joined(separator: ", ")) — cutting \(cuts.joined(separator: ", ")). We turned that into \(n) rule\(n == 1 ? "" : "s")."
+        return "Keeping \(keeps.joined(separator: ", ")) — cutting \(cuts.joined(separator: ", ")). That became \(n) rule\(n == 1 ? "" : "s")."
     }
 
     // MARK: Selection helpers
@@ -1187,7 +1187,7 @@ struct TodayDashboard: View {
                     .font(RinklerFonts.sans(20, .bold))
                     .foregroundStyle(RinklerColors.signalText)
                 Text(sessions.streak > 0
-                     ? "Keep it alive — start a session and the ring sharpens."
+                     ? "Keep it alive. Start a session and the ring sharpens."
                      : "Start a session and your signal starts to build.")
                     .font(RinklerFonts.sans(13, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
@@ -1243,7 +1243,7 @@ struct TodayDashboard: View {
                     Text(nextRule != nil ? "Next window" : "Suggested")
                         .font(RinklerFonts.sans(12, .medium))
                         .foregroundStyle(RinklerColors.signalTextDim)
-                    Text(nextRule?.name ?? "Start a quick 10-minute session")
+                    Text(nextRule?.name ?? "Quick 10-minute session")
                         .font(RinklerFonts.sans(18, .semibold))
                         .foregroundStyle(RinklerColors.signalText)
                     if let rule = nextRule {

@@ -118,10 +118,10 @@ struct CommitmentUnlockSheet: View {
                 .frame(width: 148, height: 148)
 
                 VStack(spacing: 10) {
-                    Text("Sit with the urge.")
+                    Text("Sit with it.")
                         .font(RinklerFonts.sans(28, .bold))
                         .foregroundStyle(RinklerColors.signalText)
-                    Text("You armed protection on purpose. Give it a moment before you turn it off — the urge usually passes.")
+                    Text("You turned this on for a reason. Give it a minute before you kill it — the itch usually fades.")
                         .font(RinklerFonts.sans(15, .regular))
                         .foregroundStyle(RinklerColors.signalTextDim)
                         .multilineTextAlignment(.center)
@@ -145,7 +145,7 @@ struct CommitmentUnlockSheet: View {
                     .padding(.horizontal, RinklerSpacing.lg)
                 } else {
                     VStack(spacing: RinklerSpacing.sm) {
-                        Text("Type \(CommitmentStore.unlockWord) to confirm")
+                        Text("Type \(CommitmentStore.unlockWord) if you really mean it")
                             .font(RinklerFonts.sans(12, .medium))
                             .foregroundStyle(RinklerColors.signalTextDim)
                         TextField("", text: $typed)
@@ -164,7 +164,7 @@ struct CommitmentUnlockSheet: View {
 
                 // The healthy choice is the prominent one.
                 Button(action: onCancel) {
-                    Text("Stay protected")
+                    Text("Keep it on")
                         .font(RinklerFonts.sans(18, .semibold))
                         .foregroundStyle(RinklerColors.signalOnInk)
                         .frame(maxWidth: .infinity)
@@ -177,7 +177,7 @@ struct CommitmentUnlockSheet: View {
 
                 // Turning off is the quiet, high-friction action.
                 Button(action: onConfirm) {
-                    Text("Turn off anyway")
+                    Text("Turn it off anyway")
                         .font(RinklerFonts.sans(15, .medium))
                         .foregroundStyle(canDisable ? RinklerColors.signalWarning : RinklerColors.signalTextDim.opacity(0.55))
                 }

@@ -45,10 +45,10 @@ struct BlockScreen: View {
                     .animation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true), value: fade)
 
                 VStack(spacing: 10) {
-                    Text("\(surface) is quiet.")
+                    Text("\(surface) is quiet now.")
                         .font(RinklerFonts.sans(30, .bold))
                         .foregroundStyle(RinklerColors.signalText)
-                    Text("Rinkler cut the \(appName) feed. Your DMs and search still work — there's just nothing here to pull you under.")
+                    Text("Rinkler cut the \(appName) feed. DMs and search still work — there's just nothing left here to suck you in.")
                         .font(RinklerFonts.sans(15, .regular))
                         .foregroundStyle(RinklerColors.signalTextDim)
                         .multilineTextAlignment(.center)
@@ -57,13 +57,11 @@ struct BlockScreen: View {
                 }
 
                 // The win — blocking is a score, not a punishment.
-                HStack(spacing: 0) {
-                    stat("\(pullsDodged)", "pulls dodged")
-                    statDivider
-                    stat(timeLabel, "time back")
-                    statDivider
-                    stat("\(streakDays)d", "streak")
-                }
+                RinklerStatRow(stats: [
+                    ("Pulls dodged", "\(pullsDodged)", RinklerColors.signalBlue),
+                    ("Time back", timeLabel, nil),
+                    ("Streak", "\(streakDays)d", nil),
+                ])
                 .padding(.vertical, RinklerSpacing.md)
                 .frame(maxWidth: .infinity)
                 .signalCard(cornerRadius: 18)
@@ -73,7 +71,7 @@ struct BlockScreen: View {
 
                 if let onDone {
                     Button(action: onDone) {
-                        Text("Nice — I'm good")
+                        Text("Good. I'm out")
                             .font(RinklerFonts.sans(17, .semibold))
                             .foregroundStyle(RinklerColors.signalOnInk)
                             .frame(maxWidth: .infinity)
@@ -108,23 +106,6 @@ struct BlockScreen: View {
         return "\(minutesReclaimed)m"
     }
 
-    private func stat(_ value: String, _ label: String) -> some View {
-        VStack(spacing: 3) {
-            Text(value)
-                .font(RinklerFonts.mono(22, .medium))
-                .foregroundStyle(RinklerColors.signalText)
-            Text(label)
-                .font(RinklerFonts.sans(11, .medium))
-                .foregroundStyle(RinklerColors.signalTextDim)
-        }
-        .frame(maxWidth: .infinity)
-    }
-
-    private var statDivider: some View {
-        Rectangle()
-            .fill(RinklerColors.signalBorder)
-            .frame(width: 1, height: 28)
-    }
 }
 
 /// A heart-monitor-style line that beats once, then goes flat — "signal's gone."

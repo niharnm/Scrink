@@ -167,10 +167,10 @@ struct SettingsScreen: View {
                             .font(.system(size: 18, weight: .semibold))
                             .foregroundStyle(RinklerColors.signalBlue)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Arm Strict Mode")
+                            Text("Lock it down")
                                 .font(RinklerFonts.sans(16, .semibold))
                                 .foregroundStyle(RinklerColors.signalText)
-                            Text("Lock your limits for a set window. No in-app off switch.")
+                            Text("Lock your limits for a set stretch. No backing out from here.")
                                 .font(RinklerFonts.sans(12, .regular))
                                 .foregroundStyle(RinklerColors.signalTextDim)
                                 .fixedSize(horizontal: false, vertical: true)
@@ -201,7 +201,7 @@ struct SettingsScreen: View {
                         .font(.system(size: 18, weight: .semibold))
                         .foregroundStyle(RinklerColors.signalBlue)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Health-aware tightening")
+                        Text("Let it read the room")
                             .font(RinklerFonts.sans(16, .semibold))
                             .foregroundStyle(RinklerColors.signalText)
                         Text("When stress is up or you've barely moved, Rinkler tightens limits on its own. A read on your trends — not a medical reading. Stays on your phone.")
@@ -217,12 +217,12 @@ struct SettingsScreen: View {
 
                 if health.isAvailable && !health.isAuthorized {
                     Button { Task { await connectHealth() } } label: {
-                        Text("Connect Apple Health")
+                        Text("Hook up Apple Health")
                             .font(RinklerFonts.sans(14, .semibold))
                             .foregroundStyle(RinklerColors.signalBlue)
                     }
                 } else if !health.isAvailable {
-                    Text("Health data isn't available on this device.")
+                    Text("No health data on this phone, sorry.")
                         .font(RinklerFonts.sans(12, .regular))
                         .foregroundStyle(RinklerColors.signalTextFaint)
                 }
@@ -348,7 +348,7 @@ struct SettingsScreen: View {
                 Task { await authStore.logout(); onLogout?() }
             }
         } message: {
-            Text("Your rules and history stay on this device. You can sign back in anytime.")
+            Text("Your rules and history stick around on this phone. Sign back in whenever.")
         }
     }
 
@@ -499,7 +499,7 @@ struct SettingsScreen: View {
                 .foregroundStyle(RinklerColors.signalText)
 
             if focusSystem.rules.isEmpty {
-                Text("No rules yet. Redo setup and we'll build them from your answers.")
+                Text("Nothing here yet. Run setup again and we'll build rules from your answers.")
                     .font(RinklerFonts.coolvetica(size: 13))
                     .foregroundStyle(RinklerColors.signalTextDim)
             } else {
@@ -542,7 +542,7 @@ struct SettingsScreen: View {
                 dismiss()
             }
         } message: {
-            Text("Story-mode setup will show again next launch and your generated rules will be cleared.")
+            Text("Story-mode setup comes back next launch and your generated rules get wiped.")
         }
     }
 
@@ -555,7 +555,7 @@ struct SettingsScreen: View {
                     Text("Commitment mode")
                         .font(RinklerFonts.coolvetica(size: 18))
                         .foregroundStyle(RinklerColors.signalText)
-                    Text("Make turning protection OFF the hard part.")
+                    Text("Turning protection off is the hard part now.")
                         .font(RinklerFonts.coolvetica(size: 13))
                         .foregroundStyle(RinklerColors.signalTextDim)
                 }
@@ -568,7 +568,7 @@ struct SettingsScreen: View {
             if commitment.isEnabled {
                 Divider().overlay(RinklerColors.signalBorder)
 
-                Text("Cooldown before you can disable")
+                Text("How long you wait before you can bail")
                     .font(RinklerFonts.coolvetica(size: 14))
                     .foregroundStyle(RinklerColors.signalTextDim)
 
@@ -586,7 +586,7 @@ struct SettingsScreen: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 if commitment.disablesToday > 0 {
-                    Text("Disabled \(commitment.disablesToday)× today")
+                    Text("Bailed \(commitment.disablesToday)× today")
                         .font(RinklerFonts.coolvetica(size: 12))
                         .foregroundStyle(RinklerColors.signalWarning)
                 }
@@ -606,7 +606,7 @@ struct SettingsScreen: View {
                 .font(RinklerFonts.coolvetica(size: 18))
                 .foregroundStyle(RinklerColors.signalText)
 
-            filterToggleRow(title: "Instagram video feed", isOn: $blockInstagramShortVideo)
+            filterToggleRow(title: "Instagram Reels", isOn: $blockInstagramShortVideo)
             filterToggleRow(title: "TikTok feed", isOn: $blockTikTokShortVideo)
         }
         .padding(RinklerSpacing.md)

@@ -33,7 +33,7 @@ struct LandingPage: View {
                 }
                 .fixedSize(horizontal: false, vertical: true)
 
-                Text("Keep Instagram DMs. Kill Reels. Keep YouTube Search. Kill Shorts. Keep your phone — remove the trap.")
+                Text("Keep IG DMs. Kill Reels. Keep YouTube search. Kill Shorts. Keep your phone, ditch the trap.")
                     .font(RinklerFonts.sans(15, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
                     .fixedSize(horizontal: false, vertical: true)
@@ -43,7 +43,7 @@ struct LandingPage: View {
 
                 Button(action: onGo) {
                     HStack {
-                        Text("Build your focus system")
+                        Text("Set it up")
                             .font(RinklerFonts.sans(18, .semibold))
                         Spacer()
                         Image(systemName: "arrow.right")

@@ -57,7 +57,7 @@ struct StrictModeSetupScreen: View {
                                     .foregroundStyle(RinklerColors.signalText)
                             }
                             .tint(RinklerColors.signalBlue)
-                            Text("Blocks deleting every app on your phone — including Rinkler — until the window ends. Turns on once Screen Time access is granted.")
+                            Text("Stops you deleting any app on your phone — Rinkler included — until the window's up. Kicks in once you grant Screen Time access.")
                                 .font(RinklerFonts.sans(12, .regular))
                                 .foregroundStyle(RinklerColors.signalTextDim)
                                 .fixedSize(horizontal: false, vertical: true)
@@ -83,7 +83,7 @@ struct StrictModeSetupScreen: View {
                     }
 
                     Button(action: arm) {
-                        Text("Arm Strict Mode")
+                        Text("Arm it")
                             .font(RinklerFonts.sans(18, .semibold))
                             .foregroundStyle(RinklerColors.signalOnInk)
                             .frame(maxWidth: .infinity).frame(height: 56)
@@ -110,10 +110,10 @@ struct StrictModeSetupScreen: View {
             Text("STRICT MODE")
                 .font(RinklerFonts.sans(13, .semibold))
                 .foregroundStyle(RinklerColors.signalTextDim)
-            Text("Lock it and mean it")
+            Text("Lock it and actually mean it")
                 .font(RinklerFonts.sans(28, .bold))
                 .foregroundStyle(RinklerColors.signalText)
-            Text("Once armed, you can't lower or turn off your limits from inside Rinkler until the window ends. No cooldown, no unlock word — it just holds.")
+            Text("Once it's armed, there's no lowering or killing your limits from inside Rinkler till the window ends. No cooldown, no magic word — it just holds.")
                 .font(RinklerFonts.sans(15, .regular))
                 .foregroundStyle(RinklerColors.signalTextDim)
                 .fixedSize(horizontal: false, vertical: true)
@@ -127,7 +127,7 @@ struct StrictModeSetupScreen: View {
                 #if canImport(FamilyControls)
                 Button { showPicker = true } label: {
                     HStack {
-                        Text(selection.applicationTokens.isEmpty ? "Choose apps to block" : "\(selection.applicationTokens.count) app(s) selected")
+                        Text(selection.applicationTokens.isEmpty ? "Pick apps to block" : "\(selection.applicationTokens.count) app(s) selected")
                             .font(RinklerFonts.sans(15, .medium))
                             .foregroundStyle(RinklerColors.signalText)
                         Spacer()
