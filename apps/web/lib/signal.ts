@@ -17,6 +17,6 @@ export const signal = {
   warning: "#FFB454",
   glow: "linear-gradient(135deg, #5B7CFF 0%, #8B5CF6 100%)",
   sans:
-    "'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-  mono: "'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
+    "var(--font-geist), system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+  mono: "var(--font-geist-mono), ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
 } as const;

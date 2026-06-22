@@ -9,55 +9,49 @@ interface BandwidthCardProps {
   totalBytesOut: number;
 }
 
-export default function BandwidthCard({
-  totalBytesIn,
-  totalBytesOut,
-}: BandwidthCardProps) {
+export default function BandwidthCard({ totalBytesIn, totalBytesOut }: BandwidthCardProps) {
   const cardStyle: CSSProperties = {
-    background: theme.colors.white15,
-    borderRadius: 20,
-    padding: `${theme.spacing.lg}px ${theme.spacing.xl}px`,
-    border: `1px solid ${theme.colors.white30}`,
-    minWidth: 180,
+    background: "linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018))",
+    borderRadius: 18,
+    padding: "18px 20px",
+    border: "1px solid rgba(255,255,255,0.08)",
+    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 24px rgba(0,0,0,0.28)",
+    minWidth: 150,
     flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    gap: 12,
   };
 
   const labelStyle: CSSProperties = {
     fontFamily: theme.fonts.body,
-    fontSize: theme.fontSizes.optionLabel,
+    fontSize: 11,
+    fontWeight: 600,
     color: theme.colors.white60,
-    marginBottom: theme.spacing.sm,
     textTransform: "uppercase",
-    letterSpacing: 1,
+    letterSpacing: 1.2,
   };
 
-  const valueStyle: CSSProperties = {
-    fontFamily: theme.fonts.body,
-    fontSize: 28,
-    color: theme.colors.white,
-    lineHeight: 1.2,
-    fontWeight: 400,
-  };
-
-  const subStyle: CSSProperties = {
-    fontFamily: theme.fonts.body,
-    fontSize: theme.fontSizes.small,
-    color: theme.colors.white60,
-    marginTop: theme.spacing.xs,
-  };
+  const row: CSSProperties = { display: "flex", alignItems: "baseline", gap: 8 };
+  const arrow: CSSProperties = { fontFamily: theme.fonts.body, fontSize: 13, color: theme.colors.white60, width: 12 };
+  const value: CSSProperties = { fontFamily: theme.fonts.mono, fontSize: 18, color: theme.colors.white, letterSpacing: "-0.01em" };
+  const unit: CSSProperties = { fontFamily: theme.fonts.body, fontSize: 12, color: theme.colors.white60 };
 
   return (
-    <>
-      <div style={cardStyle}>
-        <div style={labelStyle}>Data In</div>
-        <div style={valueStyle}>{formatBytes(totalBytesIn)}</div>
-        <div style={subStyle}>downloaded</div>
+    <div style={cardStyle}>
+      <div style={labelStyle}>Bandwidth</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={row}>
+          <span style={arrow}>↓</span>
+          <span style={value}>{formatBytes(totalBytesIn)}</span>
+          <span style={unit}>in</span>
+        </div>
+        <div style={row}>
+          <span style={arrow}>↑</span>
+          <span style={value}>{formatBytes(totalBytesOut)}</span>
+          <span style={unit}>out</span>
+        </div>
       </div>
-      <div style={cardStyle}>
-        <div style={labelStyle}>Data Out</div>
-        <div style={valueStyle}>{formatBytes(totalBytesOut)}</div>
-        <div style={subStyle}>uploaded</div>
-      </div>
-    </>
+    </div>
   );
 }

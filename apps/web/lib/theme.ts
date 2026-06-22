@@ -24,9 +24,9 @@ export const theme = {
     stop4: "#08090B", // bottom
   },
   fonts: {
-    display: "'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    body: "'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    mono: "'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
+    display: "var(--font-geist), system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    body: "var(--font-geist), system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    mono: "var(--font-geist-mono), ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
   },
   fontSizes: {
     titleLarge: 64,

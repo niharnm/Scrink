@@ -1,4 +1,8 @@
 import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+
+const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "swap" });
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono", display: "swap" });
 
 export const metadata: Metadata = {
   title: "Rinkler — Scroll less, keep the useful parts",
@@ -12,32 +16,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${geist.variable} ${geistMono.variable}`}>
       <head>
         <style
           dangerouslySetInnerHTML={{
             __html: `
-              @font-face {
-                font-family: 'SK Pupok';
-                src: url('/fonts/SKPupokSolid.ttf') format('truetype');
-                font-weight: 400;
-                font-style: normal;
-                font-display: swap;
-              }
-              @font-face {
-                font-family: 'Coolvetica';
-                src: url('/fonts/CoolveticaRg.otf') format('opentype');
-                font-weight: 400;
-                font-style: normal;
-                font-display: swap;
-              }
-              @font-face {
-                font-family: 'Coolvetica';
-                src: url('/fonts/CoolveticaRgIt.otf') format('opentype');
-                font-weight: 400;
-                font-style: italic;
-                font-display: swap;
-              }
               *, *::before, *::after {
                 box-sizing: border-box;
                 margin: 0;
@@ -45,14 +28,18 @@ export default function RootLayout({
               }
               html, body {
                 width: 100%;
-                height: 100%;
+                min-height: 100%;
                 overflow-x: hidden;
               }
               body {
                 background: #08090B;
                 color: #F8FAFC;
-                font-family: 'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                font-family: var(--font-geist), system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                -webkit-font-smoothing: antialiased;
+                text-rendering: optimizeLegibility;
               }
+              ::selection { background: rgba(91,124,255,0.35); }
+              * { scrollbar-color: #2A2E36 transparent; }
             `,
           }}
         />
