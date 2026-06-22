@@ -27,7 +27,7 @@ struct RinklerApp: App {
         if let i = args.firstIndex(of: "-uiPreview"), i + 1 < args.count {
             let screen = args[i + 1]
             _previewScreen = State(initialValue: screen)
-            if screen != "commitment" {
+            if screen != "commitment" && screen != "block" {
                 UserDefaults(suiteName: RinklerConstants.appGroupID)?
                     .set(true, forKey: "hasCompletedOnboarding")
                 var p = NavigationPath()
@@ -43,6 +43,9 @@ struct RinklerApp: App {
             Group {
                 if previewScreen == "commitment" {
                     CommitmentUnlockSheet(cooldownSeconds: 8, onConfirm: {}, onCancel: {})
+                } else if previewScreen == "block" {
+                    BlockScreen(appName: "Instagram", surface: "Reels", pullsDodged: 47,
+                                minutesReclaimed: 72, streakDays: 5, onLetMeIn: {}, onDone: {})
                 } else if focusSystem.hasCompletedOnboarding {
                     NavigationStack(path: $path) {
                         LandingPage(onGo: {

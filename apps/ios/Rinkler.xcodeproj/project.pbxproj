@@ -11,6 +11,7 @@
 		A1F0C0DE0000000000000101 /* FocusSessionFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000201 /* FocusSessionFlow.swift */; };
 		A1F0C0DE0000000000000102 /* FocusSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000202 /* FocusSessionStore.swift */; };
 		A1F0C0DE0000000000000103 /* CommitmentMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000203 /* CommitmentMode.swift */; };
+		50C1A1AC0000000000000021 /* BlockScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000020 /* BlockScreen.swift */; };
 		A1F0C0DE0000000000000105 /* Onboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000205 /* Onboarding.swift */; };
 		A1F0C0DE0000000000000106 /* MainTabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE0000000000000206 /* MainTabs.swift */; };
 		102A00000000000000000001 /* RinklerTunnel.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 102A00000000000000000002 /* RinklerTunnel.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -146,6 +147,7 @@
 		A1F0C0DE0000000000000201 /* FocusSessionFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSessionFlow.swift; sourceTree = "<group>"; };
 		A1F0C0DE0000000000000202 /* FocusSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSessionStore.swift; sourceTree = "<group>"; };
 		A1F0C0DE0000000000000203 /* CommitmentMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitmentMode.swift; sourceTree = "<group>"; };
+		50C1A1AC0000000000000020 /* BlockScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockScreen.swift; sourceTree = "<group>"; };
 		A1F0C0DE0000000000000205 /* Onboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Onboarding.swift; sourceTree = "<group>"; };
 		A1F0C0DE0000000000000206 /* MainTabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabs.swift; sourceTree = "<group>"; };
 		4FCEA58022A4F0F927779C3E /* settings.local.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = settings.local.json; sourceTree = "<group>"; };
@@ -262,6 +264,7 @@
 				2ADB6187B6C76458B5AF5BB8 /* CodeVerificationScreen.swift */,
 				A1F0C0DE0000000000000201 /* FocusSessionFlow.swift */,
 				A1F0C0DE0000000000000203 /* CommitmentMode.swift */,
+				50C1A1AC0000000000000020 /* BlockScreen.swift */,
 				A1F0C0DE0000000000000205 /* Onboarding.swift */,
 				A1F0C0DE0000000000000206 /* MainTabs.swift */,
 				97236875B7F5FA2B9FE201A3 /* HomeScreen.swift */,
@@ -573,6 +576,7 @@
 				A1F0C0DE0000000000000101 /* FocusSessionFlow.swift in Sources */,
 				A1F0C0DE0000000000000102 /* FocusSessionStore.swift in Sources */,
 				A1F0C0DE0000000000000103 /* CommitmentMode.swift in Sources */,
+				50C1A1AC0000000000000021 /* BlockScreen.swift in Sources */,
 				A1F0C0DE0000000000000105 /* Onboarding.swift in Sources */,
 				A1F0C0DE0000000000000106 /* MainTabs.swift in Sources */,
 				4CBD13A9A63EB6FFDE23B67B /* SVGCache.swift in Sources */,
