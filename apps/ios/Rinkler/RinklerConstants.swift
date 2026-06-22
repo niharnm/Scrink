@@ -112,6 +112,9 @@ enum RinklerConstants {
     /// Flat host set (suffix-matched) the tunnel hard-blocks at CONNECT, resolved
     /// from the user's per-app feed selections (BlockCatalog / BlockSelectionStore).
     static let blockedHostsKey = "blockedHosts"
+    /// The user's enabled feed selections ("appId/featureId" set) — shared between
+    /// BlockSelectionStore and friend-control so both resolve the same way.
+    static let blockSelectionFeaturesKey = "blockSelection.features"
 
     // MARK: - Strict Mode (total lockdown) keys
     static let strictModeEnabledKey = "strictModeEnabled"

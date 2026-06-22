@@ -1,0 +1,188 @@
+import Foundation
+import Combine
+
+/// Owner side of friend remote control: generate a short-lived code + a window,
+/// then poll for the limits a friend sets and apply them locally (and restore the
+/// owner's own settings when the window ends or is revoked). "Strict Mode, but a
+/// friend holds the key." Requires the owner to be signed in.
+@MainActor
+final class FriendControlStore: ObservableObject {
+    struct Pairing: Codable, Identifiable {
+        let id: String
+        let code: String
+        let window_end: String
+        let friend_user_id: String?
+        let redeemed_at: String?
+        let revoked: Bool
+        var windowEnd: Date { FriendControlStore.parse(window_end) ?? .distantPast }
+        var redeemed: Bool { friend_user_id != nil && redeemed_at != nil }
+    }
+    private struct Limit: Codable { let app_id: String; let feature_id: String; let enabled: Bool }
+
+    @Published private(set) var pairing: Pairing?
+    @Published private(set) var appliedCount: Int = 0
+    @Published var busy = false
+    @Published var error: String?
+
+    private let defaults = UserDefaults(suiteName: RinklerConstants.appGroupID)
+    private let client = SupabaseAuthClient.shared
+    private let snapshotKey = "friendControl.ownerSnapshot"   // owner's own feed set
+    private var ticker: AnyCancellable?
+
+    private let decoder = JSONDecoder()
+
+    var isControlled: Bool {
+        guard let p = pairing, p.redeemed, !p.revoked else { return false }
+        return p.windowEnd > Date()
+    }
+    var hasPendingCode: Bool {
+        guard let p = pairing, !p.redeemed, !p.revoked else { return false }
+        return p.windowEnd > Date()
+    }
+    var windowRemainingLabel: String {
+        guard let end = pairing?.windowEnd else { return "" }
+        let s = max(0, Int(end.timeIntervalSinceNow)); let h = s/3600, m = (s%3600)/60
+        return h > 0 ? "\(h)h \(m)m left" : "\(m)m left"
+    }
+
+    var isSignedIn: Bool { client.loadSession() != nil }
+
+    // MARK: - Actions
+
+    func generateCode(windowHours: Int) async {
+        guard let uid = client.loadSession()?.userID else { error = "Sign in first."; return }
+        busy = true; defer { busy = false }
+        do {
+            let code = String(format: "%06d", Int.random(in: 0...999_999))
+            var (req, _) = try await client.authenticatedRESTRequest(path: "friend_pairings", method: "POST")
+            req.setValue("return=representation", forHTTPHeaderField: "Prefer")
+            let now = Date()
+            let body: [String: Any] = [
+                "owner_user_id": uid,
+                "code": code,
+                "code_expires_at": Self.iso(now.addingTimeInterval(900)),     // 15 min to redeem
+                "window_end": Self.iso(now.addingTimeInterval(Double(windowHours) * 3600)),
+            ]
+            req.httpBody = try JSONSerialization.data(withJSONObject: body)
+            let (data, resp) = try await URLSession.shared.data(for: req)
+            guard (resp as? HTTPURLResponse)?.statusCode == 201 else { throw Self.httpError(data) }
+            pairing = try decoder.decode([Pairing].self, from: data).first
+            error = nil
+            startTicker()
+        } catch { self.error = friendly(error) }
+    }
+
+    func refresh() async {
+        guard let uid = client.loadSession()?.userID else { return }
+        do {
+            let (req, _) = try await client.authenticatedRESTRequest(
+                path: "friend_pairings", method: "GET",
+                queryItems: [
+                    .init(name: "owner_user_id", value: "eq.\(uid)"),
+                    .init(name: "revoked", value: "eq.false"),
+                    .init(name: "order", value: "created_at.desc"),
+                    .init(name: "limit", value: "1"),
+                ])
+            let (data, resp) = try await URLSession.shared.data(for: req)
+            guard (resp as? HTTPURLResponse)?.statusCode == 200 else { return }
+            pairing = try decoder.decode([Pairing].self, from: data).first
+
+            if isControlled, let pid = pairing?.id {
+                await applyLimits(pairingID: pid, ownerID: uid)
+                startTicker()
+            } else {
+                restoreIfNeeded()
+            }
+        } catch { /* keep last state */ }
+    }
+
+    func revoke() async {
+        guard let p = pairing else { return }
+        busy = true; defer { busy = false }
+        do {
+            var (req, _) = try await client.authenticatedRESTRequest(
+                path: "friend_pairings", method: "PATCH",
+                queryItems: [.init(name: "id", value: "eq.\(p.id)")])
+            req.httpBody = try JSONSerialization.data(withJSONObject: ["revoked": true])
+            _ = try await URLSession.shared.data(for: req)
+            restoreIfNeeded()
+            pairing = nil
+            ticker?.cancel(); ticker = nil
+        } catch { self.error = friendly(error) }
+    }
+
+    /// Called on launch + foreground.
+    func tick() {
+        if isControlled { if ticker == nil { startTicker() } }
+        Task { await refresh() }
+    }
+
+    // MARK: - Apply / restore (writes the App Group knobs the tunnel reads)
+
+    private func applyLimits(pairingID: String, ownerID: String) async {
+        do {
+            let (req, _) = try await client.authenticatedRESTRequest(
+                path: "friend_set_limits", method: "GET",
+                queryItems: [
+                    .init(name: "owner_user_id", value: "eq.\(ownerID)"),
+                    .init(name: "pairing_id", value: "eq.\(pairingID)"),
+                    .init(name: "select", value: "app_id,feature_id,enabled"),
+                ])
+            let (data, resp) = try await URLSession.shared.data(for: req)
+            guard (resp as? HTTPURLResponse)?.statusCode == 200 else { return }
+            let limits = try decoder.decode([Limit].self, from: data)
+            let friendKeys = Set(limits.filter { $0.enabled }.map { "\($0.app_id)/\($0.feature_id)" })
+
+            // Snapshot the owner's own set once, when control begins.
+            if defaults?.object(forKey: snapshotKey) == nil {
+                defaults?.set(defaults?.stringArray(forKey: RinklerConstants.blockSelectionFeaturesKey) ?? [], forKey: snapshotKey)
+            }
+            let ownSet = Set(defaults?.stringArray(forKey: snapshotKey) ?? [])
+            let merged = ownSet.union(friendKeys)   // a friend can only ADD blocks
+            defaults?.set(Array(merged), forKey: RinklerConstants.blockSelectionFeaturesKey)
+            defaults?.set(BlockCatalog.hosts(forEnabled: merged), forKey: RinklerConstants.blockedHostsKey)
+            appliedCount = friendKeys.count
+        } catch { /* keep */ }
+    }
+
+    private func restoreIfNeeded() {
+        guard let snap = defaults?.stringArray(forKey: snapshotKey) else { return }
+        defaults?.set(snap, forKey: RinklerConstants.blockSelectionFeaturesKey)
+        defaults?.set(BlockCatalog.hosts(forEnabled: Set(snap)), forKey: RinklerConstants.blockedHostsKey)
+        defaults?.removeObject(forKey: snapshotKey)
+        appliedCount = 0
+    }
+
+    // MARK: - Helpers
+
+    private func startTicker() {
+        ticker?.cancel()
+        ticker = Timer.publish(every: 20, on: .main, in: .common).autoconnect()
+            .sink { [weak self] _ in
+                guard let self else { return }
+                self.objectWillChange.send()
+                if let end = self.pairing?.windowEnd, end <= Date() {
+                    self.restoreIfNeeded(); self.ticker?.cancel(); self.ticker = nil
+                }
+                Task { await self.refresh() }
+            }
+    }
+
+    nonisolated static func iso(_ d: Date) -> String {
+        let f = ISO8601DateFormatter(); f.formatOptions = [.withInternetDateTime]
+        return f.string(from: d)
+    }
+    nonisolated static func parse(_ s: String) -> Date? {
+        let f = ISO8601DateFormatter(); f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let d = f.date(from: s) { return d }
+        let g = ISO8601DateFormatter(); g.formatOptions = [.withInternetDateTime]
+        return g.date(from: s)
+    }
+    private func friendly(_ error: Error) -> String {
+        (error as? LocalizedError)?.errorDescription ?? "Something went wrong. Try again."
+    }
+    private static func httpError(_ data: Data) -> Error {
+        NSError(domain: "FriendControl", code: 1,
+                userInfo: [NSLocalizedDescriptionKey: String(data: data, encoding: .utf8) ?? "Request failed"])
+    }
+}

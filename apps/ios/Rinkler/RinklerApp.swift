@@ -11,6 +11,7 @@ struct RinklerApp: App {
     @StateObject private var strictMode = StrictModeStore()
     @StateObject private var health = HealthManager()
     @StateObject private var autoMode = AutoModeEngine()
+    @StateObject private var friendControl = FriendControlStore()
     @State private var path = NavigationPath()
     @State private var authStore = AuthStore()
     @State private var showSplash = true
@@ -71,6 +72,8 @@ struct RinklerApp: App {
                     NavigationStack { ControlScreen() }
                 } else if previewScreen == "apps" {
                     NavigationStack { AppsScreen() }
+                } else if previewScreen == "friend" {
+                    NavigationStack { FriendControlScreen() }
                 } else if focusSystem.hasCompletedOnboarding {
                     NavigationStack(path: $path) {
                         LandingPage(onGo: {
@@ -146,6 +149,8 @@ struct RinklerApp: App {
                                 })
                             case .strictModeSetup:
                                 StrictModeSetupScreen()
+                            case .friendControl:
+                                FriendControlScreen()
                             case .trafficDashboard:
                                 TrafficDashboardView()
                             case .extensionLog:
@@ -170,6 +175,7 @@ struct RinklerApp: App {
             .environmentObject(strictMode)
             .environmentObject(health)
             .environmentObject(autoMode)
+            .environmentObject(friendControl)
             .preferredColorScheme(appearance.mode.colorScheme)
             .task {
                 SVGCache.shared.preload(svgNames: ["instagram"])
@@ -183,6 +189,7 @@ struct RinklerApp: App {
                 strictMode.configure(vpn: vpnManager, commitment: commitment, screenTime: screenTime)
                 strictMode.tickIfExpired()
                 autoMode.configure(health: health, screenTime: screenTime)
+                friendControl.tick()        // pull any active friend-control limits
                 await RuleRegistry.sync()   // hot-update the block rule pack
                 health.refreshAvailability()
                 if health.isAuthorized {
@@ -195,6 +202,7 @@ struct RinklerApp: App {
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active {
                     strictMode.tickIfExpired()
+                    friendControl.tick()
                     Task { await autoMode.evaluate(trigger: .foreground) }
                 }
             }

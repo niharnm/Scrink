@@ -48,6 +48,9 @@ struct SettingsScreen: View {
                     // Strict Mode (total lockdown)
                     strictModeSection
 
+                    // Friend remote control
+                    friendControlSection
+
                     // Automatic, health-aware tightening
                     automaticModeSection
 
@@ -184,6 +187,38 @@ struct SettingsScreen: View {
                 }
                 .buttonStyle(.plain)
             }
+        }
+    }
+
+    // MARK: - Friend control
+
+    private var friendControlSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("FRIEND CONTROL")
+                .font(RinklerFonts.sans(12, .semibold))
+                .foregroundStyle(RinklerColors.signalTextDim)
+            NavigationLink(value: Route.friendControl) {
+                HStack(spacing: RinklerSpacing.md) {
+                    Image(systemName: "person.2.fill")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(RinklerColors.signalBlue)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Let a friend run your limits")
+                            .font(RinklerFonts.sans(16, .semibold))
+                            .foregroundStyle(RinklerColors.signalText)
+                        Text("Hand someone a code; they tighten your limits for a window you pick.")
+                            .font(RinklerFonts.sans(12, .regular))
+                            .foregroundStyle(RinklerColors.signalTextDim)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    Spacer(minLength: RinklerSpacing.sm)
+                    Image(systemName: "chevron.right").foregroundStyle(RinklerColors.signalTextFaint)
+                }
+                .padding(RinklerSpacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .signalCard(cornerRadius: 16)
+            }
+            .buttonStyle(.plain)
         }
     }
 

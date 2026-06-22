@@ -132,4 +132,15 @@ enum BlockCatalog {
     ]
 
     static func app(_ id: String) -> BlockApp? { apps.first { $0.id == id } }
+
+    /// Resolve a set of enabled "appId/featureId" keys → the host set to block.
+    static func hosts(forEnabled enabled: Set<String>) -> [String] {
+        var hosts: Set<String> = []
+        for app in apps {
+            for f in app.features where enabled.contains("\(app.id)/\(f.id)") {
+                hosts.formUnion(f.hosts)
+            }
+        }
+        return Array(hosts)
+    }
 }

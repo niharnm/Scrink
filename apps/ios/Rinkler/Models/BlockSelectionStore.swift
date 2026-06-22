@@ -8,7 +8,7 @@ final class BlockSelectionStore: ObservableObject {
     @Published private(set) var enabled: Set<String> = []
 
     private let defaults = UserDefaults(suiteName: RinklerConstants.appGroupID)
-    private let selectionKey = "blockSelection.features"
+    private let selectionKey = RinklerConstants.blockSelectionFeaturesKey
 
     init() { load() }
 
@@ -40,12 +40,6 @@ final class BlockSelectionStore: ObservableObject {
 
     /// Flattens enabled features → the host set the tunnel blocks at CONNECT.
     private func resolveHosts() {
-        var hosts: Set<String> = []
-        for app in BlockCatalog.apps {
-            for feature in app.features where enabled.contains(key(app.id, feature.id)) {
-                hosts.formUnion(feature.hosts)
-            }
-        }
-        defaults?.set(Array(hosts), forKey: RinklerConstants.blockedHostsKey)
+        defaults?.set(BlockCatalog.hosts(forEnabled: enabled), forKey: RinklerConstants.blockedHostsKey)
     }
 }
