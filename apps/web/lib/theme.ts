@@ -1,22 +1,32 @@
+/**
+ * Dashboard theme — now the "Signal" identity (matches the iOS app + the
+ * marketing site): a near-black control-panel surface with a single blue→violet
+ * signal accent. Token KEYS are unchanged so every dashboard component keeps
+ * working; only the values moved from the old blue "Living Sky" palette.
+ */
 export const theme = {
   colors: {
-    skyBlue: "#3A8DDE",
-    backArrow: "#0C6CC2",
-    white: "#FFFFFF",
-    white10: "rgba(255,255,255,0.1)",
-    white15: "rgba(255,255,255,0.15)",
-    white30: "rgba(255,255,255,0.3)",
-    white60: "rgba(255,255,255,0.6)",
+    skyBlue: "#5B7CFF", // primary signal accent (charts, buttons, links)
+    violet: "#8B5CF6", // secondary accent for multi-series charts
+    success: "#63D297",
+    warning: "#FFB454",
+    backArrow: "#5B7CFF",
+    white: "#F8FAFC", // primary text on the dark surface
+    white10: "rgba(255,255,255,0.05)", // card fill
+    white15: "rgba(255,255,255,0.09)", // raised fill / hover
+    white30: "rgba(255,255,255,0.14)", // hairline borders
+    white60: "rgba(255,255,255,0.60)", // dim/secondary text
   },
   gradient: {
-    stop1: "rgb(102,178,255)", // top
-    stop2: "rgb(89,166,242)",
-    stop3: "rgb(77,153,230)",
-    stop4: "rgb(64,140,217)", // bottom
+    stop1: "#0E1118", // top
+    stop2: "#0B0D13",
+    stop3: "#090A0E",
+    stop4: "#08090B", // bottom
   },
   fonts: {
-    display: "'Coolvetica', system-ui, sans-serif",
-    body: "'Coolvetica', system-ui, sans-serif",
+    display: "'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    body: "'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    mono: "'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
   },
   fontSizes: {
     titleLarge: 64,

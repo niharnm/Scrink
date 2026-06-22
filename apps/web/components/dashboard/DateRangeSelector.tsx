@@ -34,7 +34,7 @@ export default function DateRangeSelector({
           fontSize: theme.fontSizes.optionLabel,
           color: theme.colors.white,
           background: active ? theme.colors.skyBlue : "transparent",
-          border: `1px solid ${active ? theme.colors.white : theme.colors.white30}`,
+          border: `1px solid ${active ? theme.colors.skyBlue : theme.colors.white30}`,
           borderRadius: 20,
           padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
           cursor: "pointer",

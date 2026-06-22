@@ -86,7 +86,7 @@ export default function ContentTypeChart({
           />
           <Tooltip
             contentStyle={{
-              background: "rgba(26,95,170,0.95)",
+              background: "rgba(20,22,26,0.97)",
               border: `1px solid ${theme.colors.white30}`,
               borderRadius: 12,
               fontFamily: theme.fonts.body,
@@ -102,7 +102,7 @@ export default function ContentTypeChart({
           />
           <Bar
             dataKey="count"
-            fill="rgba(255,255,255,0.4)"
+            fill={theme.colors.skyBlue}
             radius={[0, 6, 6, 0]}
           />
         </BarChart>

@@ -13,10 +13,12 @@ const HOURS = Array.from({ length: 24 }, (_, i) =>
 );
 
 function intensityToColor(value: number): string {
-  const r = Math.round(255 - (255 - 58) * value);
-  const g = Math.round(255 - (255 - 141) * value);
-  const b = Math.round(255 - (255 - 222) * value);
-  const alpha = 0.15 + value * 0.7;
+  // Faint -> strong, easing from signal blue (#5B7CFF) toward violet (#8B5CF6).
+  const v = Math.max(0, Math.min(1, value));
+  const r = Math.round(91 + (139 - 91) * v);
+  const g = Math.round(124 - (124 - 92) * v);
+  const b = Math.round(255 - (255 - 246) * v);
+  const alpha = 0.06 + v * 0.85;
   return `rgba(${r},${g},${b},${alpha})`;
 }
 

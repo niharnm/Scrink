@@ -133,7 +133,7 @@ export default function AppDetailClient({ slug }: AppDetailClientProps) {
     { name: "Allowed", value: 100 - detail.blockedPercent },
   ];
 
-  const PIE_COLORS = ["#FF6B6B", theme.colors.white];
+  const PIE_COLORS = ["#FF6B6B", theme.colors.skyBlue];
 
   const contentTypeBarStyle = (): CSSProperties => ({
     height: 8,
@@ -150,7 +150,7 @@ export default function AppDetailClient({ slug }: AppDetailClientProps) {
     top: 0,
     height: "100%",
     borderRadius: 4,
-    background: theme.colors.white,
+    background: theme.colors.skyBlue,
     width: `${(count / max) * 100}%`,
     transition: "width 0.5s ease",
   });
@@ -228,7 +228,7 @@ export default function AppDetailClient({ slug }: AppDetailClientProps) {
               </Pie>
               <Tooltip
                 contentStyle={{
-                  background: "rgba(26,95,170,0.95)",
+                  background: "rgba(20,22,26,0.97)",
                   border: `1px solid ${theme.colors.white30}`,
                   borderRadius: 12,
                   fontFamily: theme.fonts.body,
