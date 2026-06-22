@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import type { CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
 import { signal } from "@/lib/signal";
 import AppShowcase from "./AppShowcase";
 import Reveal from "./Reveal";
@@ -7,31 +9,43 @@ import Countdown from "./Countdown";
 
 /**
  * Rinkler marketing landing — stark, true black, casual real voice (lowercase,
- * no em dashes). Opens on a countdown splash; "what is this" scrolls to the
- * rest. Scroll-reveals on each section.
+ * no em dashes). Opens on JUST the countdown splash; "what is this" reveals the
+ * rest of the page. Scroll-reveals on each section.
  */
 export default function Landing({ loggedIn }: { loggedIn: boolean }) {
   const ctaHref = loggedIn ? "/dashboard" : "/login";
   const ctaLabel = loggedIn ? "open dashboard" : "get early access";
 
+  const [open, setOpen] = useState(false);
+  const reveal = () => {
+    setOpen(true);
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() =>
+        document.getElementById("more")?.scrollIntoView({ behavior: "smooth" })
+      )
+    );
+  };
+
   return (
     <div style={page}>
       <style dangerouslySetInnerHTML={{ __html: css }} />
 
-      {/* Nav */}
-      <header style={nav}>
-        <Link href="/" style={wordmark}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/rinkler-mark.png" alt="" width={22} height={22} style={{ display: "block" }} />
-          Rinkler
-        </Link>
-        <nav style={navRight} className="nav-links">
-          <a href="#how" style={navLink}>how</a>
-          <Link href="/privacy" style={navLink}>privacy</Link>
-          <Link href="/login" style={navLink}>log in</Link>
-          <Link href={ctaHref} style={lightBtn} className="light-btn">{ctaLabel}</Link>
-        </nav>
-      </header>
+      {/* Nav (revealed with the rest of the page) */}
+      {open && (
+        <header style={nav}>
+          <Link href="/" style={wordmark}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/rinkler-mark.png" alt="" width={22} height={22} style={{ display: "block" }} />
+            Rinkler
+          </Link>
+          <nav style={navRight} className="nav-links">
+            <a href="#how" style={navLink}>how</a>
+            <Link href="/privacy" style={navLink}>privacy</Link>
+            <Link href="/login" style={navLink}>log in</Link>
+            <Link href={ctaHref} style={lightBtn} className="light-btn">{ctaLabel}</Link>
+          </nav>
+        </header>
+      )}
 
       <main style={main}>
         {/* Splash — countdown */}
@@ -49,18 +63,16 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
               <Countdown />
             </div>
 
-            <div style={splashPill}>
-              <span style={dot} /> dropping july 10
-            </div>
-
-            <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
+            <div style={{ display: "flex", justifyContent: "center", marginTop: "clamp(32px, 5vh, 48px)" }}>
               <Link href={ctaHref} style={lightBtnLg} className="light-btn">{ctaLabel}</Link>
             </div>
 
-            <a href="#more" style={learnMore} className="text-btn">what is this ↓</a>
+            <button onClick={reveal} style={learnMore} className="text-btn">what is this ↓</button>
           </Reveal>
         </section>
 
+        {open && (
+          <>
         {/* Hero */}
         <Reveal y={18}>
           <section id="more" style={{ ...section, paddingTop: "clamp(48px, 8vh, 90px)", paddingBottom: "clamp(72px, 12vh, 150px)" }}>
@@ -211,9 +223,12 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
             </div>
           </section>
         </Reveal>
+          </>
+        )}
       </main>
 
       {/* Footer */}
+      {open && (
       <footer style={footer}>
         <span style={wordmark}>Rinkler</span>
         <div style={footerLinks} className="nav-links">
@@ -223,6 +238,7 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
         </div>
         <span style={{ color: signal.textFaint, fontFamily: signal.mono, fontSize: 12 }}>© 2026</span>
       </footer>
+      )}
     </div>
   );
 }
@@ -289,7 +305,7 @@ const lightBtnLg: CSSProperties = { ...lightBtn, padding: "13px 26px", fontSize:
 
 /* splash */
 const splash: CSSProperties = {
-  minHeight: "calc(100vh - 58px)",
+  minHeight: "100vh",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -301,21 +317,7 @@ const splashLogo: CSSProperties = { display: "flex", alignItems: "center", justi
 const splashWord: CSSProperties = { fontSize: "clamp(40px, 9vw, 72px)", fontWeight: 600, letterSpacing: "-0.03em", color: signal.text };
 const splashTag: CSSProperties = { fontSize: "clamp(15px, 2.1vw, 19px)", color: signal.textDim, maxWidth: 480, margin: "0 auto", lineHeight: 1.5 };
 const countLabel: CSSProperties = { fontFamily: signal.mono, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: signal.textFaint, marginBottom: 18 };
-const splashPill: CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 8,
-  marginTop: 34,
-  padding: "7px 14px",
-  borderRadius: 999,
-  border: `1px solid ${signal.border}`,
-  fontFamily: signal.mono,
-  fontSize: 12,
-  letterSpacing: "0.04em",
-  color: signal.textDim,
-};
-const dot: CSSProperties = { width: 7, height: 7, borderRadius: "50%", background: signal.success, boxShadow: `0 0 8px ${signal.success}` };
-const learnMore: CSSProperties = { display: "inline-block", marginTop: 40, color: signal.textDim, textDecoration: "none", fontSize: 14, fontFamily: signal.mono, letterSpacing: "0.04em" };
+const learnMore: CSSProperties = { display: "inline-block", marginTop: 44, color: signal.textDim, textDecoration: "none", fontSize: 14, fontFamily: signal.mono, letterSpacing: "0.04em", background: "none", border: "none", cursor: "pointer", padding: 0 };
 
 const section: CSSProperties = { padding: "clamp(64px, 10vh, 120px) 0" };
 const h1: CSSProperties = { fontSize: "clamp(42px, 8vw, 88px)", lineHeight: 1.0, fontWeight: 600, letterSpacing: "-0.04em", margin: 0, maxWidth: 980 };
