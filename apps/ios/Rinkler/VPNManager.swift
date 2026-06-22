@@ -130,6 +130,14 @@ final class VPNManager: ObservableObject {
         }
     }
 
+    /// Creates (but does not start) the VPN profile so iOS shows its "Rinkler
+    /// would like to add VPN configurations" permission prompt. Called during
+    /// onboarding so the user grants access up front, before their first session.
+    func requestPermission() {
+        guard manager == nil else { return }
+        createVPNProfile(startAfterSave: false)
+    }
+
     func toggleVPN() {
         guard let manager = self.manager else {
             startVPN()

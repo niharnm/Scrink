@@ -36,6 +36,34 @@
 - Web checks (`pnpm typecheck`, `pnpm lint`, `pnpm build`) pass with the pinned `pnpm@9.15.4`.
 - Re-run `pnpm audit` after any lockfile change and before each release.
 
+## Social Sign-In (Apple / Google)
+
+Onboarding ends with an account step offering **Sign in with Apple** and
+**Continue with Google**. The code is wired (`SocialAuthService`,
+`SupabaseAuthClient.signInWithApple` / `oauthAuthorizeURL` / `completeOAuth`,
+`rinkler://auth-callback` URL scheme, `com.apple.developer.applesignin`
+entitlement), but the following account-side config is required for it to work on
+a device — it cannot be done from the source tree:
+
+Apple Developer portal:
+- Enable the **Sign in with Apple** capability on the `com.rinkler.app` App ID.
+- Regenerate the provisioning profile after enabling it.
+
+Supabase dashboard (Authentication → Providers):
+- **Apple**: enable the provider; set Services ID / Team ID / Key ID / private
+  key. For the native iOS `id_token` flow, add the app bundle id
+  `com.rinkler.app` to the Apple provider's authorized client IDs.
+- **Google**: enable the provider; set the OAuth client ID + secret (Google Cloud
+  console, OAuth consent screen configured).
+- Authentication → URL Configuration → **Redirect URLs**: add
+  `rinkler://auth-callback` to the allow list.
+
+Verify on a physical iPhone: Apple sign-in returns to the app signed in; Google
+opens the web sheet and returns to `rinkler://auth-callback` signed in; "Maybe
+later" skips without an account; the session persists across relaunch (Landing →
+Today without re-auth). The official Google logo asset can be dropped into
+`Assets.xcassets` as `google-logo` and swapped into `GoogleGlyph`.
+
 ## Supabase Data
 
 Use Supabase for auth and server-side dashboard data only. Rinkler stores destination hostnames, block status, byte counts, timestamps, and minimal event metadata for dashboard summaries. Keep packet contents, screenshots, private text, auth tokens, and full request bodies out of logs and external APIs unless the user explicitly approves that data flow.

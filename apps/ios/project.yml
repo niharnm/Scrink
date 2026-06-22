@@ -41,6 +41,10 @@ targets:
         UILaunchScreen: {}
         SUPABASE_URL: $(SUPABASE_URL)
         SUPABASE_KEY: $(SUPABASE_KEY)
+        CFBundleURLTypes:
+          - CFBundleURLName: com.rinkler.app.oauth
+            CFBundleURLSchemes:
+              - rinkler
     entitlements:
       path: Rinkler/Rinkler.entitlements
     settings:

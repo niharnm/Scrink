@@ -5,50 +5,63 @@ struct LandingPage: View {
 
     var body: some View {
         ZStack {
-            SkyBackgroundView()
+            RinklerColors.signalBackground.ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                // Spacer to position text closer to top
+            // Decorative signal ring glow in the upper field.
+            SignalRing(progress: 0.72, lineWidth: 6)
+                .frame(width: 260, height: 260)
+                .opacity(0.35)
+                .blur(radius: 0.5)
+                .offset(x: 90, y: -260)
+
+            VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
                 Spacer()
-                    .frame(height: UIScreen.main.bounds.height / 6)
 
-                // Title block - positioned closer to top, slightly to the right
+                Text("RINKLER")
+                    .font(RinklerFonts.sans(15, .semibold))
+                    .tracking(4)
+                    .foregroundStyle(RinklerColors.signalTextDim)
+
                 VStack(alignment: .leading, spacing: RinklerSpacing.xs) {
-                    Text("RINKLER")
-                        .font(RinklerFonts.titleLarge)
-                        .foregroundStyle(.white)
-                    
-                    Text("keep the useful parts.")
-                        .font(RinklerFonts.subtitleItalic)
-                        .foregroundStyle(.white)
-                        .padding(.leading, 4)
+                    Text("Keep the useful parts.")
+                        .font(RinklerFonts.sans(40, .bold))
+                        .foregroundStyle(RinklerColors.signalText)
+                    Text("Kill the infinite scroll.")
+                        .font(RinklerFonts.sans(40, .bold))
+                        .foregroundStyle(RinklerColors.signalBlue)
                 }
-                .padding(.leading, RinklerSpacing.xxl)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .fixedSize(horizontal: false, vertical: true)
+
+                Text("Keep Instagram DMs. Kill Reels. Keep YouTube Search. Kill Shorts. Keep your phone — remove the trap.")
+                    .font(RinklerFonts.sans(15, .regular))
+                    .foregroundStyle(RinklerColors.signalTextDim)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.trailing, RinklerSpacing.lg)
 
                 Spacer()
-            }
-            
-            // Forward arrow button in bottom right corner
-            VStack {
-                Spacer()
-                HStack {
-                    Spacer()
-                    Button {
-                        onGo()
-                    } label: {
-                        BackArrowView(size: 34, color: .white)
-                            .rotationEffect(.degrees(180))
-                            .frame(width: 44, height: 44)
-                            .background(RinklerColors.skyBlue)
-                            .clipShape(Circle())
+
+                Button(action: onGo) {
+                    HStack {
+                        Text("Build your focus system")
+                            .font(RinklerFonts.sans(18, .semibold))
+                        Spacer()
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 17, weight: .semibold))
                     }
-                    .padding(.trailing, RinklerSpacing.xl + 10)
-                    .padding(.bottom, 14)
+                    .foregroundStyle(.black)
+                    .padding(.horizontal, RinklerSpacing.lg)
+                    .frame(height: 58)
+                    .frame(maxWidth: .infinity)
+                    .background(RinklerColors.signalGlow)
+                    .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                 }
+                .buttonStyle(.plain)
             }
+            .padding(.horizontal, RinklerSpacing.lg)
+            .padding(.bottom, RinklerSpacing.xl)
         }
         .navigationBarBackButtonHidden(true)
+        .preferredColorScheme(.dark)
         .onAppear {
             SVGCache.shared.preload(svgNames: ["instagram"])
         }

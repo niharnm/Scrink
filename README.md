@@ -2,7 +2,15 @@
 
 Rinkler is an iOS network-filtering app for keeping useful app features available while blocking distracting traffic. The iOS app uses a local Network Extension tunnel and a Supabase-backed email OTP login flow.
 
-The current production filters target large Instagram and TikTok short-video media streams. Filtering is enforced locally in the packet tunnel by SNI/domain and byte thresholds; it does not decrypt traffic or inspect private page contents. YouTube Shorts, Facebook Reels, Snapchat Spotlight, X video, Reddit video, and similar sections are not enabled as section-only blockers because they share hosts with normal app traffic at the tunnel layer. Adding those without verified path-level visibility would overblock legitimate app features.
+The current production filters target large Instagram and TikTok short-video media streams. Filtering is enforced locally in the packet tunnel by SNI/domain and byte thresholds; it does not decrypt traffic or inspect private page contents. Short-video that rides QUIC (HTTP/3, UDP 443) is forced back onto TCP/TLS — where the byte-threshold blocker can act — by dropping UDP 443 to only the CDN IPs Rinkler has learned belong to a tracked app (from plaintext DNS answers and TLS SNI). YouTube Shorts, Facebook Reels, Snapchat Spotlight, X video, Reddit video, and similar sections are not enabled as section-only blockers because they share hosts with normal app traffic at the tunnel layer. Adding those without verified path-level visibility would overblock legitimate app features.
+
+## Screenshots
+
+Captures live in [`docs/screenshots/`](docs/screenshots/) — see that folder's README for how to add them on a Mac.
+
+| Home | Focus session | Dashboard |
+|------|---------------|-----------|
+| ![Home](docs/screenshots/home.png) | ![Focus session](docs/screenshots/focus-session.png) | ![Dashboard](docs/screenshots/dashboard.png) |
 
 ## Repo Layout
 
