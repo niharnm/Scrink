@@ -12,4 +12,5 @@ enum Route: Hashable {
     case sessionRecap
     case storyJourney
     case storyIntro
+    case schedules
 }

@@ -6,6 +6,7 @@ struct SettingsScreen: View {
     @EnvironmentObject private var vpnManager: VPNManager
 
     var onReplayIntro: (() -> Void)? = nil
+    var onSchedules: (() -> Void)? = nil
 
     @AppStorage(RinklerConstants.blockInstagramShortVideoEnabledKey,
                 store: UserDefaults(suiteName: RinklerConstants.appGroupID))
@@ -33,6 +34,9 @@ struct SettingsScreen: View {
 
                     // Short-form filter toggles
                     shortVideoFiltersSection
+
+                    // Focus schedules
+                    schedulesSection
 
                     // Story Mode
                     storyModeSection
@@ -142,6 +146,34 @@ struct SettingsScreen: View {
 
     private var hasActiveShortVideoFilter: Bool {
         blockInstagramShortVideo || blockTikTokShortVideo
+    }
+
+    // MARK: - Focus schedules
+
+    private var schedulesSection: some View {
+        VStack(alignment: .leading, spacing: RinklerSpacing.sm) {
+            Text("Focus schedules")
+                .font(RinklerFonts.coolvetica(size: 18))
+                .foregroundColor(.white)
+
+            Button {
+                onSchedules?()
+            } label: {
+                HStack {
+                    Image(systemName: "calendar.badge.clock")
+                        .foregroundColor(RinklerColors.auroraCyan)
+                    Text("Recurring focus blocks")
+                        .font(RinklerFonts.coolvetica(size: 16))
+                        .foregroundColor(RinklerColors.white60)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(RinklerColors.white40)
+                }
+            }
+        }
+        .padding(RinklerSpacing.md)
+        .background(Color.white.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
     // MARK: - Story Mode

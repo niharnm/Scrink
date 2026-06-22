@@ -4,6 +4,7 @@ import SwiftUI
 struct RinklerApp: App {
     @StateObject private var vpnManager = VPNManager()
     @StateObject private var sessions = FocusSessionStore()
+    @StateObject private var schedules = ScheduleStore()
     @State private var path = NavigationPath()
     @State private var authStore = AuthStore()
     @State private var showStoryIntro = !Story.hasSeenIntro
@@ -27,6 +28,14 @@ struct RinklerApp: App {
             case "journey": p.append(Route.home); p.append(Route.storyJourney)
             case "settings": p.append(Route.home); p.append(Route.settings)
             case "signin": p.append(Route.magicSignIn)
+            case "schedules":
+                let sample = FocusSchedule(label: "Evening wind-down", weekdays: [2, 3, 4, 5, 6],
+                                           hour: 20, minute: 0, durationMinutes: 45,
+                                           strictness: .focused, platforms: FocusPlatform.allCases)
+                if let data = try? JSONEncoder().encode([sample]) {
+                    UserDefaults.standard.set(data, forKey: "rinkler.focusSchedules")
+                }
+                p.append(Route.home); p.append(Route.schedules)
             default: p.append(Route.home)
             }
             _path = State(initialValue: p)
@@ -103,11 +112,15 @@ struct RinklerApp: App {
                     case .settings:
                         SettingsScreen(onReplayIntro: {
                             path.append(Route.storyIntro)
+                        }, onSchedules: {
+                            path.append(Route.schedules)
                         })
                     case .trafficDashboard:
                         TrafficDashboardView()
                     case .extensionLog:
                         ExtensionLogView()
+                    case .schedules:
+                        SchedulesScreen()
                     case .storyJourney:
                         StoryJourneyView()
                     case .storyIntro:
@@ -124,6 +137,7 @@ struct RinklerApp: App {
             .environment(authStore)
             .environmentObject(vpnManager)
             .environmentObject(sessions)
+            .environmentObject(schedules)
             .preferredColorScheme(.dark)
             .task {
                 SVGCache.shared.preload(svgNames: ["instagram"])

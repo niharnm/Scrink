@@ -52,6 +52,7 @@
 		8050EE548DB56DDCA4FB2A2A /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = EFBD2984D0510752BD1D03BD /* background.png */; };
 		88E96BE752A5DBCDD02D793B /* RinklerColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74330F9AFC4182AB67F02F83 /* RinklerColors.swift */; };
 		8CC77FCD2AFCCE05480781D9 /* icon_rect.png in Resources */ = {isa = PBXBuildFile; fileRef = 6A14727AF55B2D6A666F3D1B /* icon_rect.png */; };
+		8DBCC3E252F97831D3EBE233 /* FocusSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CFE730A8FB1758F0DEBE0C2 /* FocusSchedule.swift */; };
 		8F0D57C9A6E3045BBE001928 /* AppOptionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A500B91AAD8FCE188E83A9D /* AppOptionsService.swift */; };
 		9549542D2E57B4C55511D581 /* BackArrowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E7DF720D3EB9EAC56B49CB /* BackArrowView.swift */; };
 		96E5C7ABCADDD122544A7882 /* GridPositionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96DCEEE446F160532470E8D /* GridPositionStore.swift */; };
@@ -70,6 +71,7 @@
 		A4F54B5F314F2FF8E40B46D2 /* clouds.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F112CC7035E04A18029EC82 /* clouds.png */; };
 		ACA43E523546E460FF425CF2 /* HeaderBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA7879AE04880FB01A49C3C /* HeaderBar.swift */; };
 		B2D940F3D19D696D7AFFBB1F /* clouds_continous.png in Resources */ = {isa = PBXBuildFile; fileRef = 54C6C8C64B29A95223064A2A /* clouds_continous.png */; };
+		B2F6DA31BD1C08AB2D1C8384 /* SchedulesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F598EA32BB262424BC71CAA6 /* SchedulesScreen.swift */; };
 		B63F3A7EE3787197C19D9D8A /* Coolvetica Rg It.otf in Resources */ = {isa = PBXBuildFile; fileRef = B033FC1D06B6F626D38BA842 /* Coolvetica Rg It.otf */; };
 		B6B171FEBB0DB8C0233D540D /* DialSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE9069ED02F96B6B3BF4062 /* DialSelector.swift */; };
 		B7F4E889C0C9CF5017891111 /* AppIconCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1AF9CB0269E85989CE0DC6 /* AppIconCircle.swift */; };
@@ -135,6 +137,7 @@
 		2F1CE437AADFB2D399B4E4CD /* SkyBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkyBackgroundView.swift; sourceTree = "<group>"; };
 		3288B67D55E1FF065382E8E9 /* HexGridLayoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexGridLayoutManager.swift; sourceTree = "<group>"; };
 		3A500B91AAD8FCE188E83A9D /* AppOptionsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOptionsService.swift; sourceTree = "<group>"; };
+		3CFE730A8FB1758F0DEBE0C2 /* FocusSchedule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FocusSchedule.swift; sourceTree = "<group>"; };
 		4F5A0931BEF4F3F4B1BF8741 /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
 		4FCEA58022A4F0F927779C3E /* settings.local.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = settings.local.json; sourceTree = "<group>"; };
 		51B12D2A976C53EEB139FC50 /* RinklerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RinklerApp.swift; sourceTree = "<group>"; };
@@ -187,6 +190,7 @@
 		E3EF496D1E6382443B39705A /* SupabaseAuthClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseAuthClient.swift; sourceTree = "<group>"; };
 		EFBD2984D0510752BD1D03BD /* background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = background.png; sourceTree = "<group>"; };
 		F0B814D56804DA2A853F0CC7 /* PageIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageIndicator.swift; sourceTree = "<group>"; };
+		F598EA32BB262424BC71CAA6 /* SchedulesScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SchedulesScreen.swift; sourceTree = "<group>"; };
 		F96DCEEE446F160532470E8D /* GridPositionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridPositionStore.swift; sourceTree = "<group>"; };
 		FD7690CC40D5611A9C232A9E /* generate_app_icons.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = generate_app_icons.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -258,6 +262,7 @@
 				9D3E5F60718293A4B5C6D7E8 /* TrafficDashboardView.swift */,
 				8EA8D55716FCC928B541F589 /* StoryIntroView.swift */,
 				B704A1191FB290B8C1CCCB4F /* StoryJourneyView.swift */,
+				F598EA32BB262424BC71CAA6 /* SchedulesScreen.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -302,6 +307,7 @@
 				4F5A0931BEF4F3F4B1BF8741 /* Route.swift */,
 				E3EF496D1E6382443B39705A /* SupabaseAuthClient.swift */,
 				B867E88F2A9F5164AF701AF5 /* StoryMode.swift */,
+				3CFE730A8FB1758F0DEBE0C2 /* FocusSchedule.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -586,6 +592,8 @@
 				F686B97CC31083BC1D8789D2 /* StoryMode.swift in Sources */,
 				41CD2956B4F6D87F3DEC4BB0 /* StoryIntroView.swift in Sources */,
 				F43F0DB96E684DCD9C882CCA /* StoryJourneyView.swift in Sources */,
+				8DBCC3E252F97831D3EBE233 /* FocusSchedule.swift in Sources */,
+				B2F6DA31BD1C08AB2D1C8384 /* SchedulesScreen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
