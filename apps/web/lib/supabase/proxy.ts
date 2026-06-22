@@ -12,7 +12,7 @@ function isPublicPath(pathname: string): boolean {
   if (pathname === "/") return true;
   // Dev-only visual preview routes (e.g. /dev/dashboard-preview); never public in prod.
   if (pathname.startsWith("/dev") && process.env.NODE_ENV !== "production") return true;
-  return ["/login", "/auth", "/privacy", "/api/health"].some((p) =>
+  return ["/login", "/auth", "/privacy", "/terms", "/api/health"].some((p) =>
     pathname.startsWith(p)
   );
 }

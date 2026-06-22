@@ -6,6 +6,7 @@ import { signal } from "@/lib/signal";
 import AppShowcase from "./AppShowcase";
 import Reveal from "./Reveal";
 import Countdown from "./Countdown";
+import Marquee from "./Marquee";
 
 /**
  * Rinkler marketing landing — stark, true black, casual real voice (lowercase,
@@ -93,7 +94,8 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
           </section>
         </Reveal>
 
-        <Rule />
+        {/* Endless scroll marquee */}
+        <Marquee />
 
         {/* App showcase */}
         <Reveal><AppShowcase /></Reveal>
@@ -232,7 +234,9 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
       <footer style={footer}>
         <span style={wordmark}>Rinkler</span>
         <div style={footerLinks} className="nav-links">
+          <a href="https://niharm.me" target="_blank" rel="noopener noreferrer" style={navLink}>about me</a>
           <Link href="/privacy" style={navLink}>privacy</Link>
+          <Link href="/terms" style={navLink}>terms</Link>
           <a href="mailto:nihar.manchikalapudi@gmail.com" style={navLink}>support</a>
           <Link href="/login" style={navLink}>log in</Link>
         </div>
