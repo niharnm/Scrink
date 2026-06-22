@@ -525,7 +525,7 @@ struct OnboardingFlow: View {
             }
             .padding(.vertical, RinklerSpacing.lg)
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(nil)
         .alert("Skip personalization?", isPresented: $showSkipWarning) {
             Button("Keep going", role: .cancel) {}
             Button("Skip") { focusSystem.skipToReveal() }
@@ -567,10 +567,10 @@ struct OnboardingFlow: View {
                     Button { withAnimation { showPresetPopup = false } } label: {
                         Text("Use these")
                             .font(RinklerFonts.sans(16, .semibold))
-                            .foregroundStyle(.black)
+                            .foregroundStyle(RinklerColors.signalOnInk)
                             .frame(maxWidth: .infinity)
                             .frame(height: 50)
-                            .background(RinklerColors.signalText)
+                            .background(RinklerColors.signalInk)
                             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                     }
                     .buttonStyle(.plain)
@@ -1081,10 +1081,10 @@ struct OnboardingFlow: View {
         Button(action: action) {
             Text(title)
                 .font(RinklerFonts.sans(18, .semibold))
-                .foregroundStyle(.black)
+                .foregroundStyle(RinklerColors.signalOnInk)
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
-                .background(RinklerColors.signalText)
+                .background(RinklerColors.signalInk)
                 .overlay(
                     RoundedRectangle(cornerRadius: 18, style: .continuous)
                         .strokeBorder(Color.white.opacity(0.18), lineWidth: 1)
@@ -1148,7 +1148,7 @@ struct TodayDashboard: View {
             }
         }
         .navigationBarBackButtonHidden(true)
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(nil)
         .sheet(item: $editingRule) { rule in
             RuleEditorView(rule: rule)
         }
@@ -1166,7 +1166,7 @@ struct TodayDashboard: View {
             }
             Spacer()
             iconButton("chart.bar.fill", action: onTrafficDashboard)
-            iconButton("gearshape.fill", action: onSettings)
+            iconButton("line.3.horizontal", action: onSettings)
         }
     }
 
@@ -1306,9 +1306,9 @@ struct TodayDashboard: View {
             Button { vpnManager.toggleVPN() } label: {
                 Text(vpnManager.vpnStatus == .connected ? "Stop" : "Start")
                     .font(RinklerFonts.sans(14, .semibold))
-                    .foregroundStyle(vpnManager.vpnStatus == .connected ? RinklerColors.signalText : .black)
+                    .foregroundStyle(vpnManager.vpnStatus == .connected ? RinklerColors.signalText : RinklerColors.signalOnInk)
                     .padding(.horizontal, 18).frame(height: 36)
-                    .background(vpnManager.vpnStatus == .connected ? AnyView(RinklerColors.signalCardRaised) : AnyView(RinklerColors.signalText))
+                    .background(vpnManager.vpnStatus == .connected ? AnyView(RinklerColors.signalCardRaised) : AnyView(RinklerColors.signalInk))
                     .clipShape(Capsule())
             }
             .buttonStyle(.plain)

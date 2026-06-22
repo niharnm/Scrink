@@ -49,11 +49,11 @@ struct LandingPage: View {
                         Image(systemName: "arrow.right")
                             .font(.system(size: 17, weight: .semibold))
                     }
-                    .foregroundStyle(.black)
+                    .foregroundStyle(RinklerColors.signalOnInk)
                     .padding(.horizontal, RinklerSpacing.lg)
                     .frame(height: 58)
                     .frame(maxWidth: .infinity)
-                    .background(RinklerColors.signalText)
+                    .background(RinklerColors.signalInk)
                     .overlay(
                         RoundedRectangle(cornerRadius: 18, style: .continuous)
                             .strokeBorder(Color.white.opacity(0.18), lineWidth: 1)
@@ -66,7 +66,7 @@ struct LandingPage: View {
             .padding(.bottom, RinklerSpacing.xl)
         }
         .navigationBarBackButtonHidden(true)
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(nil)
         .onAppear {
             SVGCache.shared.preload(svgNames: ["instagram"])
         }

@@ -6,8 +6,10 @@ struct SettingsScreen: View {
     @EnvironmentObject private var vpnManager: VPNManager
     @EnvironmentObject private var commitment: CommitmentStore
     @EnvironmentObject private var focusSystem: FocusSystemStore
+    @EnvironmentObject private var appearance: AppearanceStore
 
     @State private var showResetOnboarding = false
+    @State private var legalDoc: LegalContent.Doc?
 
     @AppStorage(RinklerConstants.blockInstagramShortVideoEnabledKey,
                 store: UserDefaults(suiteName: RinklerConstants.appGroupID))
@@ -37,6 +39,9 @@ struct SettingsScreen: View {
                     // Permissions the app needs (Screen Time access, etc.)
                     permissionsSection
 
+                    // Light / Dark / System
+                    appearanceSection
+
                     // Focus System (rules created during onboarding)
                     focusSystemSection
 
@@ -50,6 +55,9 @@ struct SettingsScreen: View {
                     if hasActiveShortVideoFilter {
                         domainThresholdsSection
                     }
+
+                    // Privacy, Terms, Contact, Version
+                    aboutSection
 
                     #if DEBUG
                     appLogSection
@@ -75,6 +83,106 @@ struct SettingsScreen: View {
         .sheet(isPresented: $showExtensionLog) {
             extensionLogSheet
         }
+        .sheet(item: $legalDoc) { doc in
+            LegalScreen(doc: doc)
+        }
+    }
+
+    // MARK: - Appearance
+
+    private var appearanceSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("APPEARANCE")
+                .font(RinklerFonts.sans(12, .semibold))
+                .foregroundStyle(RinklerColors.signalTextDim)
+
+            HStack(spacing: 8) {
+                ForEach(AppearanceStore.Mode.allCases) { mode in
+                    Button { appearance.mode = mode } label: {
+                        VStack(spacing: 6) {
+                            Image(systemName: mode.icon)
+                                .font(.system(size: 18, weight: .semibold))
+                            Text(mode.title)
+                                .font(RinklerFonts.sans(13, .medium))
+                        }
+                        .foregroundStyle(appearance.mode == mode ? RinklerColors.signalOnInk : RinklerColors.signalText)
+                        .frame(maxWidth: .infinity).frame(height: 66)
+                        .background(appearance.mode == mode ? AnyView(RinklerColors.signalInk) : AnyView(RinklerColors.signalCard))
+                        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .strokeBorder(appearance.mode == mode ? Color.clear : RinklerColors.signalBorder, lineWidth: 1))
+                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+
+    // MARK: - About & legal
+
+    private var aboutSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("ABOUT & LEGAL")
+                .font(RinklerFonts.sans(12, .semibold))
+                .foregroundStyle(RinklerColors.signalTextDim)
+
+            VStack(spacing: 0) {
+                aboutRow("Privacy Policy", icon: "lock.shield") { legalDoc = LegalContent.privacy }
+                aboutDivider
+                aboutRow("Terms of Service", icon: "doc.text") { legalDoc = LegalContent.terms }
+                aboutDivider
+                aboutRow("Contact us", icon: "envelope") { openContact() }
+            }
+            .background(RinklerColors.signalCard)
+            .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+
+            Text("Rinkler \(appVersion)")
+                .font(RinklerFonts.mono(11, .regular))
+                .foregroundStyle(RinklerColors.signalTextFaint)
+                .frame(maxWidth: .infinity)
+                .padding(.top, 2)
+        }
+    }
+
+    private func aboutRow(_ title: String, icon: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: RinklerSpacing.md) {
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(RinklerColors.signalBlue)
+                    .frame(width: 22)
+                Text(title)
+                    .font(RinklerFonts.sans(15, .medium))
+                    .foregroundStyle(RinklerColors.signalText)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(RinklerColors.signalTextFaint)
+            }
+            .padding(.horizontal, RinklerSpacing.md)
+            .frame(height: 52)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var aboutDivider: some View {
+        Rectangle()
+            .fill(RinklerColors.signalBorder)
+            .frame(height: 1)
+            .padding(.leading, RinklerSpacing.md + 22 + RinklerSpacing.md)
+    }
+
+    private var appVersion: String {
+        let v = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+        let b = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+        return "v\(v) (\(b))"
+    }
+
+    private func openContact() {
+        guard let url = URL(string: "mailto:\(LegalContent.contactEmail)") else { return }
+        UIApplication.shared.open(url)
     }
 
     // MARK: - VPN Status
@@ -93,7 +201,7 @@ struct SettingsScreen: View {
                     .frame(width: 10, height: 10)
                 Text(vpnManager.statusString)
                     .font(RinklerFonts.coolvetica(size: 18))
-                    .foregroundColor(.white)
+                    .foregroundStyle(RinklerColors.signalText)
             }
         }
     }
@@ -160,7 +268,7 @@ struct SettingsScreen: View {
                             .font(RinklerFonts.sans(13, .semibold))
                             .foregroundStyle(.black)
                             .padding(.horizontal, 16).frame(height: 34)
-                            .background(RinklerColors.signalText)
+                            .background(RinklerColors.signalInk)
                             .clipShape(Capsule())
                     }
                     .buttonStyle(.plain)
@@ -181,22 +289,22 @@ struct SettingsScreen: View {
         VStack(alignment: .leading, spacing: RinklerSpacing.sm) {
             Text("Your Focus System")
                 .font(RinklerFonts.coolvetica(size: 18))
-                .foregroundColor(.white)
+                .foregroundStyle(RinklerColors.signalText)
 
             if focusSystem.rules.isEmpty {
                 Text("No rules yet. Redo setup and we'll build them from your answers.")
                     .font(RinklerFonts.coolvetica(size: 13))
-                    .foregroundColor(RinklerColors.white60)
+                    .foregroundStyle(RinklerColors.signalTextDim)
             } else {
                 ForEach(focusSystem.rules) { rule in
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(rule.name)
                                 .font(RinklerFonts.coolvetica(size: 15))
-                                .foregroundColor(.white)
+                                .foregroundStyle(RinklerColors.signalText)
                             Text(rule.timeRangeLabel)
                                 .font(RinklerFonts.mono(12, .regular))
-                                .foregroundColor(RinklerColors.white60)
+                                .foregroundStyle(RinklerColors.signalTextDim)
                         }
                         Spacer()
                         Text(rule.difficulty.title)
@@ -238,10 +346,10 @@ struct SettingsScreen: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Commitment mode")
                         .font(RinklerFonts.coolvetica(size: 18))
-                        .foregroundColor(.white)
+                        .foregroundStyle(RinklerColors.signalText)
                     Text("Make turning protection OFF the hard part.")
                         .font(RinklerFonts.coolvetica(size: 13))
-                        .foregroundColor(RinklerColors.white60)
+                        .foregroundStyle(RinklerColors.signalTextDim)
                 }
                 Spacer()
                 Toggle("", isOn: $commitment.isEnabled)
@@ -249,11 +357,11 @@ struct SettingsScreen: View {
             }
 
             if commitment.isEnabled {
-                Divider().overlay(RinklerColors.hairline)
+                Divider().overlay(RinklerColors.signalBorder)
 
                 Text("Cooldown before you can disable")
                     .font(RinklerFonts.coolvetica(size: 14))
-                    .foregroundColor(RinklerColors.white60)
+                    .foregroundStyle(RinklerColors.signalTextDim)
 
                 Picker("Cooldown", selection: $commitment.cooldownSeconds) {
                     ForEach(CommitmentStore.cooldownOptions, id: \.self) { seconds in
@@ -264,13 +372,13 @@ struct SettingsScreen: View {
 
                 Text("When protection is on, stopping it asks you to wait out this pause and type \(CommitmentStore.unlockWord). iOS Settings can still switch the VPN off — this only adds friction inside Rinkler.")
                     .font(RinklerFonts.coolvetica(size: 12))
-                    .foregroundColor(RinklerColors.white40)
+                    .foregroundStyle(RinklerColors.signalTextFaint)
                     .fixedSize(horizontal: false, vertical: true)
 
                 if commitment.disablesToday > 0 {
                     Text("Disabled \(commitment.disablesToday)× today")
                         .font(RinklerFonts.coolvetica(size: 12))
-                        .foregroundColor(RinklerColors.dawnGlow)
+                        .foregroundStyle(RinklerColors.signalWarning)
                 }
             }
         }
@@ -286,7 +394,7 @@ struct SettingsScreen: View {
         VStack(alignment: .leading, spacing: RinklerSpacing.sm) {
             Text("Short-video filters")
                 .font(RinklerFonts.coolvetica(size: 18))
-                .foregroundColor(.white)
+                .foregroundStyle(RinklerColors.signalText)
 
             filterToggleRow(title: "Instagram video feed", isOn: $blockInstagramShortVideo)
             filterToggleRow(title: "TikTok feed", isOn: $blockTikTokShortVideo)
@@ -301,7 +409,7 @@ struct SettingsScreen: View {
         HStack {
             Text(title)
                 .font(RinklerFonts.coolvetica(size: 16))
-                .foregroundColor(RinklerColors.white60)
+                .foregroundStyle(RinklerColors.signalTextDim)
             Spacer()
             Toggle("", isOn: isOn)
                 .labelsHidden()
@@ -318,7 +426,7 @@ struct SettingsScreen: View {
         VStack(spacing: RinklerSpacing.sm) {
             Text("Per-Domain Thresholds")
                 .font(RinklerFonts.coolvetica(size: 16))
-                .foregroundColor(RinklerColors.white60)
+                .foregroundStyle(RinklerColors.signalTextDim)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             ForEach(RinklerConstants.domainThresholdGroups.indices, id: \.self) { index in
@@ -326,7 +434,7 @@ struct SettingsScreen: View {
                 VStack(alignment: .leading, spacing: RinklerSpacing.xs) {
                     Text(group.title)
                         .font(RinklerFonts.coolvetica(size: 14))
-                        .foregroundColor(.white)
+                        .foregroundStyle(RinklerColors.signalText)
                         .frame(maxWidth: .infinity, alignment: .leading)
 
                     ForEach(group.domains, id: \.self) { domain in
@@ -350,14 +458,14 @@ struct SettingsScreen: View {
         VStack(alignment: .leading, spacing: RinklerSpacing.xs) {
             Text("App Log")
                 .font(RinklerFonts.coolvetica(size: 16))
-                .foregroundColor(RinklerColors.white60)
+                .foregroundStyle(RinklerColors.signalTextDim)
 
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 1) {
                     ForEach(vpnManager.statusLog.reversed(), id: \.self) { line in
                         Text(line)
                             .font(.system(size: 9, design: .monospaced))
-                            .foregroundColor(RinklerColors.white60)
+                            .foregroundStyle(RinklerColors.signalTextDim)
                     }
                 }
             }
@@ -377,7 +485,7 @@ struct SettingsScreen: View {
         } label: {
             Text("Show Debug Extension Log")
                 .font(RinklerFonts.coolvetica(size: 16))
-                .foregroundColor(.white)
+                .foregroundStyle(RinklerColors.signalText)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, RinklerSpacing.sm)
                 .background(Color.white.opacity(0.15))
@@ -390,12 +498,12 @@ struct SettingsScreen: View {
             ScrollView {
                 Text(vpnManager.tunnelLog)
                     .font(.system(size: 10, design: .monospaced))
-                    .foregroundColor(.white)
+                    .foregroundStyle(RinklerColors.signalText)
                     .padding()
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .textSelection(.enabled)
             }
-            .background(Color.black)
+            .background(RinklerColors.signalBackground)
             .navigationTitle("Extension Log")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -411,7 +519,7 @@ struct SettingsScreen: View {
                 }
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(nil)
     }
 }
 
@@ -428,7 +536,7 @@ struct ExtensionLogView: View {
             ScrollView {
                 Text(vpnManager.tunnelLog)
                     .font(.system(size: 10, design: .monospaced))
-                    .foregroundColor(.white)
+                    .foregroundStyle(RinklerColors.signalText)
                     .padding()
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .textSelection(.enabled)
@@ -446,7 +554,7 @@ struct ExtensionLogView: View {
                     }
                     Button("Refresh") { vpnManager.refreshTunnelLog() }
                 }
-                .foregroundColor(.white)
+                .foregroundStyle(RinklerColors.signalText)
             }
         }
         .onAppear {

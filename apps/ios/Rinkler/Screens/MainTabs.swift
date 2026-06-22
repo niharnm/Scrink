@@ -74,9 +74,9 @@ struct ControlScreen: View {
                                 Button { duration = mins } label: {
                                     Text("\(mins)m")
                                         .font(RinklerFonts.mono(15, .medium))
-                                        .foregroundStyle(duration == mins ? .black : RinklerColors.signalText)
+                                        .foregroundStyle(duration == mins ? RinklerColors.signalOnInk : RinklerColors.signalText)
                                         .frame(maxWidth: .infinity).frame(height: 46)
-                                        .background(duration == mins ? AnyView(RinklerColors.signalText) : AnyView(RinklerColors.signalCard))
+                                        .background(duration == mins ? AnyView(RinklerColors.signalInk) : AnyView(RinklerColors.signalCard))
                                         .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: duration == mins ? 0 : 1))
                                         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                                 }
@@ -96,9 +96,9 @@ struct ControlScreen: View {
                     Button { onStart?() } label: {
                         Text("Start")
                             .font(RinklerFonts.sans(18, .semibold))
-                            .foregroundStyle(.black)
+                            .foregroundStyle(RinklerColors.signalOnInk)
                             .frame(maxWidth: .infinity).frame(height: 56)
-                            .background(RinklerColors.signalText)
+                            .background(RinklerColors.signalInk)
                             .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                     }
                     .buttonStyle(.plain)
@@ -111,7 +111,7 @@ struct ControlScreen: View {
                 .padding(RinklerSpacing.lg)
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(nil)
     }
 
     private func labeledGroup<C: View>(_ title: String, @ViewBuilder content: () -> C) -> some View {
@@ -226,7 +226,7 @@ struct AppsScreen: View {
                 .padding(RinklerSpacing.lg)
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(nil)
     }
 
     private func appCard(_ name: String, allowed: [String], blockedFeature: String,
@@ -385,7 +385,7 @@ struct RuleEditorView: View {
                         .fontWeight(.semibold)
                 }
             }
-            .preferredColorScheme(.dark)
+            .preferredColorScheme(nil)
         }
     }
 
@@ -482,7 +482,7 @@ struct ProgressScreen: View {
                 .padding(RinklerSpacing.lg)
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(nil)
         .onAppear(perform: loadStats)
     }
 

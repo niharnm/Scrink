@@ -75,10 +75,10 @@ struct BlockScreen: View {
                     Button(action: onDone) {
                         Text("Nice — I'm good")
                             .font(RinklerFonts.sans(17, .semibold))
-                            .foregroundStyle(.black)
+                            .foregroundStyle(RinklerColors.signalOnInk)
                             .frame(maxWidth: .infinity)
                             .frame(height: 54)
-                            .background(RinklerColors.signalText)
+                            .background(RinklerColors.signalInk)
                             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                     }
                     .buttonStyle(.plain)

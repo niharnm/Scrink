@@ -166,10 +166,10 @@ struct CommitmentUnlockSheet: View {
                 Button(action: onCancel) {
                     Text("Stay protected")
                         .font(RinklerFonts.sans(18, .semibold))
-                        .foregroundStyle(.black)
+                        .foregroundStyle(RinklerColors.signalOnInk)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
-                        .background(RinklerColors.signalText)
+                        .background(RinklerColors.signalInk)
                         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                 }
                 .buttonStyle(.plain)

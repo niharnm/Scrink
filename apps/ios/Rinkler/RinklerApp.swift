@@ -6,6 +6,7 @@ struct RinklerApp: App {
     @StateObject private var sessions = FocusSessionStore()
     @StateObject private var commitment = CommitmentStore()
     @StateObject private var focusSystem = FocusSystemStore()
+    @StateObject private var appearance = AppearanceStore()
     @State private var path = NavigationPath()
     @State private var authStore = AuthStore()
 
@@ -25,6 +26,10 @@ struct RinklerApp: App {
         // Jump straight to a screen for screenshots / UI verification:
         //   -uiPreview today | commitment
         let args = ProcessInfo.processInfo.arguments
+        // Force an appearance for screenshots: -appearance light | dark | system
+        if let a = args.firstIndex(of: "-appearance"), a + 1 < args.count {
+            UserDefaults.standard.set(args[a + 1], forKey: "rinkler.appearanceMode")
+        }
         if let i = args.firstIndex(of: "-uiPreview"), i + 1 < args.count {
             let screen = args[i + 1]
             _previewScreen = State(initialValue: screen)
@@ -47,6 +52,12 @@ struct RinklerApp: App {
                 } else if previewScreen == "block" {
                     BlockScreen(appName: "Instagram", surface: "Reels", pullsDodged: 47,
                                 minutesReclaimed: 72, streakDays: 5, onLetMeIn: {}, onDone: {})
+                } else if previewScreen == "settings" {
+                    NavigationStack { SettingsScreen() }
+                } else if previewScreen == "privacy" {
+                    LegalScreen(doc: LegalContent.privacy)
+                } else if previewScreen == "terms" {
+                    LegalScreen(doc: LegalContent.terms)
                 } else if focusSystem.hasCompletedOnboarding {
                     NavigationStack(path: $path) {
                         LandingPage(onGo: {
@@ -136,7 +147,8 @@ struct RinklerApp: App {
             .environmentObject(sessions)
             .environmentObject(commitment)
             .environmentObject(focusSystem)
-            .preferredColorScheme(.dark)
+            .environmentObject(appearance)
+            .preferredColorScheme(appearance.mode.colorScheme)
             .task {
                 SVGCache.shared.preload(svgNames: ["instagram"])
             }
