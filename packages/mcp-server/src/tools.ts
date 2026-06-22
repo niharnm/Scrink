@@ -14,7 +14,7 @@ export function registerTools(server: FastMCP) {
     description:
       "Get all blocker configs for a user. Returns is_active (computed from is_enabled + expires_at) and expires_at for countdown display.",
     parameters: z.object({
-      user_id: z.string().describe("The user's UUID"),
+      user_id: z.string().uuid().describe("The user's UUID"),
       active_only: z
         .boolean()
         .optional()
@@ -39,9 +39,15 @@ export function registerTools(server: FastMCP) {
     description:
       "Enable or disable a blocking option for a user. Pass duration_minutes for a timed blocker (e.g. 180 for 3 hours). Omit duration_minutes for a permanent toggle.",
     parameters: z.object({
-      user_id: z.string().describe("The user's UUID"),
-      app_id: z.string().describe("App ID (e.g. instagram, tiktok, youtube)"),
-      option_id: z.string().describe("Option ID (e.g. reels, scroll, video)"),
+      user_id: z.string().uuid().describe("The user's UUID"),
+      app_id: z
+        .string()
+        .min(1)
+        .describe("App ID (e.g. instagram, tiktok, youtube)"),
+      option_id: z
+        .string()
+        .min(1)
+        .describe("Option ID (e.g. reels, scroll, video)"),
       is_enabled: z.boolean().describe("Whether the option should be enabled"),
       duration_minutes: z
         .number()

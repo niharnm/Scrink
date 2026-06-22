@@ -1,5 +1,11 @@
 import CryptoKit
 import Foundation
+import os
+
+private let syncLog = Logger(
+    subsystem: RinklerConstants.logSubsystem,
+    category: "traffic-sync"
+)
 
 enum TrafficSyncStatus: Equatable {
     case waitingForTraffic
@@ -88,6 +94,9 @@ actor TrafficSyncService {
             let (_, response) = try await urlSession.data(for: authenticated.request)
             guard let httpResponse = response as? HTTPURLResponse,
                   (200..<300).contains(httpResponse.statusCode) else {
+                let status = (response as? HTTPURLResponse)?.statusCode ?? -1
+                // Status code is not user content; log it for diagnosability.
+                syncLog.error("Traffic sync rejected by server (HTTP \(status, privacy: .public))")
                 return .failed("Traffic sync failed. Check your connection and try again.")
             }
 
@@ -98,6 +107,9 @@ actor TrafficSyncService {
         } catch SupabaseAuthError.missingConfiguration {
             return .failed("Cloud sync is not configured for this build.")
         } catch {
+            // Underlying error is redacted by default in release builds; this
+            // makes transient network/decode failures diagnosable in Console.
+            syncLog.error("Traffic sync failed: \(error.localizedDescription, privacy: .private)")
             return .failed("Traffic sync failed. Check your connection and try again.")
         }
     }

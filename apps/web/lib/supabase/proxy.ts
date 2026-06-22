@@ -4,12 +4,15 @@ import { getSupabasePublicConfig } from "./config";
 
 /**
  * Public routes that must be reachable without signing in: the marketing
- * landing (`/`), the privacy policy, and the auth screens themselves.
+ * landing (`/`), the privacy policy, the auth screens themselves, and the
+ * unauthenticated health probe (`/api/health`) used by uptime monitors.
  * Everything else (the dashboard, analytics APIs) still requires a session.
  */
 function isPublicPath(pathname: string): boolean {
   if (pathname === "/") return true;
-  return ["/login", "/auth", "/privacy"].some((p) => pathname.startsWith(p));
+  return ["/login", "/auth", "/privacy", "/api/health"].some((p) =>
+    pathname.startsWith(p)
+  );
 }
 
 export async function updateSession(request: NextRequest) {

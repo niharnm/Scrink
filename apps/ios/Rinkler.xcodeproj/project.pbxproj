@@ -50,6 +50,7 @@
 		4CBD13A9A63EB6FFDE23B67B /* SVGCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30EEB2AB48FAE0B765F046C /* SVGCache.swift */; };
 		55B0C1B5A6CF3AA8C6AEF432 /* AppOptionArcs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B4EC3C0F908E65D671403F /* AppOptionArcs.swift */; };
 		55B9C498EF03C4B9380E9BA0 /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E46F6CBC4504443A3E050DE /* AppStore.swift */; };
+		50C1A1AC0000000000000002 /* SocialAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000001 /* SocialAuthService.swift */; };
 		63985968494496186AAAAE97 /* SocialMediaIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 221C01C91E8FC62806530668 /* SocialMediaIcon.swift */; };
 		63FA599ABB0F0D47230364C1 /* RinklerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884244700EF00F59FE7F49D1 /* RinklerButton.swift */; };
 		6AB0C375DDD14ACE8678338E /* SupabaseAuthClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EF496D1E6382443B39705A /* SupabaseAuthClient.swift */; };
@@ -151,6 +152,7 @@
 		9B1C3D4E5F60718293A4B5C6 /* DomainThresholdsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainThresholdsStore.swift; sourceTree = "<group>"; };
 		54C6C8C64B29A95223064A2A /* clouds_continous.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clouds_continous.png; sourceTree = "<group>"; };
 		5E46F6CBC4504443A3E050DE /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
+		50C1A1AC0000000000000001 /* SocialAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialAuthService.swift; sourceTree = "<group>"; };
 		5F0388BBA774E17DCA5497C6 /* RinklerFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RinklerFonts.swift; sourceTree = "<group>"; };
 		5F112CC7035E04A18029EC82 /* clouds.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clouds.png; sourceTree = "<group>"; };
 		64DB7E7C0A427B4897386603 /* BlockedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedApp.swift; sourceTree = "<group>"; };
@@ -299,6 +301,7 @@
 			children = (
 				3A500B91AAD8FCE188E83A9D /* AppOptionsService.swift */,
 				5E46F6CBC4504443A3E050DE /* AppStore.swift */,
+				50C1A1AC0000000000000001 /* SocialAuthService.swift */,
 				931B0AF1A32A039B27B089E5 /* AuthStore.swift */,
 				64DB7E7C0A427B4897386603 /* BlockedApp.swift */,
 				A1F0C0DE0000000000000202 /* FocusSessionStore.swift */,
@@ -539,6 +542,7 @@
 				55B0C1B5A6CF3AA8C6AEF432 /* AppOptionArcs.swift in Sources */,
 				8F0D57C9A6E3045BBE001928 /* AppOptionsService.swift in Sources */,
 				55B9C498EF03C4B9380E9BA0 /* AppStore.swift in Sources */,
+				50C1A1AC0000000000000002 /* SocialAuthService.swift in Sources */,
 				F4B56F9A3A941A0C2EBDADE7 /* AuthStore.swift in Sources */,
 				9549542D2E57B4C55511D581 /* BackArrowView.swift in Sources */,
 				175B55D8F51D048B9FEFF95B /* BlockedApp.swift in Sources */,
