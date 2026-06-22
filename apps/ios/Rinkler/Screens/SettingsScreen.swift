@@ -4,6 +4,10 @@ import NetworkExtension
 struct SettingsScreen: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var vpnManager: VPNManager
+    @EnvironmentObject private var commitment: CommitmentStore
+    @EnvironmentObject private var focusSystem: FocusSystemStore
+
+    @State private var showResetOnboarding = false
 
     @AppStorage(RinklerConstants.blockInstagramShortVideoEnabledKey,
                 store: UserDefaults(suiteName: RinklerConstants.appGroupID))
@@ -19,7 +23,7 @@ struct SettingsScreen: View {
 
     var body: some View {
         ZStack {
-            SkyBackgroundView()
+            RinklerColors.signalBackground.ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: RinklerSpacing.lg) {
@@ -28,6 +32,12 @@ struct SettingsScreen: View {
 
                     // VPN Toggle Button
                     vpnToggleButton
+
+                    // Focus System (rules created during onboarding)
+                    focusSystemSection
+
+                    // Commitment mode (friction on turning protection OFF)
+                    commitmentSection
 
                     // Short-form filter toggles
                     shortVideoFiltersSection
@@ -110,6 +120,111 @@ struct SettingsScreen: View {
         return vpnManager.vpnStatus == .connected ? "STOP PROTECTION" : "START PROTECTION"
     }
 
+    // MARK: - Focus System
+
+    private var focusSystemSection: some View {
+        VStack(alignment: .leading, spacing: RinklerSpacing.sm) {
+            Text("Your Focus System")
+                .font(RinklerFonts.coolvetica(size: 18))
+                .foregroundColor(.white)
+
+            if focusSystem.rules.isEmpty {
+                Text("No rules yet. Re-run setup to generate personalized rules.")
+                    .font(RinklerFonts.coolvetica(size: 13))
+                    .foregroundColor(RinklerColors.white60)
+            } else {
+                ForEach(focusSystem.rules) { rule in
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(rule.name)
+                                .font(RinklerFonts.coolvetica(size: 15))
+                                .foregroundColor(.white)
+                            Text(rule.timeRangeLabel)
+                                .font(RinklerFonts.mono(12, .regular))
+                                .foregroundColor(RinklerColors.white60)
+                        }
+                        Spacer()
+                        Text(rule.difficulty.title)
+                            .font(RinklerFonts.coolvetica(size: 11))
+                            .foregroundColor(RinklerColors.signalBlue)
+                    }
+                }
+            }
+
+            Button(role: .destructive) {
+                showResetOnboarding = true
+            } label: {
+                Text("Reset onboarding (testing)")
+                    .font(RinklerFonts.coolvetica(size: 14))
+                    .foregroundColor(RinklerColors.signalWarning)
+            }
+            .padding(.top, RinklerSpacing.xs)
+        }
+        .padding(RinklerSpacing.md)
+        .background(RinklerColors.signalCard)
+        .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .alert("Reset onboarding?", isPresented: $showResetOnboarding) {
+            Button("Cancel", role: .cancel) {}
+            Button("Reset", role: .destructive) {
+                focusSystem.resetOnboarding()
+                dismiss()
+            }
+        } message: {
+            Text("Story-mode setup will show again next launch and your generated rules will be cleared.")
+        }
+    }
+
+    // MARK: - Commitment Mode
+
+    private var commitmentSection: some View {
+        VStack(alignment: .leading, spacing: RinklerSpacing.sm) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Commitment mode")
+                        .font(RinklerFonts.coolvetica(size: 18))
+                        .foregroundColor(.white)
+                    Text("Make turning protection OFF the hard part.")
+                        .font(RinklerFonts.coolvetica(size: 13))
+                        .foregroundColor(RinklerColors.white60)
+                }
+                Spacer()
+                Toggle("", isOn: $commitment.isEnabled)
+                    .labelsHidden()
+            }
+
+            if commitment.isEnabled {
+                Divider().overlay(RinklerColors.hairline)
+
+                Text("Cooldown before you can disable")
+                    .font(RinklerFonts.coolvetica(size: 14))
+                    .foregroundColor(RinklerColors.white60)
+
+                Picker("Cooldown", selection: $commitment.cooldownSeconds) {
+                    ForEach(CommitmentStore.cooldownOptions, id: \.self) { seconds in
+                        Text(CommitmentStore.label(forCooldown: seconds)).tag(seconds)
+                    }
+                }
+                .pickerStyle(.segmented)
+
+                Text("When protection is on, stopping it asks you to wait out this pause and type \(CommitmentStore.unlockWord). iOS Settings can still switch the VPN off — this only adds friction inside Rinkler.")
+                    .font(RinklerFonts.coolvetica(size: 12))
+                    .foregroundColor(RinklerColors.white40)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                if commitment.disablesToday > 0 {
+                    Text("Disabled \(commitment.disablesToday)× today")
+                        .font(RinklerFonts.coolvetica(size: 12))
+                        .foregroundColor(RinklerColors.dawnGlow)
+                }
+            }
+        }
+        .padding(RinklerSpacing.md)
+        .background(RinklerColors.signalCard)
+        .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
     // MARK: - Short-Video Filters
 
     private var shortVideoFiltersSection: some View {
@@ -122,7 +237,8 @@ struct SettingsScreen: View {
             filterToggleRow(title: "TikTok feed", isOn: $blockTikTokShortVideo)
         }
         .padding(RinklerSpacing.md)
-        .background(Color.white.opacity(0.1))
+        .background(RinklerColors.signalCard)
+        .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
@@ -168,7 +284,8 @@ struct SettingsScreen: View {
             }
         }
         .padding(RinklerSpacing.md)
-        .background(Color.white.opacity(0.1))
+        .background(RinklerColors.signalCard)
+        .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
@@ -251,7 +368,7 @@ struct ExtensionLogView: View {
 
     var body: some View {
         ZStack {
-            SkyBackgroundView()
+            RinklerColors.signalBackground.ignoresSafeArea()
 
             ScrollView {
                 Text(vpnManager.tunnelLog)

@@ -4,6 +4,8 @@ import SwiftUI
 struct RinklerApp: App {
     @StateObject private var vpnManager = VPNManager()
     @StateObject private var sessions = FocusSessionStore()
+    @StateObject private var commitment = CommitmentStore()
+    @StateObject private var focusSystem = FocusSystemStore()
     @State private var path = NavigationPath()
     @State private var authStore = AuthStore()
 
@@ -17,16 +19,24 @@ struct RinklerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            NavigationStack(path: $path) {
+            Group {
+                if focusSystem.hasCompletedOnboarding {
+                NavigationStack(path: $path) {
                 LandingPage(onGo: {
                     if authStore.isLoggedIn {
-                        path.append(Route.home)
+                        path.append(Route.today)
                     } else {
                         path.append(Route.magicSignIn)
                     }
                 })
                 .navigationDestination(for: Route.self) { route in
                     switch route {
+                    case .today:
+                        MainTabView(
+                            onSettings: { path.append(Route.settings) },
+                            onStartSession: { path.append(Route.focusSetup) },
+                            onTrafficDashboard: { path.append(Route.trafficDashboard) }
+                        )
                     case .home:
                         HomeScreen(
                             onSignIn: {
@@ -59,9 +69,9 @@ struct RinklerApp: App {
                         })
                     case .sessionRecap:
                         SessionRecapScreen(onDone: {
-                            // Reset cleanly to a fresh home screen.
+                            // Reset cleanly back to the Today tab shell.
                             path = NavigationPath()
-                            path.append(Route.home)
+                            path.append(Route.today)
                         })
                     case .magicSignIn:
                         MagicSignInScreen(
@@ -70,13 +80,13 @@ struct RinklerApp: App {
                             },
                             onContinueOffline: {
                                 path = NavigationPath()
-                                path.append(Route.home)
+                                path.append(Route.today)
                             }
                         )
                     case .codeVerification(let email):
                         CodeVerificationScreen(email: email, onVerified: {
                             path = NavigationPath()
-                            path.append(Route.home)
+                            path.append(Route.today)
                         })
                     case .settings:
                         SettingsScreen()
@@ -87,9 +97,18 @@ struct RinklerApp: App {
                     }
                 }
             }
+                } else {
+                    OnboardingFlow(onFinish: {
+                        path = NavigationPath()
+                        path.append(Route.today)
+                    })
+                }
+            }
             .environment(authStore)
             .environmentObject(vpnManager)
             .environmentObject(sessions)
+            .environmentObject(commitment)
+            .environmentObject(focusSystem)
             .preferredColorScheme(.dark)
             .task {
                 SVGCache.shared.preload(svgNames: ["instagram"])

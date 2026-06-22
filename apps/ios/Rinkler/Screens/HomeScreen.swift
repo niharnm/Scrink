@@ -4,6 +4,9 @@ struct HomeScreen: View {
     @Environment(AuthStore.self) private var authStore
     @EnvironmentObject private var vpnManager: VPNManager
     @EnvironmentObject private var sessions: FocusSessionStore
+    @EnvironmentObject private var commitment: CommitmentStore
+
+    @State private var showUnlock = false
 
     var onSignIn: (() -> Void)? = nil
     var onSettings: (() -> Void)? = nil
@@ -33,6 +36,28 @@ struct HomeScreen: View {
             }
         }
         .navigationBarBackButtonHidden(true)
+        .sheet(isPresented: $showUnlock) {
+            CommitmentUnlockSheet(
+                cooldownSeconds: commitment.cooldownSeconds,
+                onConfirm: {
+                    vpnManager.toggleVPN()
+                    commitment.recordDisable()
+                    showUnlock = false
+                },
+                onCancel: { showUnlock = false }
+            )
+        }
+    }
+
+    /// Start is always one tap. Stopping while Commitment Mode is on routes
+    /// through the friction sheet instead of toggling immediately.
+    private func handleProtectionTap() {
+        let isOn = vpnManager.vpnStatus == .connected || vpnManager.vpnStatus == .connecting
+        if isOn && commitment.isEnabled {
+            showUnlock = true
+        } else {
+            vpnManager.toggleVPN()
+        }
     }
 
     // MARK: Header
@@ -153,7 +178,7 @@ struct HomeScreen: View {
 
             if !sessions.isRunning {
                 Button {
-                    vpnManager.toggleVPN()
+                    handleProtectionTap()
                 } label: {
                     Text(vpnManager.vpnStatus == .connected ? "Stop" : "Start")
                         .font(RinklerFonts.coolvetica(size: 15))
@@ -273,7 +298,10 @@ struct HomeScreen: View {
     private var protectionSubtitle: String {
         if sessions.isRunning { return "Held by your active focus session." }
         switch vpnManager.vpnStatus {
-        case .connected: return "Filtering supported traffic on this device."
+        case .connected:
+            return commitment.isEnabled
+                ? "Locked in — a \(commitment.cooldownLabel) pause guards the stop button."
+                : "Filtering supported traffic on this device."
         case .connecting, .reasserting: return "Preparing the local VPN tunnel."
         case .invalid: return "Open Settings if iOS needs VPN permission."
         default: return "Turn on to filter outside a focus session."
@@ -286,4 +314,5 @@ struct HomeScreen: View {
         .environment(AuthStore())
         .environmentObject(VPNManager())
         .environmentObject(FocusSessionStore())
+        .environmentObject(CommitmentStore())
 }

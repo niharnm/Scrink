@@ -272,6 +272,124 @@ final class SupabaseAuthClient {
     }
 }
 
+// MARK: - Social sign-in (Apple / Google)
+
+extension SupabaseAuthClient {
+    /// Native Sign in with Apple: exchanges Apple's identity token for a Supabase
+    /// session via the `id_token` grant. `nonce` is the *raw* (un-hashed) nonce —
+    /// Apple embeds its SHA-256 in the token and Supabase re-hashes this to verify.
+    func signInWithApple(idToken: String, nonce: String) async throws -> SupabaseAuthSession {
+        var request = try authRequest(path: "token")
+        guard let url = request.url,
+              var components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            throw SupabaseAuthError.invalidResponse
+        }
+        components.queryItems = [URLQueryItem(name: "grant_type", value: "id_token")]
+        request.url = components.url
+        request.httpMethod = "POST"
+        request.httpBody = try JSONEncoder().encode(
+            IDTokenRequest(provider: "apple", idToken: idToken, nonce: nonce)
+        )
+
+        let response = try await send(request, decodeAs: VerifyOTPResponse.self)
+        guard let accessToken = response.accessToken, let userID = response.user.id else {
+            throw SupabaseAuthError.invalidResponse
+        }
+
+        let session = SupabaseAuthSession(
+            accessToken: accessToken,
+            refreshToken: response.refreshToken,
+            expiresIn: response.expiresIn,
+            expiresAt: response.expiresIn.map { Date().addingTimeInterval(TimeInterval($0)) },
+            userID: userID,
+            email: response.user.email ?? ""
+        )
+        try saveSession(session)
+        return session
+    }
+
+    /// Builds the Supabase OAuth authorize URL for a provider (e.g. "google"),
+    /// driven through `ASWebAuthenticationSession`. `redirectTo` is the app's
+    /// custom-scheme callback (must be allow-listed in the Supabase dashboard).
+    func oauthAuthorizeURL(provider: String, redirectTo: String) -> URL? {
+        guard let configuration else { return nil }
+        let base = configuration.baseURL
+            .appendingPathComponent("auth")
+            .appendingPathComponent("v1")
+            .appendingPathComponent("authorize")
+        guard var components = URLComponents(url: base, resolvingAgainstBaseURL: false) else { return nil }
+        components.queryItems = [
+            URLQueryItem(name: "provider", value: provider),
+            URLQueryItem(name: "redirect_to", value: redirectTo),
+        ]
+        return components.url
+    }
+
+    /// Completes an OAuth implicit-flow redirect: parses the tokens from the
+    /// callback URL fragment, derives the user id/email from the JWT, and stores
+    /// the session.
+    func completeOAuth(callbackURL: URL) throws -> SupabaseAuthSession {
+        guard let fragment = URLComponents(url: callbackURL, resolvingAgainstBaseURL: false)?.fragment else {
+            throw SupabaseAuthError.invalidResponse
+        }
+
+        var params: [String: String] = [:]
+        for pair in fragment.split(separator: "&") {
+            let kv = pair.split(separator: "=", maxSplits: 1).map(String.init)
+            guard kv.count == 2 else { continue }
+            params[kv[0]] = kv[1].removingPercentEncoding ?? kv[1]
+        }
+
+        if let error = params["error_description"] ?? params["error"] {
+            throw SupabaseAuthError.requestFailed(error.replacingOccurrences(of: "+", with: " "))
+        }
+        guard let accessToken = params["access_token"] else {
+            throw SupabaseAuthError.invalidResponse
+        }
+
+        let claims = Self.decodeJWTClaims(accessToken)
+        let expiresIn = params["expires_in"].flatMap { Int($0) }
+        let session = SupabaseAuthSession(
+            accessToken: accessToken,
+            refreshToken: params["refresh_token"],
+            expiresIn: expiresIn,
+            expiresAt: expiresIn.map { Date().addingTimeInterval(TimeInterval($0)) },
+            userID: (claims?["sub"] as? String) ?? "",
+            email: (claims?["email"] as? String) ?? ""
+        )
+        try saveSession(session)
+        return session
+    }
+
+    /// Decodes the (unverified) payload claims of a JWT — used only to read the
+    /// `sub`/`email` for display; the token itself is what Supabase trusts.
+    private static func decodeJWTClaims(_ jwt: String) -> [String: Any]? {
+        let segments = jwt.split(separator: ".")
+        guard segments.count >= 2 else { return nil }
+        var base64 = String(segments[1])
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+        while base64.count % 4 != 0 { base64.append("=") }
+        guard let data = Data(base64Encoded: base64),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return nil
+        }
+        return json
+    }
+}
+
+private struct IDTokenRequest: Encodable {
+    let provider: String
+    let idToken: String
+    let nonce: String
+
+    enum CodingKeys: String, CodingKey {
+        case provider
+        case idToken = "id_token"
+        case nonce
+    }
+}
+
 private struct OTPRequest: Encodable {
     let email: String
     let createUser = true

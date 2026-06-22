@@ -13,6 +13,7 @@ build/
 # Swift / Xcode
 Secrets.xcconfig
 DerivedData/
+DerivedData*/
 *.xcuserstate
 xcuserdata/
 .build/

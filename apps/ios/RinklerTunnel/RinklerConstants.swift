@@ -10,7 +10,11 @@ enum RinklerConstants {
     static let tunnelLocalAddress = "198.18.0.2"
     static let tunnelSubnetMask = "255.255.255.0"
     static let dnsServers = ["8.8.8.8", "1.1.1.1"]
-    static let mtu: NSNumber = 9000
+    // Standard packet-tunnel MTU. A jumbo MTU (e.g. 9000) is not a valid path
+    // MTU to real servers: large frames get black-holed or fragmented, which
+    // stalls TCP and can tear the tunnel down shortly after it connects. This
+    // was the root cause of the tunnel "connecting but no traffic" failure.
+    static let mtu: NSNumber = 1500
 
     // MARK: - tun2socks Configuration
     static let tun2socksTaskStackSize = 24576
@@ -26,6 +30,18 @@ enum RinklerConstants {
     static let tcpRelayTimeout: TimeInterval = 120.0
     static let maxConnections = 500
     static let statsInterval: TimeInterval = 10.0
+
+    // MARK: - QUIC / UDP Blocking
+    // Short-video media is largely served over QUIC (HTTP/3) on UDP 443. Because
+    // the QUIC handshake is encrypted there is no plaintext SNI to read, so we
+    // match QUIC datagrams by destination IP using the set of IPs we learn belong
+    // to tracked CDNs (from DNS answers + TLS SNI on parallel TCP/443 sockets).
+    // Dropping UDP 443 to those IPs forces the apps to fall back to TCP/TLS, where
+    // the byte-threshold stream blocker can actually act. Without this, reels play
+    // over QUIC and bypass the filter entirely.
+    static let quicPort: UInt16 = 443
+    static let trackedIPTTL: TimeInterval = 600   // 10 min — covers DNS TTL + reuse
+    static let maxTrackedIPs = 4000
 
     // MARK: - Logging
     static let logFileName = "tunnel_log.txt"
@@ -94,6 +110,8 @@ enum RinklerConstants {
     static let blockReelsEnabledKey = blockInstagramShortVideoEnabledKey
     static let domainThresholdsKey = "domainThresholds"
     static let optionStatesKey = "optionStates"
+    /// Compact schedule written by the app from the user's Focus System rules.
+    static let ruleScheduleKey = "ruleSchedule"
 
     static func filterEnabledKey(forTrackedDomain domain: String) -> String? {
         if instagramTrackedDomains.contains(domain) {

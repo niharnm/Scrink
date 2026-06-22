@@ -10,7 +10,10 @@ enum RinklerConstants {
     static let tunnelLocalAddress = "198.18.0.2"
     static let tunnelSubnetMask = "255.255.255.0"
     static let dnsServers = ["8.8.8.8", "1.1.1.1"]
-    static let mtu: NSNumber = 9000
+    // Keep this in sync with the packet tunnel target. A jumbo MTU is not a
+    // valid path MTU for real device traffic and can stall or tear down the
+    // tunnel shortly after it connects.
+    static let mtu: NSNumber = 1500
 
     // MARK: - tun2socks Configuration
     static let tun2socksTaskStackSize = 24576
@@ -26,6 +29,11 @@ enum RinklerConstants {
     static let tcpRelayTimeout: TimeInterval = 120.0
     static let maxConnections = 500
     static let statsInterval: TimeInterval = 10.0
+
+    // MARK: - QUIC / UDP Blocking
+    static let quicPort: UInt16 = 443
+    static let trackedIPTTL: TimeInterval = 600
+    static let maxTrackedIPs = 4000
 
     // MARK: - Logging
     static let logFileName = "tunnel_log.txt"
