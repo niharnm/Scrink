@@ -159,7 +159,7 @@ export default function LoginPage() {
           Rinkler
         </Link>
         <div style={subtitleStyle}>
-          join the waitlist. Rinkler drops July 10 and we&apos;ll tell you the second it&apos;s live.
+          hop on the waitlist. Rinkler drops July 10, and youll be first to know the second its ready.
         </div>
 
         {!shouldEnterCode && (
