@@ -1,16 +1,18 @@
 import Link from "next/link";
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
 import { signal } from "@/lib/signal";
 import AppShowcase from "./AppShowcase";
+import Reveal from "./Reveal";
+import Countdown from "./Countdown";
 
 /**
- * Rinkler marketing landing — "stark minimal" direction: true black, left-aligned
- * big type, hairline-separated sections, monospace eyebrow labels, a single light
- * button. No glows, no gradients, no colored cards.
+ * Rinkler marketing landing — stark, true black, casual real voice (lowercase,
+ * no em dashes). Opens on a countdown splash; "what is this" scrolls to the
+ * rest. Scroll-reveals on each section.
  */
 export default function Landing({ loggedIn }: { loggedIn: boolean }) {
   const ctaHref = loggedIn ? "/dashboard" : "/login";
-  const ctaLabel = loggedIn ? "Open dashboard" : "Get early access";
+  const ctaLabel = loggedIn ? "open dashboard" : "get early access";
 
   return (
     <div style={page}>
@@ -24,165 +26,200 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
           Rinkler
         </Link>
         <nav style={navRight} className="nav-links">
-          <a href="#difference" style={navLink}>Why</a>
-          <a href="#how" style={navLink}>How</a>
-          <Link href="/privacy" style={navLink}>Privacy</Link>
-          <Link href="/login" style={navLink}>Log in</Link>
+          <a href="#how" style={navLink}>how</a>
+          <Link href="/privacy" style={navLink}>privacy</Link>
+          <Link href="/login" style={navLink}>log in</Link>
           <Link href={ctaHref} style={lightBtn} className="light-btn">{ctaLabel}</Link>
         </nav>
       </header>
 
       <main style={main}>
-        {/* Hero */}
-        <section style={{ ...section, paddingTop: "clamp(96px, 16vh, 200px)", paddingBottom: "clamp(72px, 12vh, 150px)" }}>
-          <h1 style={h1}>
-            Your phone isn&apos;t<br className="br-hide" /> the problem.
-            <br />
-            <span style={{ color: signal.textFaint }}>The infinite scroll is.</span>
-          </h1>
-          <p style={{ ...lede, marginTop: 28 }}>
-            Rinkler interrupts the feeds built to swallow your evenings — Reels,
-            TikTok — and leaves everything you actually opened the app for. DMs,
-            search, messages: untouched.
-          </p>
-          <div style={ctaRow}>
-            <Link href={ctaHref} style={lightBtn} className="light-btn">{ctaLabel}</Link>
-            <a href="#difference" style={textBtn} className="text-btn">Why it&apos;s different →</a>
-          </div>
+        {/* Splash — countdown */}
+        <section style={splash}>
+          <Reveal y={14}>
+            <div style={splashLogo}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/rinkler-mark.png" alt="" width={40} height={40} style={{ display: "block" }} />
+              <span style={splashWord}>Rinkler</span>
+            </div>
+            <p style={splashTag}>the app that kills the endless scroll, not your whole phone</p>
+
+            <div style={{ marginTop: "clamp(28px, 5vh, 52px)" }}>
+              <div style={countLabel}>launching in</div>
+              <Countdown />
+            </div>
+
+            <div style={splashPill}>
+              <span style={dot} /> dropping july 10
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
+              <Link href={ctaHref} style={lightBtnLg} className="light-btn">{ctaLabel}</Link>
+            </div>
+
+            <a href="#more" style={learnMore} className="text-btn">what is this ↓</a>
+          </Reveal>
         </section>
+
+        {/* Hero */}
+        <Reveal y={18}>
+          <section id="more" style={{ ...section, paddingTop: "clamp(48px, 8vh, 90px)", paddingBottom: "clamp(72px, 12vh, 150px)" }}>
+            <h1 style={h1}>
+              your phone isnt<br className="br-hide" /> the problem.
+              <br />
+              <span style={{ color: signal.textFaint }}>the feed is.</span>
+            </h1>
+            <p style={{ ...lede, marginTop: 28 }}>
+              rinkler cuts the endless reels and tiktoks that eat your night, and
+              leaves the stuff you actually opened the app for. dms, search,
+              messages, all still there.
+            </p>
+            <div style={ctaRow}>
+              <Link href={ctaHref} style={lightBtn} className="light-btn">{ctaLabel}</Link>
+              <a href="#difference" style={textBtn} className="text-btn">see why its different →</a>
+            </div>
+          </section>
+        </Reveal>
 
         <Rule />
 
         {/* App showcase */}
-        <AppShowcase />
+        <Reveal><AppShowcase /></Reveal>
 
         <Rule />
 
         {/* The real fight */}
-        <section style={section}>
-          <Eyebrow>The real fight</Eyebrow>
-          <h2 style={h2}>You&apos;re not weak. It&apos;s rigged.</h2>
-          <p style={statement}>
-            You opened Instagram to answer one message. Forty minutes later
-            you&apos;re watching a stranger restore a rusted wrench. That isn&apos;t a
-            willpower failure — the feed is tuned by hundreds of engineers and an
-            A/B test for every pixel, all pointed at one thing: the next swipe.
-          </p>
-          <p style={{ ...statement, color: signal.text, marginTop: 20 }}>
-            Rinkler evens the odds — at the one layer the feed can&apos;t talk you
-            out of.
-          </p>
-        </section>
+        <Reveal>
+          <section style={section}>
+            <h2 style={h2}>youre not weak. its rigged.</h2>
+            <p style={statement}>
+              you open instagram to answer one text. forty minutes later youre
+              watching some guy fix a rusted wrench and you dont even know how you
+              got there. thats not you being lazy. the feed is built by hundreds of
+              engineers testing every pixel to keep you swiping. you were never
+              gonna beat that with willpower.
+            </p>
+            <p style={{ ...statement, color: signal.text, marginTop: 20 }}>
+              rinkler evens it out, at the one spot the feed cant talk you out of.
+            </p>
+          </section>
+        </Reveal>
 
         <Rule />
 
-        {/* Scalpel, not a hammer */}
-        <section id="difference" style={section}>
-          <Eyebrow>Why it&apos;s different</Eyebrow>
-          <h2 style={h2}>A scalpel, not a hammer.</h2>
-          <p style={{ ...lede, maxWidth: 680, marginTop: 20 }}>
-            Most screen-time apps are all-or-nothing. Block Instagram, unblock it
-            to send one DM, and you&apos;re back in the feed — so people rage-quit
-            blockers within a week. Rinkler cuts only the short-video feed and
-            leaves the rest working. Nothing to rage-quit.
-          </p>
-          <div style={compareGrid} className="compare">
-            <div style={{ paddingRight: 32 }}>
-              <div style={colLabel}>Blanket blockers</div>
-              {compareBad.map((t) => <CompareRow key={t} text={t} good={false} />)}
+        {/* Scalpel */}
+        <Reveal>
+          <section id="difference" style={section}>
+            <h2 style={h2}>it cuts the feed, not the whole app.</h2>
+            <p style={{ ...lede, maxWidth: 680, marginTop: 20 }}>
+              most blockers are all or nothing. you block instagram, then unblock
+              it to send one dm, and youre right back in the feed. thats why people
+              delete them in a week. rinkler only cuts the short video feed and
+              leaves everything else working. theres nothing to ragequit.
+            </p>
+            <div style={compareGrid} className="compare">
+              <div style={{ paddingRight: 32 }}>
+                <div style={colLabel}>blanket blockers</div>
+                {compareBad.map((t) => <CompareRow key={t} text={t} good={false} />)}
+              </div>
+              <div style={{ paddingLeft: 32, borderLeft: `1px solid ${signal.border}` }} className="compare-right">
+                <div style={{ ...colLabel, color: signal.text }}>rinkler</div>
+                {compareGood.map((t) => <CompareRow key={t} text={t} good />)}
+              </div>
             </div>
-            <div style={{ paddingLeft: 32, borderLeft: `1px solid ${signal.border}` }} className="compare-right">
-              <div style={{ ...colLabel, color: signal.text }}>Rinkler</div>
-              {compareGood.map((t) => <CompareRow key={t} text={t} good />)}
-            </div>
-          </div>
-        </section>
+          </section>
+        </Reveal>
 
         <Rule />
 
         {/* How it works */}
-        <section id="how" style={section}>
-          <Eyebrow>How it works</Eyebrow>
-          <h2 style={h2}>Set it once. It holds the line.</h2>
-          <div style={{ marginTop: 40 }}>
-            {howSteps.map((s, i) => (
-              <div key={s.title} style={stepRow} className="step-row">
-                <div style={stepNum}>{String(i + 1).padStart(2, "0")}</div>
-                <div style={{ maxWidth: 620 }}>
-                  <div style={stepTitle}>{s.title}</div>
-                  <div style={stepBody}>{s.body}</div>
+        <Reveal>
+          <section id="how" style={section}>
+            <h2 style={h2}>set it up once, it handles the rest.</h2>
+            <div style={{ marginTop: 40 }}>
+              {howSteps.map((s, i) => (
+                <div key={s.title} style={stepRow} className="step-row">
+                  <div style={stepNum}>{String(i + 1).padStart(2, "0")}</div>
+                  <div style={{ maxWidth: 620 }}>
+                    <div style={stepTitle}>{s.title}</div>
+                    <div style={stepBody}>{s.body}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+        </Reveal>
 
         <Rule />
 
-        {/* Honest by design */}
-        <section style={section}>
-          <Eyebrow>Honest by design</Eyebrow>
-          <h2 style={h2}>No glow, no gimmicks.</h2>
-          <div style={featGrid} className="feat-grid">
-            {features.map((f) => (
-              <div key={f.title}>
-                <div style={featTitle}>{f.title}</div>
-                <div style={featBody}>{f.body}</div>
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* Honest */}
+        <Reveal>
+          <section style={section}>
+            <h2 style={h2}>how it actually works.</h2>
+            <div style={featGrid} className="feat-grid">
+              {features.map((f) => (
+                <div key={f.title}>
+                  <div style={featTitle}>{f.title}</div>
+                  <div style={featBody}>{f.body}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </Reveal>
 
         <Rule />
 
         {/* Privacy */}
-        <section style={section}>
-          <Eyebrow>Privacy by design</Eyebrow>
-          <h2 style={{ ...h2, maxWidth: 760 }}>It filters on your device. It never reads your content.</h2>
-          <p style={{ ...lede, maxWidth: 640, marginTop: 20 }}>
-            The filter runs locally — a private configuration that never routes
-            your traffic through a server. It sees where a connection is going and
-            how big a stream is, never what&apos;s inside. No messages read,
-            nothing stored, nothing sold.
-          </p>
-          <Link href="/privacy" style={{ ...textBtn, display: "inline-block", marginTop: 24 }} className="text-btn">
-            Read the privacy policy →
-          </Link>
-        </section>
+        <Reveal>
+          <section style={section}>
+            <h2 style={{ ...h2, maxWidth: 760 }}>it runs on your phone and never reads your stuff.</h2>
+            <p style={{ ...lede, maxWidth: 640, marginTop: 20 }}>
+              the filter runs locally. your traffic never goes through a server. it
+              only sees where a connection is headed and how big it is, never whats
+              inside. no messages read, nothing stored, nothing sold.
+            </p>
+            <Link href="/privacy" style={{ ...textBtn, display: "inline-block", marginTop: 24 }} className="text-btn">
+              read the privacy policy →
+            </Link>
+          </section>
+        </Reveal>
 
         <Rule />
 
-        {/* Founder note */}
-        <section style={section}>
-          <Eyebrow>Why I built this</Eyebrow>
-          <p style={{ ...quote }}>
-            &ldquo;Id just be scrolling endlessly without even knowing whats going
-            on and that would be the first thing i did going to sleep and waking
-            up, i dint even like or want to scroll but it just became a habit.
-            Nobody was able to fix this issue, so i did.&rdquo;
-          </p>
-          <div style={{ ...colLabel, marginTop: 20 }}>— the maker of Rinkler</div>
-        </section>
+        {/* Founder quote */}
+        <Reveal>
+          <section style={section}>
+            <p style={{ ...quote }}>
+              &ldquo;Id just be scrolling endlessly without even knowing whats going
+              on and that would be the first thing i did going to sleep and waking
+              up, i dint even like or want to scroll but it just became a habit.
+              Nobody was able to fix this issue, so i did.&rdquo;
+            </p>
+            <div style={{ ...colLabel, marginTop: 20 }}>the kid who made rinkler</div>
+          </section>
+        </Reveal>
 
         <Rule />
 
         {/* Final CTA */}
-        <section style={{ ...section, paddingTop: "clamp(80px, 13vh, 160px)", paddingBottom: "clamp(80px, 13vh, 160px)" }}>
-          <h2 style={{ ...h2, fontSize: "clamp(34px, 6vw, 64px)" }}>Take back your attention.</h2>
-          <p style={{ ...lede, marginTop: 18 }}>Coming to iOS. Get early access and win your first ten quiet minutes.</p>
-          <div style={{ ...ctaRow, marginTop: 32 }}>
-            <Link href={ctaHref} style={lightBtn} className="light-btn">{ctaLabel}</Link>
-          </div>
-        </section>
+        <Reveal>
+          <section style={{ ...section, paddingTop: "clamp(80px, 13vh, 160px)", paddingBottom: "clamp(80px, 13vh, 160px)" }}>
+            <h2 style={{ ...h2, fontSize: "clamp(34px, 6vw, 64px)" }}>get your time back.</h2>
+            <p style={{ ...lede, marginTop: 18 }}>launching july 10. get early access and win your first ten quiet minutes.</p>
+            <div style={{ ...ctaRow, marginTop: 32 }}>
+              <Link href={ctaHref} style={lightBtn} className="light-btn">{ctaLabel}</Link>
+            </div>
+          </section>
+        </Reveal>
       </main>
 
       {/* Footer */}
       <footer style={footer}>
         <span style={wordmark}>Rinkler</span>
         <div style={footerLinks} className="nav-links">
-          <Link href="/privacy" style={navLink}>Privacy</Link>
-          <a href="mailto:nihar.manchikalapudi@gmail.com" style={navLink}>Support</a>
-          <Link href="/login" style={navLink}>Log in</Link>
+          <Link href="/privacy" style={navLink}>privacy</Link>
+          <a href="mailto:nihar.manchikalapudi@gmail.com" style={navLink}>support</a>
+          <Link href="/login" style={navLink}>log in</Link>
         </div>
         <span style={{ color: signal.textFaint, fontFamily: signal.mono, fontSize: 12 }}>© 2026</span>
       </footer>
@@ -190,9 +227,6 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
   );
 }
 
-function Eyebrow({ children }: { children: ReactNode }) {
-  return <div style={eyebrow}>{children}</div>;
-}
 function Rule() {
   return <div style={{ height: 1, background: signal.border, maxWidth: 1080, margin: "0 auto", width: "100%" }} />;
 }
@@ -206,27 +240,27 @@ function CompareRow({ text, good }: { text: string; good: boolean }) {
 }
 
 const compareBad = [
-  "Block the whole app — including the DMs you need",
-  "Unblock it for a second, fall right back in",
-  "Guilt-trips and lockouts you resent",
-  "Quietly deleted within a week",
+  "blocks the whole app, dms and all",
+  "you unlock it for a sec and fall back in",
+  "guilt trips and lockouts you hate",
+  "deleted within a week",
 ];
 const compareGood = [
-  "Cut only the short-video feed",
-  "Keep messages, search, and posts working",
-  "No shame — just real numbers and quiet wins",
-  "Sticks, because there's nothing to rage-quit",
+  "only cuts the short video feed",
+  "dms, search and posts still work",
+  "no shame, just real numbers",
+  "sticks, theres nothing to ragequit",
 ];
 const howSteps = [
-  { title: "Build your Focus System", body: "Answer a few questions about what pulls you in and when. Rinkler turns them into rules tuned to you — Homework Mode, Night Lock, a clean morning start — before you touch a setting." },
-  { title: "Start a Control Session", body: "One tap. Pick Gentle, Focused, or a locked Deep session you can't quit early. Rules also run on a schedule, so the line holds even when the app is closed." },
-  { title: "Watch your Signal grow", body: "Real focused time and interrupted feeds add up. Build a streak and see exactly how much scroll you cut — measured, never guessed." },
+  { title: "build your setup", body: "answer a few questions when you first open the app and rinkler makes the rules for you. homework mode, night lock, a clean morning. you dont touch a single setting." },
+  { title: "start a session", body: "one tap. pick how strict you want it, from chill to a locked deep session you cant quit early. it runs on a schedule too, so it kicks in even when the app is closed." },
+  { title: "watch it stack up", body: "real focused time and blocked feeds add up. build a streak and see exactly how much scroll you cut. its all real, nothing made up." },
 ];
 const features = [
-  { title: "On-device & private", body: "Filtering happens locally on your phone. Traffic never routes through our servers, and we never read what's inside it." },
-  { title: "Surgical, not blunt", body: "It targets the infinite short-video feed specifically — not your whole phone — so the useful parts of every app keep working." },
-  { title: "Schedules that hold", body: "Your windows run on time without the app open, so protection is already up when you're most likely to slip." },
-  { title: "Real numbers, no shame", body: "Every stat is measured on-device, not estimated. Honest time saved, honest streams interrupted — and no lecture when you slip." },
+  { title: "stays on your phone", body: "everything runs on your device. your traffic never hits our servers and we never look inside it." },
+  { title: "cuts the feed, not the app", body: "it goes after the endless short video feed, not your whole phone, so the useful parts of every app still work." },
+  { title: "runs on a schedule", body: "your windows kick in on time even with the app closed, so its already on right when youd usually slip." },
+  { title: "real numbers", body: "every stat is measured on your phone, not guessed. real time saved, real feeds blocked, no lecture when you slip." },
 ];
 
 /* ---------- styles ---------- */
@@ -250,40 +284,42 @@ const nav: CSSProperties = {
 const wordmark: CSSProperties = { display: "inline-flex", alignItems: "center", gap: 8, fontSize: 17, fontWeight: 600, color: signal.text, textDecoration: "none", letterSpacing: "-0.01em" };
 const navRight: CSSProperties = { display: "flex", alignItems: "center", gap: 26 };
 const navLink: CSSProperties = { color: signal.textDim, textDecoration: "none", fontSize: 14 };
-const lightBtn: CSSProperties = {
-  padding: "9px 18px",
-  borderRadius: 8,
-  background: signal.text,
-  color: "#08080A",
-  textDecoration: "none",
-  fontSize: 14,
-  fontWeight: 600,
-};
+const lightBtn: CSSProperties = { padding: "9px 18px", borderRadius: 8, background: signal.text, color: "#08080A", textDecoration: "none", fontSize: 14, fontWeight: 600 };
+const lightBtnLg: CSSProperties = { ...lightBtn, padding: "13px 26px", fontSize: 15, borderRadius: 10 };
 
-const section: CSSProperties = { padding: "clamp(64px, 10vh, 120px) 0" };
-const eyebrow: CSSProperties = {
+/* splash */
+const splash: CSSProperties = {
+  minHeight: "calc(100vh - 58px)",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  textAlign: "center",
+  padding: "40px 0",
+};
+const splashLogo: CSSProperties = { display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 18 };
+const splashWord: CSSProperties = { fontSize: "clamp(40px, 9vw, 72px)", fontWeight: 600, letterSpacing: "-0.03em", color: signal.text };
+const splashTag: CSSProperties = { fontSize: "clamp(15px, 2.1vw, 19px)", color: signal.textDim, maxWidth: 480, margin: "0 auto", lineHeight: 1.5 };
+const countLabel: CSSProperties = { fontFamily: signal.mono, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: signal.textFaint, marginBottom: 18 };
+const splashPill: CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 8,
+  marginTop: 34,
+  padding: "7px 14px",
+  borderRadius: 999,
+  border: `1px solid ${signal.border}`,
   fontFamily: signal.mono,
   fontSize: 12,
-  letterSpacing: "0.16em",
-  textTransform: "uppercase",
-  color: signal.textFaint,
-  marginBottom: 22,
+  letterSpacing: "0.04em",
+  color: signal.textDim,
 };
-const h1: CSSProperties = {
-  fontSize: "clamp(42px, 8vw, 88px)",
-  lineHeight: 1.0,
-  fontWeight: 600,
-  letterSpacing: "-0.04em",
-  margin: 0,
-  maxWidth: 980,
-};
-const h2: CSSProperties = {
-  fontSize: "clamp(28px, 4.6vw, 48px)",
-  lineHeight: 1.04,
-  fontWeight: 600,
-  letterSpacing: "-0.03em",
-  margin: 0,
-};
+const dot: CSSProperties = { width: 7, height: 7, borderRadius: "50%", background: signal.success, boxShadow: `0 0 8px ${signal.success}` };
+const learnMore: CSSProperties = { display: "inline-block", marginTop: 40, color: signal.textDim, textDecoration: "none", fontSize: 14, fontFamily: signal.mono, letterSpacing: "0.04em" };
+
+const section: CSSProperties = { padding: "clamp(64px, 10vh, 120px) 0" };
+const h1: CSSProperties = { fontSize: "clamp(42px, 8vw, 88px)", lineHeight: 1.0, fontWeight: 600, letterSpacing: "-0.04em", margin: 0, maxWidth: 980 };
+const h2: CSSProperties = { fontSize: "clamp(28px, 4.6vw, 48px)", lineHeight: 1.04, fontWeight: 600, letterSpacing: "-0.03em", margin: 0 };
 const lede: CSSProperties = { fontSize: "clamp(16px, 1.8vw, 19px)", lineHeight: 1.6, color: signal.textDim, maxWidth: 540, margin: 0 };
 const statement: CSSProperties = { fontSize: "clamp(19px, 2.6vw, 26px)", lineHeight: 1.45, color: signal.textDim, maxWidth: 820, margin: "26px 0 0", letterSpacing: "-0.01em" };
 

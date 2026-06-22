@@ -25,11 +25,10 @@ const app = {
 export default function AppShowcase() {
   return (
     <section style={section}>
-      <div style={eyebrow}>See it on your phone</div>
-      <h2 style={h2}>Your Focus System, ready before you touch a setting.</h2>
+      <h2 style={h2}>your whole setup, ready before you change a thing.</h2>
       <p style={lede}>
-        Answer a few questions on first launch and Rinkler builds your rules,
-        starts your sessions, and tracks every clean minute — all on-device.
+        answer a few questions the first time you open it and rinkler builds your
+        rules, runs your sessions, and tracks every clean minute. all on your phone.
       </p>
 
       <div style={row} className="phones">
@@ -189,7 +188,6 @@ function AppCard({ name, blocked, kept }: { name: string; blocked: string; kept:
 
 /* ----- styles ----- */
 const section: CSSProperties = { padding: "clamp(64px, 10vh, 120px) 0" };
-const eyebrow: CSSProperties = { fontFamily: signal.mono, fontSize: 12, letterSpacing: "0.16em", textTransform: "uppercase", color: signal.textFaint, marginBottom: 22 };
 const h2: CSSProperties = { fontSize: "clamp(28px, 4.6vw, 48px)", lineHeight: 1.04, fontWeight: 600, letterSpacing: "-0.03em", margin: 0, maxWidth: 740 };
 const lede: CSSProperties = { fontSize: "clamp(16px, 1.8vw, 19px)", lineHeight: 1.6, color: signal.textDim, maxWidth: 560, margin: "20px 0 0" };
 const row: CSSProperties = { display: "flex", gap: 28, marginTop: 52, justifyContent: "center", flexWrap: "wrap" };
