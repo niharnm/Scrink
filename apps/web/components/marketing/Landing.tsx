@@ -158,11 +158,10 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
         <section style={section}>
           <Eyebrow>Why I built this</Eyebrow>
           <p style={{ ...quote }}>
-            &ldquo;I&apos;d open my phone to answer one text and resurface forty
-            minutes later with no idea what I&apos;d even watched. I didn&apos;t
-            want to be locked out of Instagram — I just wanted the part that was
-            eating me gone, and everything else left alone. Nobody had built that,
-            so I did.&rdquo;
+            &ldquo;Id just be scrolling endlessly without even knowing whats going
+            on and that would be the first thing i did going to sleep and waking
+            up, i dint even like or want to scroll but it just became a habit.
+            Nobody was able to fix this issue, so i did.&rdquo;
           </p>
           <div style={{ ...colLabel, marginTop: 20 }}>— the maker of Rinkler</div>
         </section>
