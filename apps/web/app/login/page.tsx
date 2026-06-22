@@ -169,7 +169,7 @@ export default function LoginPage() {
           Rinkler
         </Link>
         <div style={{ ...subtitleStyle, marginBottom: waitCount != null ? 10 : 30 }}>
-          join the waitlist. rinkler drops july 10 and we&apos;ll tell you the second it&apos;s live.
+          join the waitlist. Rinkler drops July 10 and we&apos;ll tell you the second it&apos;s live.
         </div>
         {waitCount != null && (
           <div style={{ fontSize: 13.5, color: signal.textDim, marginBottom: 28 }}>

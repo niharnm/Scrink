@@ -6,7 +6,7 @@ import { signal } from "@/lib/signal";
  * Two rows moving opposite directions, pure CSS, seamless loop. Pauses for
  * reduced-motion.
  */
-const ROW1 = ["reels", "tiktok", "shorts", "explore", "for you", "spotlight", "the feed"];
+const ROW1 = ["Reels", "TikTok", "Shorts", "Explore", "For You", "Spotlight", "the feed"];
 const ROW2 = ["just one more", "40 minutes gone", "how did i get here", "i dont even like this", "the algorithm wins"];
 
 export default function Marquee() {

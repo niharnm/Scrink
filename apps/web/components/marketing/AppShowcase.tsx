@@ -28,7 +28,7 @@ export default function AppShowcase() {
       <h2 style={h2}>a setup that already gets you.</h2>
       <p style={lede}>
         a quick personalized onboarding asks what pulls you in and when, then
-        builds your whole focus system before you change a single thing. your
+        builds your whole Focus System before you change a single thing. your
         rules, your sessions, your blocks, all ready to go.
       </p>
 
