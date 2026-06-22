@@ -3,7 +3,7 @@
 **Effective date:** [FILL IN — e.g. 2026-06-21]
 **Last updated:** [FILL IN]
 
-This policy explains what Rinkler ("Rinkler", "we", "us") collects, why, and what we do not do. Rinkler is a personal focus tool that filters short‑video traffic (such as Instagram Reels and TikTok) on your device to help you scroll less. It is operated by [LEGAL ENTITY / YOUR NAME], contactable at **[CONTACT EMAIL]**.
+This policy explains what Rinkler ("Rinkler", "we", "us") collects, why, and what we do not do. Rinkler is a personal focus tool that filters short‑video traffic (such as Instagram Reels and TikTok) on your device to help you scroll less. It is operated by [LEGAL ENTITY / YOUR NAME], contactable at **nihar.manchikalapudi@gmail.com**.
 
 We wrote this to be readable, not to hide things. If anything here is unclear, email us.
 
@@ -75,7 +75,7 @@ Rinkler can optionally generate written insights from your **aggregate** dashboa
 ## 6. Data retention & deletion
 
 - Usage metadata is retained to show your history and is bounded over time.
-- You can **delete your account and associated data** by emailing **[CONTACT EMAIL]** (or via the in‑app option if available). We will remove your account record and associated usage data from our database.
+- You can **delete your account and associated data** by emailing **nihar.manchikalapudi@gmail.com** (or via the in‑app option if available). We will remove your account record and associated usage data from our database.
 - Deleting the app removes the on‑device data (rules, session history, the VPN configuration).
 
 ---
@@ -98,7 +98,7 @@ Rinkler is not directed to children under 13 (or the minimum age in your country
 
 ## 9. Your rights
 
-Depending on where you live, you may have rights to access, correct, export, or delete your personal data, and to object to certain processing. To exercise any of these, email **[CONTACT EMAIL]**. We don't discriminate against you for exercising them.
+Depending on where you live, you may have rights to access, correct, export, or delete your personal data, and to object to certain processing. To exercise any of these, email **nihar.manchikalapudi@gmail.com**. We don't discriminate against you for exercising them.
 
 ---
 
@@ -110,7 +110,7 @@ If we make material changes, we'll update the "Last updated" date and, where app
 
 ## 11. Contact
 
-Questions, requests, or concerns: **[CONTACT EMAIL]**.
+Questions, requests, or concerns: **nihar.manchikalapudi@gmail.com**.
 
 ---
 
