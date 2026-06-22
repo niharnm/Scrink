@@ -129,7 +129,7 @@ struct SettingsScreen: View {
                 .foregroundColor(.white)
 
             if focusSystem.rules.isEmpty {
-                Text("No rules yet. Re-run setup to generate personalized rules.")
+                Text("No rules yet. Redo setup and we'll build them from your answers.")
                     .font(RinklerFonts.coolvetica(size: 13))
                     .foregroundColor(RinklerColors.white60)
             } else {

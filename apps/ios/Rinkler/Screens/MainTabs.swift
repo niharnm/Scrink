@@ -64,7 +64,7 @@ struct ControlScreen: View {
             SignalBackground()
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
-                    Text("Start a Control Session")
+                    Text("Start a session")
                         .font(RinklerFonts.sans(26, .bold))
                         .foregroundStyle(RinklerColors.signalText)
 
@@ -85,11 +85,11 @@ struct ControlScreen: View {
                         }
                     }
 
-                    labeledGroup("WHAT DISAPPEARS") {
+                    labeledGroup("WHAT GOES") {
                         flow(disappears, color: RinklerColors.signalWarning)
                     }
 
-                    labeledGroup("WHAT STAYS OPEN") {
+                    labeledGroup("WHAT STAYS") {
                         flow(keeps, color: RinklerColors.signalSuccess)
                     }
 
@@ -104,7 +104,7 @@ struct ControlScreen: View {
                     .buttonStyle(.plain)
                     .padding(.top, RinklerSpacing.sm)
 
-                    Text("Start hands off to your focus session, which applies these blocks through the local tunnel.")
+                    Text("Hit start and these blocks kick in right on your phone. That's the whole thing.")
                         .font(RinklerFonts.sans(12, .regular))
                         .foregroundStyle(RinklerColors.signalTextDim)
                 }
@@ -171,7 +171,7 @@ struct AppsScreen: View {
                     Text("Apps")
                         .font(RinklerFonts.sans(26, .bold))
                         .foregroundStyle(RinklerColors.signalText)
-                    Text("Keep the useful parts. Kill the infinite scroll.")
+                    Text("Keep the parts you actually use. Kill the endless scroll.")
                         .font(RinklerFonts.sans(14, .regular))
                         .foregroundStyle(RinklerColors.signalTextDim)
 
@@ -193,7 +193,7 @@ struct AppsScreen: View {
                                   allowed: ["Search", "Subscriptions", "Playlists"],
                                   blocked: ["Shorts", "Home feed", "Recommended"])
 
-                    Text("Blocks act on heavy short-video streams at the network layer. Some feeds share hosts with useful features, so a few controls are previews until per-feature path control ships.")
+                    Text("Rinkler kills the heavy video feeds right on your phone. A few apps mix their feed in with the stuff you actually use, so those are previews for now while we tighten them up.")
                         .font(RinklerFonts.sans(12, .regular))
                         .foregroundStyle(RinklerColors.signalTextDim)
                         .padding(.top, RinklerSpacing.sm)
@@ -442,8 +442,8 @@ struct ProgressScreen: View {
                             .font(RinklerFonts.sans(12, .semibold))
                             .foregroundStyle(RinklerColors.signalTextDim)
                         Text(noiseBlocked > 0
-                             ? "You've cut \(noiseBlocked) short-video pulls so far. Keep your windows armed and the number climbs."
-                             : "Start a Control Session to begin your scroll report. Once the tunnel is filtering, blocked pulls and time saved show up here.")
+                             ? "You've killed \(noiseBlocked) scroll pulls so far. Keep it running and that number keeps climbing."
+                             : "Nothing here yet. Start a session and your blocked scrolls + time saved show up here.")
                             .font(RinklerFonts.sans(14, .regular))
                             .foregroundStyle(RinklerColors.signalTextDim)
                             .fixedSize(horizontal: false, vertical: true)

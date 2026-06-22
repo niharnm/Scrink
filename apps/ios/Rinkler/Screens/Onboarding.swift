@@ -1049,7 +1049,7 @@ struct TodayDashboard: View {
                 Text("TODAY")
                     .font(RinklerFonts.sans(13, .semibold))
                     .foregroundStyle(RinklerColors.signalTextDim)
-                Text("Your Focus System")
+                Text("Your setup")
                     .font(RinklerFonts.sans(24, .bold))
                     .foregroundStyle(RinklerColors.signalText)
             }
@@ -1077,7 +1077,7 @@ struct TodayDashboard: View {
                 Text("Scroll Control")
                     .font(RinklerFonts.sans(17, .semibold))
                     .foregroundStyle(RinklerColors.signalText)
-                Text("Your system is armed. Start a session to win your first ring and push the score up.")
+                Text("You're all set. Start a session, grab your first ring, and watch the score climb.")
                     .font(RinklerFonts.sans(13, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
                     .fixedSize(horizontal: false, vertical: true)
@@ -1095,7 +1095,7 @@ struct TodayDashboard: View {
                     Text(nextRule != nil ? "Next window" : "Suggested")
                         .font(RinklerFonts.sans(12, .medium))
                         .foregroundStyle(RinklerColors.signalTextDim)
-                    Text(nextRule?.name ?? "Start a 10-minute Control Session")
+                    Text(nextRule?.name ?? "Start a quick 10-minute session")
                         .font(RinklerFonts.sans(18, .semibold))
                         .foregroundStyle(RinklerColors.signalText)
                     if let rule = nextRule {
@@ -1136,7 +1136,7 @@ struct TodayDashboard: View {
                 .buttonStyle(.plain)
             }
             if focusSystem.rules.isEmpty {
-                Text("No rules yet — add one, or re-run setup from Settings.")
+                Text("No rules yet. Add one, or redo setup in Settings.")
                     .font(RinklerFonts.sans(13, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
             } else {
