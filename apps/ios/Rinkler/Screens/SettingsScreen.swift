@@ -23,7 +23,7 @@ struct SettingsScreen: View {
 
     var body: some View {
         ZStack {
-            RinklerColors.signalBackground.ignoresSafeArea()
+            SignalBackground()
 
             ScrollView {
                 VStack(spacing: RinklerSpacing.lg) {
@@ -368,7 +368,7 @@ struct ExtensionLogView: View {
 
     var body: some View {
         ZStack {
-            RinklerColors.signalBackground.ignoresSafeArea()
+            SignalBackground()
 
             ScrollView {
                 Text(vpnManager.tunnelLog)

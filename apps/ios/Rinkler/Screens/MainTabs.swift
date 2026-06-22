@@ -61,7 +61,7 @@ struct ControlScreen: View {
 
     var body: some View {
         ZStack {
-            RinklerColors.signalBackground.ignoresSafeArea()
+            SignalBackground()
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
                     Text("Start a Control Session")
@@ -165,7 +165,7 @@ struct AppsScreen: View {
 
     var body: some View {
         ZStack {
-            RinklerColors.signalBackground.ignoresSafeArea()
+            SignalBackground()
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
                     Text("Apps")
@@ -297,7 +297,7 @@ struct RuleEditorView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                RinklerColors.signalBackground.ignoresSafeArea()
+                SignalBackground()
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
                         group("NAME") {
@@ -428,7 +428,7 @@ struct ProgressScreen: View {
 
     var body: some View {
         ZStack {
-            RinklerColors.signalBackground.ignoresSafeArea()
+            SignalBackground()
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
                     Text("Scroll Report")

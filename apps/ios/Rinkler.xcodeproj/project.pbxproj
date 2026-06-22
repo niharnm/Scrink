@@ -80,6 +80,7 @@
 		B7F4E889C0C9CF5017891111 /* AppIconCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1AF9CB0269E85989CE0DC6 /* AppIconCircle.swift */; };
 		C3E37E71922E29CA38A09A4B /* HexGridOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10B73DFB24FA4518541EBD14 /* HexGridOverlay.swift */; };
 		DA022CE2410220BBEB0EFC55 /* SkyBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F1CE437AADFB2D399B4E4CD /* SkyBackgroundView.swift */; };
+		50C1A1AC0000000000000011 /* SignalBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000010 /* SignalBackground.swift */; };
 		EE5AF52C3094005B17EF5118 /* HexGridLayoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3288B67D55E1FF065382E8E9 /* HexGridLayoutManager.swift */; };
 		EFEC044BD16A58AABFD1B820 /* app_options.json in Resources */ = {isa = PBXBuildFile; fileRef = ADF713ED6242175766746424 /* app_options.json */; };
 		F4B56F9A3A941A0C2EBDADE7 /* AuthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 931B0AF1A32A039B27B089E5 /* AuthStore.swift */; };
@@ -138,6 +139,7 @@
 		28E7DF720D3EB9EAC56B49CB /* BackArrowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackArrowView.swift; sourceTree = "<group>"; };
 		2ADB6187B6C76458B5AF5BB8 /* CodeVerificationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeVerificationScreen.swift; sourceTree = "<group>"; };
 		2F1CE437AADFB2D399B4E4CD /* SkyBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkyBackgroundView.swift; sourceTree = "<group>"; };
+		50C1A1AC0000000000000010 /* SignalBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalBackground.swift; sourceTree = "<group>"; };
 		3288B67D55E1FF065382E8E9 /* HexGridLayoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexGridLayoutManager.swift; sourceTree = "<group>"; };
 		3A500B91AAD8FCE188E83A9D /* AppOptionsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOptionsService.swift; sourceTree = "<group>"; };
 		4F5A0931BEF4F3F4B1BF8741 /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
@@ -392,6 +394,7 @@
 				10B73DFB24FA4518541EBD14 /* HexGridOverlay.swift */,
 				F0B814D56804DA2A853F0CC7 /* PageIndicator.swift */,
 				2F1CE437AADFB2D399B4E4CD /* SkyBackgroundView.swift */,
+				50C1A1AC0000000000000010 /* SignalBackground.swift */,
 				221C01C91E8FC62806530668 /* SocialMediaIcon.swift */,
 				A30EEB2AB48FAE0B765F046C /* SVGCache.swift */,
 				11372BC005F536F03A206A0C /* SVGView.swift */,
@@ -575,6 +578,7 @@
 				4CBD13A9A63EB6FFDE23B67B /* SVGCache.swift in Sources */,
 				7187CAA7759A0FB102770E7D /* SVGView.swift in Sources */,
 				DA022CE2410220BBEB0EFC55 /* SkyBackgroundView.swift in Sources */,
+				50C1A1AC0000000000000011 /* SignalBackground.swift in Sources */,
 				63985968494496186AAAAE97 /* SocialMediaIcon.swift in Sources */,
 				3E2F4A5B6C7D8091A2B3C4D5 /* SettingsScreen.swift in Sources */,
 				6AB0C375DDD14ACE8678338E /* SupabaseAuthClient.swift in Sources */,
