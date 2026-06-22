@@ -17,7 +17,11 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
 
       {/* Nav */}
       <header style={nav}>
-        <Link href="/" style={wordmark}>Rinkler</Link>
+        <Link href="/" style={wordmark}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/rinkler-mark.png" alt="" width={22} height={22} style={{ display: "block" }} />
+          Rinkler
+        </Link>
         <nav style={navRight} className="nav-links">
           <a href="#difference" style={navLink}>Why</a>
           <a href="#how" style={navLink}>How</a>
@@ -240,7 +244,7 @@ const nav: CSSProperties = {
   backdropFilter: "blur(10px)",
   borderBottom: `1px solid ${signal.border}`,
 };
-const wordmark: CSSProperties = { fontSize: 17, fontWeight: 600, color: signal.text, textDecoration: "none", letterSpacing: "-0.01em" };
+const wordmark: CSSProperties = { display: "inline-flex", alignItems: "center", gap: 8, fontSize: 17, fontWeight: 600, color: signal.text, textDecoration: "none", letterSpacing: "-0.01em" };
 const navRight: CSSProperties = { display: "flex", alignItems: "center", gap: 26 };
 const navLink: CSSProperties = { color: signal.textDim, textDecoration: "none", fontSize: 14 };
 const lightBtn: CSSProperties = {
