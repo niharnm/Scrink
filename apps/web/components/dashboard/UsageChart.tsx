@@ -49,12 +49,12 @@ export default function UsageChart({
         <AreaChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
           <defs>
             <linearGradient id="gradAllowed" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={theme.colors.skyBlue} stopOpacity={0.45} />
-              <stop offset="95%" stopColor={theme.colors.skyBlue} stopOpacity={0.04} />
+              <stop offset="5%" stopColor={"#8A8A90"} stopOpacity={0.45} />
+              <stop offset="95%" stopColor={"#8A8A90"} stopOpacity={0.04} />
             </linearGradient>
             <linearGradient id="gradBlocked" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#FF6B6B" stopOpacity={0.4} />
-              <stop offset="95%" stopColor="#FF6B6B" stopOpacity={0.05} />
+              <stop offset="5%" stopColor="#ECECEE" stopOpacity={0.4} />
+              <stop offset="95%" stopColor="#ECECEE" stopOpacity={0.05} />
             </linearGradient>
           </defs>
           <CartesianGrid
@@ -94,7 +94,7 @@ export default function UsageChart({
           <Area
             type="monotone"
             dataKey="allowed"
-            stroke={theme.colors.skyBlue}
+            stroke={"#8A8A90"}
             strokeWidth={2}
             fill="url(#gradAllowed)"
             name="Allowed"
@@ -102,7 +102,7 @@ export default function UsageChart({
           <Area
             type="monotone"
             dataKey="blocked"
-            stroke="#FF6B6B"
+            stroke="#ECECEE"
             strokeWidth={2}
             fill="url(#gradBlocked)"
             name="Blocked"

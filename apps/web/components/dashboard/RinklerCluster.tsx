@@ -243,8 +243,8 @@ export default function RinklerCluster({ apps, onAppClick }: RinklerClusterProps
           transform: `scale(${scale})`,
           transition: isDragged ? "none" : "transform 0.15s ease",
           boxShadow: isHovered
-            ? "0 0 22px rgba(91,124,255,0.55)"
-            : "0 2px 14px rgba(91,124,255,0.18)",
+            ? "0 0 18px rgba(255,255,255,0.28)"
+            : "0 1px 10px rgba(0,0,0,0.45)",
           userSelect: "none",
           touchAction: "none",
         };

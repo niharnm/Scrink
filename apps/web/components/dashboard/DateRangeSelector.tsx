@@ -31,14 +31,15 @@ export default function DateRangeSelector({
         const active = value === opt.value;
         const pillStyle: CSSProperties = {
           fontFamily: theme.fonts.body,
-          fontSize: theme.fontSizes.optionLabel,
-          color: theme.colors.white,
-          background: active ? theme.colors.skyBlue : "transparent",
-          border: `1px solid ${active ? theme.colors.skyBlue : theme.colors.white30}`,
-          borderRadius: 20,
-          padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
+          fontSize: 14,
+          fontWeight: active ? 600 : 500,
+          color: active ? "#08080A" : theme.colors.white60,
+          background: active ? theme.colors.white : "transparent",
+          border: `1px solid ${active ? theme.colors.white : theme.colors.white30}`,
+          borderRadius: 8,
+          padding: "7px 14px",
           cursor: "pointer",
-          transition: "all 0.2s ease",
+          transition: "all 0.15s ease",
         };
         return (
           <button

@@ -6,22 +6,22 @@
  */
 export const theme = {
   colors: {
-    skyBlue: "#5B7CFF", // primary signal accent (charts, buttons, links)
-    violet: "#8B5CF6", // secondary accent for multi-series charts
-    success: "#63D297",
-    warning: "#FFB454",
-    backArrow: "#5B7CFF",
-    white: "#F8FAFC", // primary text on the dark surface
-    white10: "rgba(255,255,255,0.05)", // card fill
-    white15: "rgba(255,255,255,0.09)", // raised fill / hover
-    white30: "rgba(255,255,255,0.14)", // hairline borders
-    white60: "rgba(255,255,255,0.60)", // dim/secondary text
+    skyBlue: "#D4D4D8", // monochrome "accent" — charts/active states render light grey
+    violet: "#9A9AA0", // secondary mono tone for multi-series charts
+    success: "#9CA3AF",
+    warning: "#B8B8BE",
+    backArrow: "#D4D4D8",
+    white: "#ECECEE", // primary text (off-white, not pure)
+    white10: "rgba(255,255,255,0.035)", // faint fill
+    white15: "rgba(255,255,255,0.06)", // raised fill / hover
+    white30: "rgba(255,255,255,0.10)", // hairline borders
+    white60: "rgba(255,255,255,0.55)", // dim/secondary text
   },
   gradient: {
-    stop1: "#0E1118", // top
-    stop2: "#0B0D13",
-    stop3: "#090A0E",
-    stop4: "#08090B", // bottom
+    stop1: "#0A0A0B", // top
+    stop2: "#090909",
+    stop3: "#08080A",
+    stop4: "#08080A", // bottom
   },
   fonts: {
     display: "var(--font-geist), system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",

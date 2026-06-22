@@ -88,10 +88,9 @@ export default function DashboardView({
     alignItems: "center",
     gap: theme.spacing.lg,
     padding: theme.spacing.lg,
-    background: "linear-gradient(180deg, rgba(91,124,255,0.10), rgba(255,255,255,0.015))",
-    border: "1px solid rgba(91,124,255,0.28)",
-    borderRadius: 22,
-    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06), 0 10px 34px rgba(0,0,0,0.3)",
+    background: "rgba(255,255,255,0.018)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 16,
   };
 
   const kpiGrid: CSSProperties = {

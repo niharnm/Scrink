@@ -1,14 +1,11 @@
 import Link from "next/link";
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { signal } from "@/lib/signal";
 
 /**
- * Public marketing landing page for Rinkler, in the app's "Signal" identity.
- * Server component — no client JS needed; hover/entrance effects are CSS only.
- *
- * Voice: sharp, honest, a clear point of view. It borrows the proven moves of
- * the category (villain framing, transformation, a concrete differentiator)
- * without faking social proof — there are no invented users, reviews, or press.
+ * Rinkler marketing landing — "stark minimal" direction: true black, left-aligned
+ * big type, hairline-separated sections, monospace eyebrow labels, a single light
+ * button. No glows, no gradients, no colored cards.
  */
 export default function Landing({ loggedIn }: { loggedIn: boolean }) {
   const ctaHref = loggedIn ? "/dashboard" : "/login";
@@ -20,179 +17,183 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
 
       {/* Nav */}
       <header style={nav}>
-        <Link href="/" style={wordmark}>
-          <span style={dot} />
-          Rinkler
-        </Link>
+        <Link href="/" style={wordmark}>Rinkler</Link>
         <nav style={navRight} className="nav-links">
-          <a href="#difference" style={navLink}>Why it&apos;s different</a>
-          <a href="#how" style={navLink}>How it works</a>
-          <a href="#privacy" style={navLink}>Privacy</a>
-          <Link href={ctaHref} style={navBtn} className="btn-primary">{ctaLabel}</Link>
+          <a href="#difference" style={navLink}>Why</a>
+          <a href="#how" style={navLink}>How</a>
+          <Link href="/privacy" style={navLink}>Privacy</Link>
+          <Link href="/login" style={navLink}>Log in</Link>
+          <Link href={ctaHref} style={lightBtn} className="light-btn">{ctaLabel}</Link>
         </nav>
       </header>
 
-      {/* Hero */}
-      <section style={hero}>
-        <div style={glowOrb} aria-hidden />
-        <span style={pill} className="fade" data-d="0">Coming to iOS · on-device &amp; private</span>
-        <h1 style={h1} className="fade hero-h1" data-d="1">
-          Your phone isn&apos;t the problem.
-          <br />
-          <span style={{ color: signal.textDim }}>The infinite scroll is.</span>
-        </h1>
-        <p style={lede} className="fade" data-d="2">
-          Rinkler interrupts the feeds engineered to swallow your evenings —
-          Reels, TikTok — and leaves everything you actually opened the app for.
-          DMs, search, messages: untouched.
-        </p>
-        <div style={ctaRow} className="fade" data-d="3">
-          <Link href={ctaHref} style={primaryBtn} className="btn-primary">{ctaLabel}</Link>
-          <a href="#difference" style={ghostBtn} className="btn-ghost">Why it&apos;s different</a>
-        </div>
-        <p style={microNote} className="fade" data-d="3">No account needed to try · filters locally, never reads your content</p>
-      </section>
-
-      {/* The problem — villain framing */}
-      <section style={section}>
-        <SectionHeading kicker="THE REAL FIGHT" title="You're not weak. It's rigged." />
-        <p style={{ ...bigPara }}>
-          You opened Instagram to answer one message. Forty minutes later you&apos;re
-          watching a stranger restore a rusted wrench. That&apos;s not a willpower
-          failure — the feed is tuned by hundreds of engineers and an A/B test for
-          every pixel, all pointed at one goal: the next swipe. Going up against
-          that with &quot;just put the phone down&quot; was never a fair fight.
-        </p>
-        <p style={{ ...bigPara, color: signal.text, marginTop: 18 }}>
-          Rinkler evens the odds — at the one layer the feed can&apos;t talk you out of.
-        </p>
-      </section>
-
-      {/* The difference — scalpel vs hammer */}
-      <section id="difference" style={section}>
-        <SectionHeading kicker="WHY IT'S DIFFERENT" title="A scalpel, not a hammer" />
-        <p style={{ ...lede, maxWidth: 720, marginTop: 0 }}>
-          Most screen-time apps are all-or-nothing. You block Instagram, then
-          unblock it ten minutes later to send a DM — and you&apos;re right back in
-          the feed. That&apos;s why people rage-quit blockers within a week. Rinkler
-          cuts only the short-video feed and leaves the rest working, so there&apos;s
-          nothing to rage-quit.
-        </p>
-        <div style={compareGrid} className="grid-2">
-          <div style={{ ...card, borderColor: "rgba(255,107,107,0.28)" }} className="card">
-            <div style={{ ...tag, color: "#FF8585", background: "rgba(255,107,107,0.12)", borderColor: "rgba(255,107,107,0.3)" }}>Blanket blockers</div>
-            {compareBad.map((t) => <CompareRow key={t} text={t} good={false} />)}
-          </div>
-          <div style={{ ...card, borderColor: "rgba(91,124,255,0.4)" }} className="card">
-            <div style={{ ...tag, color: signal.blue, background: "rgba(91,124,255,0.12)", borderColor: "rgba(91,124,255,0.3)" }}>Rinkler</div>
-            {compareGood.map((t) => <CompareRow key={t} text={t} good />)}
-          </div>
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section id="how" style={section}>
-        <SectionHeading kicker="HOW IT WORKS" title="Set it once. It holds the line for you." />
-        <div style={steps} className="grid-3">
-          {howSteps.map((s, i) => (
-            <div key={s.title} style={card} className="card">
-              <div style={stepNum}>{String(i + 1).padStart(2, "0")}</div>
-              <h3 style={cardTitle}>{s.title}</h3>
-              <p style={cardBody}>{s.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Features */}
-      <section style={section}>
-        <SectionHeading kicker="UNDER THE HOOD" title="Honest by design" />
-        <div style={featGrid} className="grid-2">
-          {features.map((f) => (
-            <div key={f.title} style={card} className="card">
-              <div style={featIcon} aria-hidden>{f.icon}</div>
-              <h3 style={cardTitle}>{f.title}</h3>
-              <p style={cardBody}>{f.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Privacy band */}
-      <section id="privacy" style={privacyBand}>
-        <SectionHeading kicker="PRIVACY BY DESIGN" title="It filters on your device. It never reads your content." center />
-        <p style={{ ...lede, textAlign: "center", margin: "0 auto", maxWidth: 640 }}>
-          The filter runs locally — a private configuration that never routes your
-          traffic through a server. It sees where a connection is going and how big
-          a stream is, never what&apos;s inside. No messages read, nothing stored,
-          nothing sold.
-        </p>
-        <div style={{ textAlign: "center", marginTop: 28 }}>
-          <Link href="/privacy" style={ghostBtn} className="btn-ghost">Read the privacy policy</Link>
-        </div>
-      </section>
-
-      {/* Founder note — authenticity over fake social proof */}
-      <section style={section}>
-        <div style={{ ...card, padding: "clamp(28px, 5vw, 48px)", background: signal.cardRaised }}>
-          <div style={{ ...kickerStyle, marginBottom: 18 }}>
-            <span style={dot} />
-            WHY I BUILT THIS
-          </div>
-          <p style={{ ...bigPara, color: signal.text }}>
-            &quot;I lost too many evenings to Reels, and every blocker I tried treated me
-            like a child — lock everything, feel guilty, turn it off. So I built the
-            tool I actually wanted: one that quietly removes the trap and trusts me
-            with the rest. Rinkler is that, shipped honestly — real numbers, no
-            shame, nothing leaving your phone.&quot;
+      <main style={main}>
+        {/* Hero */}
+        <section style={{ ...section, paddingTop: "clamp(96px, 16vh, 200px)", paddingBottom: "clamp(72px, 12vh, 150px)" }}>
+          <Eyebrow>Coming to iOS — on-device &amp; private</Eyebrow>
+          <h1 style={h1}>
+            Your phone isn&apos;t<br className="br-hide" /> the problem.
+            <br />
+            <span style={{ color: signal.textFaint }}>The infinite scroll is.</span>
+          </h1>
+          <p style={{ ...lede, marginTop: 28 }}>
+            Rinkler interrupts the feeds built to swallow your evenings — Reels,
+            TikTok — and leaves everything you actually opened the app for. DMs,
+            search, messages: untouched.
           </p>
-          <p style={{ ...cardBody, marginTop: 16, color: signal.textDim }}>— the maker of Rinkler</p>
-        </div>
-      </section>
+          <div style={ctaRow}>
+            <Link href={ctaHref} style={lightBtn} className="light-btn">{ctaLabel}</Link>
+            <a href="#difference" style={textBtn} className="text-btn">Why it&apos;s different →</a>
+          </div>
+          <p style={micro}>No account needed to try · filters locally, never reads your content</p>
+        </section>
 
-      {/* Final CTA */}
-      <section style={finalCta}>
-        <h2 style={ctaTitle}>Take back your attention.</h2>
-        <p style={{ ...lede, textAlign: "center", maxWidth: 520, marginTop: 8 }}>
-          Coming to iOS. Get early access and win your first ten quiet minutes.
-        </p>
-        <Link href={ctaHref} style={primaryBtn} className="btn-primary">{ctaLabel}</Link>
-      </section>
+        <Rule />
+
+        {/* The real fight */}
+        <section style={section}>
+          <Eyebrow>The real fight</Eyebrow>
+          <h2 style={h2}>You&apos;re not weak. It&apos;s rigged.</h2>
+          <p style={statement}>
+            You opened Instagram to answer one message. Forty minutes later
+            you&apos;re watching a stranger restore a rusted wrench. That isn&apos;t a
+            willpower failure — the feed is tuned by hundreds of engineers and an
+            A/B test for every pixel, all pointed at one thing: the next swipe.
+          </p>
+          <p style={{ ...statement, color: signal.text, marginTop: 20 }}>
+            Rinkler evens the odds — at the one layer the feed can&apos;t talk you
+            out of.
+          </p>
+        </section>
+
+        <Rule />
+
+        {/* Scalpel, not a hammer */}
+        <section id="difference" style={section}>
+          <Eyebrow>Why it&apos;s different</Eyebrow>
+          <h2 style={h2}>A scalpel, not a hammer.</h2>
+          <p style={{ ...lede, maxWidth: 680, marginTop: 20 }}>
+            Most screen-time apps are all-or-nothing. Block Instagram, unblock it
+            to send one DM, and you&apos;re back in the feed — so people rage-quit
+            blockers within a week. Rinkler cuts only the short-video feed and
+            leaves the rest working. Nothing to rage-quit.
+          </p>
+          <div style={compareGrid} className="compare">
+            <div style={{ paddingRight: 32 }}>
+              <div style={colLabel}>Blanket blockers</div>
+              {compareBad.map((t) => <CompareRow key={t} text={t} good={false} />)}
+            </div>
+            <div style={{ paddingLeft: 32, borderLeft: `1px solid ${signal.border}` }} className="compare-right">
+              <div style={{ ...colLabel, color: signal.text }}>Rinkler</div>
+              {compareGood.map((t) => <CompareRow key={t} text={t} good />)}
+            </div>
+          </div>
+        </section>
+
+        <Rule />
+
+        {/* How it works */}
+        <section id="how" style={section}>
+          <Eyebrow>How it works</Eyebrow>
+          <h2 style={h2}>Set it once. It holds the line.</h2>
+          <div style={{ marginTop: 40 }}>
+            {howSteps.map((s, i) => (
+              <div key={s.title} style={stepRow} className="step-row">
+                <div style={stepNum}>{String(i + 1).padStart(2, "0")}</div>
+                <div style={{ maxWidth: 620 }}>
+                  <div style={stepTitle}>{s.title}</div>
+                  <div style={stepBody}>{s.body}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <Rule />
+
+        {/* Honest by design */}
+        <section style={section}>
+          <Eyebrow>Honest by design</Eyebrow>
+          <h2 style={h2}>No glow, no gimmicks.</h2>
+          <div style={featGrid} className="feat-grid">
+            {features.map((f) => (
+              <div key={f.title}>
+                <div style={featTitle}>{f.title}</div>
+                <div style={featBody}>{f.body}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <Rule />
+
+        {/* Privacy */}
+        <section style={section}>
+          <Eyebrow>Privacy by design</Eyebrow>
+          <h2 style={{ ...h2, maxWidth: 760 }}>It filters on your device. It never reads your content.</h2>
+          <p style={{ ...lede, maxWidth: 640, marginTop: 20 }}>
+            The filter runs locally — a private configuration that never routes
+            your traffic through a server. It sees where a connection is going and
+            how big a stream is, never what&apos;s inside. No messages read,
+            nothing stored, nothing sold.
+          </p>
+          <Link href="/privacy" style={{ ...textBtn, display: "inline-block", marginTop: 24 }} className="text-btn">
+            Read the privacy policy →
+          </Link>
+        </section>
+
+        <Rule />
+
+        {/* Founder note */}
+        <section style={section}>
+          <Eyebrow>Why I built this</Eyebrow>
+          <p style={{ ...quote }}>
+            &ldquo;I lost too many evenings to Reels, and every blocker I tried
+            treated me like a child — lock everything, feel guilty, turn it off.
+            So I built the one I actually wanted: it quietly removes the trap and
+            trusts me with the rest. Real numbers, no shame, nothing leaving your
+            phone.&rdquo;
+          </p>
+          <div style={{ ...colLabel, marginTop: 20 }}>— the maker of Rinkler</div>
+        </section>
+
+        <Rule />
+
+        {/* Final CTA */}
+        <section style={{ ...section, paddingTop: "clamp(80px, 13vh, 160px)", paddingBottom: "clamp(80px, 13vh, 160px)" }}>
+          <h2 style={{ ...h2, fontSize: "clamp(34px, 6vw, 64px)" }}>Take back your attention.</h2>
+          <p style={{ ...lede, marginTop: 18 }}>Coming to iOS. Get early access and win your first ten quiet minutes.</p>
+          <div style={{ ...ctaRow, marginTop: 32 }}>
+            <Link href={ctaHref} style={lightBtn} className="light-btn">{ctaLabel}</Link>
+          </div>
+        </section>
+      </main>
 
       {/* Footer */}
       <footer style={footer}>
-        <div style={{ ...wordmark, fontSize: 18 }}>
-          <span style={dot} />
-          Rinkler
-        </div>
+        <span style={wordmark}>Rinkler</span>
         <div style={footerLinks} className="nav-links">
           <Link href="/privacy" style={navLink}>Privacy</Link>
           <a href="mailto:nihar.manchikalapudi@gmail.com" style={navLink}>Support</a>
           <Link href="/login" style={navLink}>Log in</Link>
         </div>
-        <span style={{ color: signal.textDim, fontSize: 13 }}>© 2026 Rinkler</span>
+        <span style={{ color: signal.textFaint, fontFamily: signal.mono, fontSize: 12 }}>© 2026</span>
       </footer>
     </div>
   );
 }
 
-function SectionHeading({ kicker, title, center }: { kicker: string; title: string; center?: boolean }) {
-  return (
-    <div style={{ textAlign: center ? "center" : "left", marginBottom: 32 }}>
-      <div style={{ ...kickerStyle, justifyContent: center ? "center" : "flex-start" }}>
-        <span style={dot} />
-        {kicker}
-      </div>
-      <h2 style={{ ...h2, maxWidth: center ? 700 : undefined, marginInline: center ? "auto" : undefined }}>{title}</h2>
-    </div>
-  );
+function Eyebrow({ children }: { children: ReactNode }) {
+  return <div style={eyebrow}>{children}</div>;
 }
-
+function Rule() {
+  return <div style={{ height: 1, background: signal.border, maxWidth: 1080, margin: "0 auto", width: "100%" }} />;
+}
 function CompareRow({ text, good }: { text: string; good: boolean }) {
   return (
     <div style={compareRow}>
-      <span style={{ ...compareMark, color: good ? signal.success : "#FF8585" }}>{good ? "→" : "×"}</span>
-      <span style={compareText}>{text}</span>
+      <span style={{ ...compareMark, color: good ? signal.accent : signal.textFaint }}>{good ? "→" : "×"}</span>
+      <span style={{ fontSize: 15.5, lineHeight: 1.5, color: good ? signal.text : signal.textDim }}>{text}</span>
     </div>
   );
 }
@@ -209,38 +210,21 @@ const compareGood = [
   "No shame — just real numbers and quiet wins",
   "Sticks, because there's nothing to rage-quit",
 ];
-
 const howSteps = [
-  {
-    title: "Build your Focus System",
-    body: "Answer a few quick questions about what pulls you in and when. Rinkler turns them into rules tuned to you — Homework Mode, Night Lock, a clean morning start — before you touch a single setting.",
-  },
-  {
-    title: "Start a Control Session",
-    body: "One tap. Pick Gentle, Focused, or a locked Deep session you can't quit early. Your rules also run on a schedule, so the line holds even when the app is closed.",
-  },
-  {
-    title: "Watch your Signal grow",
-    body: "Real focused time and interrupted feeds add up. Earn Signal Rings, build a streak, and see exactly how much scroll you cut — measured, never guessed.",
-  },
+  { title: "Build your Focus System", body: "Answer a few questions about what pulls you in and when. Rinkler turns them into rules tuned to you — Homework Mode, Night Lock, a clean morning start — before you touch a setting." },
+  { title: "Start a Control Session", body: "One tap. Pick Gentle, Focused, or a locked Deep session you can't quit early. Rules also run on a schedule, so the line holds even when the app is closed." },
+  { title: "Watch your Signal grow", body: "Real focused time and interrupted feeds add up. Build a streak and see exactly how much scroll you cut — measured, never guessed." },
 ];
-
 const features = [
-  { icon: "◓", title: "On-device & private", body: "Filtering happens locally on your phone. Your traffic never routes through our servers, and we never read what's inside it." },
-  { icon: "✓", title: "Surgical, not blunt", body: "It targets the infinite short-video feed specifically — not your whole phone — so the useful parts of every app keep working." },
-  { icon: "◷", title: "Schedules that hold", body: "Your windows run on time without the app open, so protection is already up when you're most likely to slip." },
-  { icon: "◎", title: "Real numbers, no shame", body: "Every stat is measured on-device, not estimated. Honest time saved, honest streams interrupted — and no lecture when you slip." },
+  { title: "On-device & private", body: "Filtering happens locally on your phone. Traffic never routes through our servers, and we never read what's inside it." },
+  { title: "Surgical, not blunt", body: "It targets the infinite short-video feed specifically — not your whole phone — so the useful parts of every app keep working." },
+  { title: "Schedules that hold", body: "Your windows run on time without the app open, so protection is already up when you're most likely to slip." },
+  { title: "Real numbers, no shame", body: "Every stat is measured on-device, not estimated. Honest time saved, honest streams interrupted — and no lecture when you slip." },
 ];
 
 /* ---------- styles ---------- */
-
-const page: CSSProperties = {
-  background: signal.bg,
-  color: signal.text,
-  fontFamily: signal.sans,
-  minHeight: "100vh",
-  WebkitFontSmoothing: "antialiased",
-};
+const page: CSSProperties = { background: signal.bg, color: signal.text, fontFamily: signal.sans, minHeight: "100vh" };
+const main: CSSProperties = { maxWidth: 1080, margin: "0 auto", padding: "0 clamp(20px, 5vw, 40px)" };
 
 const nav: CSSProperties = {
   position: "sticky",
@@ -249,237 +233,97 @@ const nav: CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  padding: "18px clamp(20px, 5vw, 64px)",
-  background: "rgba(8,9,11,0.72)",
-  backdropFilter: "blur(12px)",
+  padding: "16px clamp(20px, 5vw, 40px)",
+  maxWidth: 1080 + 80,
+  margin: "0 auto",
+  background: "rgba(8,8,10,0.8)",
+  backdropFilter: "blur(10px)",
   borderBottom: `1px solid ${signal.border}`,
 };
-
-const wordmark: CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 10,
-  fontSize: 21,
-  fontWeight: 700,
-  color: signal.text,
-  textDecoration: "none",
-  letterSpacing: "-0.01em",
-};
-
-const dot: CSSProperties = {
-  width: 9,
-  height: 9,
-  borderRadius: "50%",
-  background: signal.glow,
-  boxShadow: `0 0 12px ${signal.blue}`,
-  display: "inline-block",
-  flexShrink: 0,
-};
-
+const wordmark: CSSProperties = { fontSize: 17, fontWeight: 600, color: signal.text, textDecoration: "none", letterSpacing: "-0.01em" };
 const navRight: CSSProperties = { display: "flex", alignItems: "center", gap: 26 };
-const navLink: CSSProperties = { color: signal.textDim, textDecoration: "none", fontSize: 15 };
-const navBtn: CSSProperties = {
+const navLink: CSSProperties = { color: signal.textDim, textDecoration: "none", fontSize: 14 };
+const lightBtn: CSSProperties = {
   padding: "9px 18px",
-  borderRadius: 12,
-  background: signal.glow,
-  color: "#fff",
+  borderRadius: 8,
+  background: signal.text,
+  color: "#08080A",
   textDecoration: "none",
-  fontSize: 15,
+  fontSize: 14,
   fontWeight: 600,
 };
 
-const hero: CSSProperties = {
-  position: "relative",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  textAlign: "center",
-  padding: "clamp(72px, 13vw, 150px) clamp(20px, 5vw, 64px) clamp(56px, 8vw, 96px)",
-  overflow: "hidden",
+const section: CSSProperties = { padding: "clamp(64px, 10vh, 120px) 0" };
+const eyebrow: CSSProperties = {
+  fontFamily: signal.mono,
+  fontSize: 12,
+  letterSpacing: "0.16em",
+  textTransform: "uppercase",
+  color: signal.textFaint,
+  marginBottom: 22,
 };
-
-const glowOrb: CSSProperties = {
-  position: "absolute",
-  top: "-22%",
-  left: "50%",
-  transform: "translateX(-50%)",
-  width: "min(760px, 95vw)",
-  height: 520,
-  background: "radial-gradient(closest-side, rgba(91,124,255,0.30), rgba(139,92,246,0.10) 55%, transparent 75%)",
-  filter: "blur(20px)",
-  pointerEvents: "none",
-};
-
-const pill: CSSProperties = {
-  position: "relative",
-  display: "inline-block",
-  padding: "6px 14px",
-  borderRadius: 999,
-  border: `1px solid ${signal.border}`,
-  background: signal.card,
-  color: signal.textDim,
-  fontSize: 13,
-  letterSpacing: "0.04em",
-  marginBottom: 26,
-};
-
 const h1: CSSProperties = {
-  position: "relative",
-  fontSize: "clamp(38px, 7vw, 76px)",
+  fontSize: "clamp(42px, 8vw, 88px)",
+  lineHeight: 1.0,
+  fontWeight: 600,
+  letterSpacing: "-0.04em",
+  margin: 0,
+  maxWidth: 980,
+};
+const h2: CSSProperties = {
+  fontSize: "clamp(28px, 4.6vw, 48px)",
   lineHeight: 1.04,
-  fontWeight: 700,
+  fontWeight: 600,
   letterSpacing: "-0.03em",
   margin: 0,
-  maxWidth: 920,
 };
+const lede: CSSProperties = { fontSize: "clamp(16px, 1.8vw, 19px)", lineHeight: 1.6, color: signal.textDim, maxWidth: 540, margin: 0 };
+const statement: CSSProperties = { fontSize: "clamp(19px, 2.6vw, 26px)", lineHeight: 1.45, color: signal.textDim, maxWidth: 820, margin: "26px 0 0", letterSpacing: "-0.01em" };
+const micro: CSSProperties = { fontFamily: signal.mono, fontSize: 12, color: signal.textFaint, marginTop: 22 };
 
-const lede: CSSProperties = {
-  position: "relative",
-  fontSize: "clamp(16px, 2.2vw, 20px)",
-  lineHeight: 1.55,
-  color: signal.textDim,
-  marginTop: 24,
-  maxWidth: 620,
-};
+const ctaRow: CSSProperties = { display: "flex", flexWrap: "wrap", alignItems: "center", gap: 22, marginTop: 36 };
+const textBtn: CSSProperties = { color: signal.text, textDecoration: "none", fontSize: 15, fontWeight: 500 };
 
-const microNote: CSSProperties = {
-  position: "relative",
-  marginTop: 20,
-  fontSize: 13,
-  color: signal.textDim,
-  opacity: 0.8,
-};
+const compareGrid: CSSProperties = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0, marginTop: 44 };
+const colLabel: CSSProperties = { fontFamily: signal.mono, fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase", color: signal.textFaint, marginBottom: 20 };
+const compareRow: CSSProperties = { display: "flex", gap: 14, alignItems: "flex-start", padding: "11px 0", borderTop: `1px solid ${signal.border}` };
+const compareMark: CSSProperties = { fontFamily: signal.mono, fontSize: 14, lineHeight: 1.55, flexShrink: 0, width: 14 };
 
-const ctaRow: CSSProperties = { position: "relative", display: "flex", flexWrap: "wrap", gap: 14, justifyContent: "center", marginTop: 38 };
+const stepRow: CSSProperties = { display: "flex", gap: 32, padding: "26px 0", borderTop: `1px solid ${signal.border}` };
+const stepNum: CSSProperties = { fontFamily: signal.mono, fontSize: 14, color: signal.textFaint, paddingTop: 4, width: 36, flexShrink: 0 };
+const stepTitle: CSSProperties = { fontSize: 19, fontWeight: 600, color: signal.text, letterSpacing: "-0.01em" };
+const stepBody: CSSProperties = { fontSize: 15, lineHeight: 1.6, color: signal.textDim, marginTop: 8 };
 
-const primaryBtn: CSSProperties = {
-  padding: "15px 30px",
-  borderRadius: 14,
-  background: signal.glow,
-  color: "#fff",
-  textDecoration: "none",
-  fontSize: 17,
-  fontWeight: 600,
-  boxShadow: "0 8px 30px rgba(91,124,255,0.35)",
-};
+const featGrid: CSSProperties = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px 56px", marginTop: 44 };
+const featTitle: CSSProperties = { fontSize: 17, fontWeight: 600, color: signal.text, marginBottom: 8, letterSpacing: "-0.01em" };
+const featBody: CSSProperties = { fontSize: 14.5, lineHeight: 1.6, color: signal.textDim };
 
-const ghostBtn: CSSProperties = {
-  padding: "15px 30px",
-  borderRadius: 14,
-  background: signal.card,
-  border: `1px solid ${signal.border}`,
-  color: signal.text,
-  textDecoration: "none",
-  fontSize: 17,
-  fontWeight: 600,
-};
-
-const section: CSSProperties = { padding: "clamp(56px, 9vw, 104px) clamp(20px, 5vw, 64px)", maxWidth: 1120, margin: "0 auto" };
-
-const kickerStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: 9,
-  fontSize: 13,
-  fontWeight: 600,
-  letterSpacing: "0.1em",
-  color: signal.textDim,
-  marginBottom: 14,
-};
-
-const h2: CSSProperties = { fontSize: "clamp(28px, 4.5vw, 44px)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.1, margin: 0 };
-
-const bigPara: CSSProperties = { fontSize: "clamp(18px, 2.6vw, 24px)", lineHeight: 1.5, color: signal.textDim, maxWidth: 780, margin: 0, letterSpacing: "-0.01em" };
-
-const steps: CSSProperties = { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 };
-const featGrid: CSSProperties = { display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 };
-const compareGrid: CSSProperties = { display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20, marginTop: 32 };
-
-const card: CSSProperties = {
-  background: signal.card,
-  border: `1px solid ${signal.border}`,
-  borderRadius: 20,
-  padding: 28,
-};
-
-const tag: CSSProperties = {
-  display: "inline-block",
-  fontSize: 13,
-  fontWeight: 600,
-  padding: "5px 12px",
-  borderRadius: 999,
-  border: "1px solid",
-  marginBottom: 18,
-};
-
-const compareRow: CSSProperties = { display: "flex", gap: 12, alignItems: "flex-start", padding: "9px 0" };
-const compareMark: CSSProperties = { fontSize: 16, fontWeight: 700, lineHeight: 1.5, flexShrink: 0, width: 16 };
-const compareText: CSSProperties = { fontSize: 15.5, lineHeight: 1.5, color: signal.textDim };
-
-const stepNum: CSSProperties = { fontFamily: signal.mono, fontSize: 15, color: signal.blue, marginBottom: 16 };
-const featIcon: CSSProperties = {
-  width: 44,
-  height: 44,
-  borderRadius: 12,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: 22,
-  color: signal.blue,
-  background: "rgba(91,124,255,0.12)",
-  border: `1px solid ${signal.border}`,
-  marginBottom: 18,
-};
-
-const cardTitle: CSSProperties = { fontSize: 19, fontWeight: 600, margin: "0 0 8px" };
-const cardBody: CSSProperties = { fontSize: 15, lineHeight: 1.6, color: signal.textDim, margin: 0 };
-
-const privacyBand: CSSProperties = {
-  padding: "clamp(64px, 10vw, 116px) clamp(20px, 5vw, 64px)",
-  background: "radial-gradient(120% 100% at 50% 0%, rgba(91,124,255,0.08), transparent 60%)",
-  borderTop: `1px solid ${signal.border}`,
-  borderBottom: `1px solid ${signal.border}`,
-};
-
-const finalCta: CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  gap: 14,
-  textAlign: "center",
-  padding: "clamp(72px, 11vw, 130px) clamp(20px, 5vw, 64px)",
-};
-
-const ctaTitle: CSSProperties = { fontSize: "clamp(30px, 5vw, 52px)", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 };
+const quote: CSSProperties = { fontSize: "clamp(20px, 2.8vw, 28px)", lineHeight: 1.45, color: signal.text, maxWidth: 820, fontWeight: 400, letterSpacing: "-0.01em", margin: "20px 0 0" };
 
 const footer: CSSProperties = {
+  maxWidth: 1080,
+  margin: "0 auto",
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
   flexWrap: "wrap",
   gap: 16,
-  padding: "32px clamp(20px, 5vw, 64px)",
+  padding: "28px clamp(20px, 5vw, 40px)",
   borderTop: `1px solid ${signal.border}`,
 };
-
 const footerLinks: CSSProperties = { display: "flex", gap: 24 };
 
 const css = `
-  .fade { opacity: 0; transform: translateY(14px); animation: fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) forwards; }
-  .fade[data-d="0"] { animation-delay: 0.02s; }
-  .fade[data-d="1"] { animation-delay: 0.10s; }
-  .fade[data-d="2"] { animation-delay: 0.18s; }
-  .fade[data-d="3"] { animation-delay: 0.26s; }
-  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
-  .card { transition: transform 0.2s ease, border-color 0.2s ease; }
-  .card:hover { transform: translateY(-3px); }
-  .btn-primary { transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease; }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(91,124,255,0.5); }
-  .btn-ghost { transition: border-color 0.2s ease, background 0.2s ease; }
-  .btn-ghost:hover { border-color: rgba(91,124,255,0.5); background: #1B1E24; }
-  .nav-links a[href^="#"]:hover, .nav-links a[href^="/"]:not(.btn-primary):hover { color: #F8FAFC; }
-  @media (max-width: 860px) { .grid-3 { grid-template-columns: 1fr !important; } }
-  @media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr !important; } .nav-links a:not(:last-child) { display: none; } }
-  @media (prefers-reduced-motion: reduce) { .fade { animation: none; opacity: 1; transform: none; } }
   html { scroll-behavior: smooth; }
+  .light-btn { transition: opacity 0.15s ease; }
+  .light-btn:hover { opacity: 0.85; }
+  .text-btn:hover { color: ${signal.textDim}; }
+  .nav-links a:hover { color: ${signal.text}; }
+  @media (max-width: 720px) {
+    .compare { grid-template-columns: 1fr !important; }
+    .compare-right { padding-left: 0 !important; border-left: 0 !important; border-top: 1px solid ${signal.border}; padding-top: 28px; margin-top: 8px; }
+    .feat-grid { grid-template-columns: 1fr !important; }
+    .nav-links a:not(:last-child) { display: none; }
+    .br-hide { display: none; }
+  }
 `;

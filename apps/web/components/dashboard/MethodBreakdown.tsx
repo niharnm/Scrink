@@ -10,11 +10,11 @@ interface MethodBreakdownProps {
 }
 
 const COLORS = [
-  "#5B7CFF", // signal blue
-  "#8B5CF6", // violet
-  "#63D297", // success
-  "#FFB454", // warning
-  "rgba(255,255,255,0.22)",
+  "#ECECEE",
+  "#9A9AA0",
+  "#646468",
+  "#3E3E44",
+  "rgba(255,255,255,0.12)",
 ];
 
 export default function MethodBreakdown({ methods }: MethodBreakdownProps) {

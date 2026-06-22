@@ -28,8 +28,8 @@ export default function Ring({
       <svg width={size} height={size}>
         <defs>
           <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#5B7CFF" />
-            <stop offset="100%" stopColor="#8B5CF6" />
+            <stop offset="0%" stopColor="#F2F2F4" />
+            <stop offset="100%" stopColor="#A8A8AE" />
           </linearGradient>
         </defs>
         <circle
