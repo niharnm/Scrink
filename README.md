@@ -28,10 +28,11 @@ For web development, install the pinned package manager from `package.json`, the
 ```bash
 pnpm install
 pnpm typecheck
+pnpm lint
 pnpm build
 ```
 
-This machine currently does not have `pnpm` available, so regenerate `pnpm-lock.yaml` on a machine with pnpm before relying on web dependency changes.
+The pinned package manager is `pnpm@9.15.4` (see `packageManager` in `package.json`); enable it with `corepack enable` if needed. Regenerate `pnpm-lock.yaml` after any dependency change.
 
 Apply the Supabase schema before using the dashboard or MCP server:
 
@@ -46,6 +47,10 @@ The web dashboard uses the same email-code Supabase auth flow as iOS. Configure 
 `ENABLE_EXTERNAL_AI_INSIGHTS` defaults to `false`. Leave it disabled unless you intentionally want dashboard summary statistics sent to the configured external AI provider.
 
 `ENABLE_DASHBOARD_ADMIN_TOOLS` and `NEXT_PUBLIC_ENABLE_DASHBOARD_ADMIN_TOOLS` default to `false`. Only enable them for trusted maintenance sessions because those endpoints run service-role rollups and domain classification.
+
+`GET /api/health` is a public, unauthenticated liveness/readiness probe (returns `{status:"ok",...}` with no user data) for load balancers and uptime monitors.
+
+The MCP server (`packages/mcp-server`) runs with the Supabase service-role key. When served over HTTP it **requires** `MCP_API_KEY` (a strong shared secret, ≥16 chars) and refuses to start without one; it binds to `127.0.0.1` by default (set `MCP_HOST=0.0.0.0` only behind a proxy/LB). The `stdio` transport (`MCP_TRANSPORT=stdio`) is local-only and needs no key.
 
 ## Release State
 

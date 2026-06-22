@@ -29,12 +29,12 @@
 
 ## Current Verification Gaps
 
-- Unsigned iPhoneOS builds pass, but signed device install is blocked until Xcode has a signed-in Apple Developer account and matching provisioning profiles for the app, tunnel, and App Group.
-- The latest signed iPhoneOS build probe failed because both targets have an empty `DEVELOPMENT_TEAM`. After setting the Apple Developer Team ID, matching provisioning profiles and Network Extension/App Group entitlements are still required.
-- Simulator UX smoke testing is currently blocked on this machine. The simulator can report `Booted`, but install/launch commands hang and screenshots show only the system spinner.
+- `DEVELOPMENT_TEAM` is now set to `QDKSUX27F9` on both targets, and the simulator build (`Rinkler` scheme, `iphonesimulator`, `CODE_SIGNING_ALLOWED=NO`) compiles the app and packet-tunnel extension cleanly.
+- Signed device install is still blocked until Xcode has a signed-in Apple Developer account with matching provisioning profiles for the app, tunnel, and App Group, plus an approved Network Extension entitlement.
+- On-device UX smoke testing (VPN start/stop, OTP login, traffic sync) still requires a signed build on a physical iPhone; the simulator cannot exercise the Network Extension packet tunnel.
 - Section-only blocking for YouTube Shorts and other mainstream short-video surfaces needs a different, App-Store-safe architecture or verified app-specific hosts. The current local VPN tunnel must not claim that precision or it will break normal YouTube/social app behavior.
-- The local machine still has no installed `pnpm`, `npm`, or `corepack`. Web checks were run with a temporary pnpm 9.15.4 executable under `/tmp`.
-- `pnpm audit --json` currently reports zero known dependency advisories after the lockfile refresh.
+- Web checks (`pnpm typecheck`, `pnpm lint`, `pnpm build`) pass with the pinned `pnpm@9.15.4`.
+- Re-run `pnpm audit` after any lockfile change and before each release.
 
 ## Supabase Data
 
