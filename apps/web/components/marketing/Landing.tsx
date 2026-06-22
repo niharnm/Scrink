@@ -357,18 +357,19 @@ const splashTag: CSSProperties = { fontSize: "clamp(15px, 2.1vw, 19px)", color: 
 const countLabel: CSSProperties = { fontFamily: signal.mono, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: signal.textFaint, marginBottom: 18 };
 const learnMore: CSSProperties = { display: "inline-block", marginTop: 44, color: signal.textDim, textDecoration: "none", fontSize: 14, fontFamily: signal.mono, letterSpacing: "0.04em", background: "none", border: "none", cursor: "pointer", padding: 0 };
 
-/* vertical "endless scroll" ticker */
+/* vertical "endless scroll" ticker — lines touch (no gap) so the loop is
+   truly continuous, with masked top/bottom edges. */
 const vWrap: CSSProperties = {
   display: "inline-flex",
-  height: "1.2em",
-  lineHeight: 1.2,
+  height: "1em",
+  lineHeight: 1,
   overflow: "hidden",
-  verticalAlign: "-0.22em",
-  WebkitMaskImage: "linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent)",
-  maskImage: "linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent)",
+  verticalAlign: "-0.12em",
+  WebkitMaskImage: "linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent)",
+  maskImage: "linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent)",
 };
 const vInner: CSSProperties = { display: "flex", flexDirection: "column", willChange: "transform" };
-const vLine: CSSProperties = { height: "1.2em", lineHeight: 1.2, whiteSpace: "nowrap", color: signal.text, fontWeight: 600 };
+const vLine: CSSProperties = { height: "1em", lineHeight: 1, whiteSpace: "nowrap", color: signal.text, fontWeight: 600 };
 
 const section: CSSProperties = { padding: "clamp(64px, 10vh, 120px) 0" };
 const h1: CSSProperties = { fontSize: "clamp(42px, 8vw, 88px)", lineHeight: 1.0, fontWeight: 600, letterSpacing: "-0.04em", margin: 0, maxWidth: 980 };
