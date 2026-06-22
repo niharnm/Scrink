@@ -1,8 +1,10 @@
 import SwiftUI
 import NetworkExtension
+import StoreKit
 
 struct SettingsScreen: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.requestReview) private var requestReview
     @EnvironmentObject private var vpnManager: VPNManager
     @EnvironmentObject private var commitment: CommitmentStore
     @EnvironmentObject private var focusSystem: FocusSystemStore
@@ -127,6 +129,8 @@ struct SettingsScreen: View {
                 .foregroundStyle(RinklerColors.signalTextDim)
 
             VStack(spacing: 0) {
+                aboutRow("Rate Rinkler", icon: "star") { requestReview() }
+                aboutDivider
                 aboutRow("Privacy Policy", icon: "lock.shield") { legalDoc = LegalContent.privacy }
                 aboutDivider
                 aboutRow("Terms of Service", icon: "doc.text") { legalDoc = LegalContent.terms }
