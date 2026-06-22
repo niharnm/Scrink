@@ -423,6 +423,7 @@ struct RuleEditorView: View {
 /// stats file when available; otherwise invites the user to start a session.
 struct ProgressScreen: View {
     @EnvironmentObject private var focusSystem: FocusSystemStore
+    @EnvironmentObject private var sessions: FocusSessionStore
     @State private var noiseBlocked = 0
 
     var body: some View {
@@ -456,12 +457,90 @@ struct ProgressScreen: View {
                     .background(RinklerColors.signalCard)
                     .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
                     .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+
+                    ringsSection
                 }
                 .padding(RinklerSpacing.lg)
             }
         }
         .preferredColorScheme(.dark)
         .onAppear(perform: loadStats)
+    }
+
+    // MARK: Signal Rings (rewards)
+
+    private struct RingLevel {
+        let title: String
+        let requirement: String
+    }
+
+    private let levels: [RingLevel] = [
+        RingLevel(title: "First Signal", requirement: "Bank your first clean minutes"),
+        RingLevel(title: "Double Ring", requirement: "Block 10 scroll pulls"),
+        RingLevel(title: "Pulse", requirement: "Hold a 3-day streak"),
+        RingLevel(title: "Orbit", requirement: "Save 5 hours in a week"),
+        RingLevel(title: "Halo", requirement: "Finish a Locked session"),
+    ]
+
+    /// Real fraction (0...1) toward each ring, so locked rings show how close the
+    /// user is rather than a flat lock. A ring is unlocked once its fraction hits 1.
+    private var fractions: [Double] {
+        let weekMin = weeklyFocusMinutes
+        let lockedDone = sessions.records.contains { $0.strictness == .deep && $0.completedFullDuration }
+        return [
+            (weekMin >= 1 || noiseBlocked > 0) ? 1 : 0,
+            min(Double(noiseBlocked) / 10, 1),
+            min(Double(sessions.streak) / 3, 1),
+            min(Double(weekMin) / 300, 1),
+            lockedDone ? 1 : 0,
+        ]
+    }
+
+    private var weeklyFocusMinutes: Int {
+        let weekAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+        let seconds = sessions.records.filter { $0.startedAt >= weekAgo }.reduce(0.0) { $0 + $1.durationSeconds }
+        return Int(seconds / 60)
+    }
+
+    private var ringsSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("SIGNAL RINGS")
+                .font(RinklerFonts.sans(12, .semibold))
+                .foregroundStyle(RinklerColors.signalTextDim)
+
+            ForEach(levels.indices, id: \.self) { i in
+                let fraction = fractions[i]
+                let isOn = fraction >= 1
+                HStack(spacing: RinklerSpacing.md) {
+                    SignalRing(progress: isOn ? 1 : max(fraction, 0.06), lineWidth: 4) {
+                        Image(systemName: isOn ? "checkmark" : "lock.fill")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(isOn ? RinklerColors.signalSuccess : RinklerColors.signalTextDim)
+                    }
+                    .frame(width: 38, height: 38)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(levels[i].title)
+                            .font(RinklerFonts.sans(15, .semibold))
+                            .foregroundStyle(isOn ? RinklerColors.signalText : RinklerColors.signalTextDim)
+                        Text(levels[i].requirement)
+                            .font(RinklerFonts.sans(12, .regular))
+                            .foregroundStyle(RinklerColors.signalTextDim)
+                    }
+                    Spacer()
+                    if !isOn && fraction > 0 {
+                        Text("\(Int(fraction * 100))%")
+                            .font(RinklerFonts.mono(12, .medium))
+                            .foregroundStyle(RinklerColors.signalTextDim)
+                    }
+                }
+                .padding(RinklerSpacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(RinklerColors.signalCard)
+                .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(isOn ? RinklerColors.signalBlue.opacity(0.4) : RinklerColors.signalBorder, lineWidth: 1))
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            }
+        }
     }
 
     private func statCard(_ value: String, _ label: String) -> some View {
