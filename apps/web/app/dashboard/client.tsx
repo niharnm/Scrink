@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef, CSSProperties } from "react";
+import { useState, useCallback, useEffect, useRef, CSSProperties, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import SkyBackground from "@/components/dashboard/SkyBackground";
 import HeaderBar from "@/components/dashboard/HeaderBar";
@@ -129,12 +129,39 @@ export default function DashboardClient({ email }: DashboardClientProps) {
   }, [loadDashboard, range]);
 
   const contentStyle: CSSProperties = {
-    maxWidth: 960,
+    maxWidth: 1240,
     margin: "0 auto",
     paddingTop: 0,
     paddingRight: theme.spacing.lg,
-    paddingBottom: 200,
+    paddingBottom: 160,
     paddingLeft: theme.spacing.lg,
+  };
+
+  const blocked = data?.totalBlocked ?? 0;
+  const allowed = data?.totalAllowed ?? 0;
+  const interceptRate = blocked + allowed > 0 ? blocked / (blocked + allowed) : 0;
+
+  const heroBandStyle: CSSProperties = {
+    display: "grid",
+    gridTemplateColumns: "minmax(260px, 340px) 1fr",
+    gap: theme.spacing.md,
+    marginBottom: theme.spacing.lg,
+  };
+
+  const heroCardStyle: CSSProperties = {
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing.lg,
+    padding: theme.spacing.lg,
+    background: theme.colors.white10,
+    border: `1px solid ${theme.colors.white30}`,
+    borderRadius: 22,
+  };
+
+  const kpiGridStyle: CSSProperties = {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+    gap: theme.spacing.md,
   };
 
   const greetingStyle: CSSProperties = {
@@ -158,13 +185,6 @@ export default function DashboardClient({ email }: DashboardClientProps) {
     justifyContent: "space-between",
     flexWrap: "wrap",
     gap: theme.spacing.md,
-    marginBottom: theme.spacing.xl,
-  };
-
-  const statsGridStyle: CSSProperties = {
-    display: "flex",
-    gap: theme.spacing.md,
-    flexWrap: "wrap",
     marginBottom: theme.spacing.xl,
   };
 
@@ -223,31 +243,52 @@ export default function DashboardClient({ email }: DashboardClientProps) {
       <HeaderBar email={email} onSignOut={handleSignOut} />
 
       <div style={contentStyle}>
+        <style>{`@media (max-width: 720px){ .dash-hero{ grid-template-columns: 1fr !important; } }`}</style>
+
         <div style={topRowStyle}>
           <div>
-            <div style={greetingStyle}>Rinkler overview</div>
+            <div style={greetingStyle}>Your Scroll Report</div>
             <div style={subGreetingStyle}>keep the useful parts.</div>
           </div>
           <DateRangeSelector value={range} onChange={setRange} />
         </div>
 
-        <div style={sectionGap}>
-          <RinklerCluster apps={data.apps} onAppClick={handleAppClick} />
+        {/* Hero band: intercept ring + key KPIs */}
+        <div style={heroBandStyle} className="dash-hero">
+          <div style={heroCardStyle}>
+            <Ring percent={interceptRate} size={132} stroke={12}>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontFamily: theme.fonts.mono, fontSize: 32, color: theme.colors.white, lineHeight: 1.05 }}>
+                  {data.totalBlocked}
+                </div>
+                <div style={{ fontFamily: theme.fonts.body, fontSize: 11, color: theme.colors.white60, textTransform: "uppercase", letterSpacing: 1 }}>
+                  blocked
+                </div>
+              </div>
+            </Ring>
+            <div>
+              <div style={{ fontFamily: theme.fonts.display, fontSize: 20, color: theme.colors.white, marginBottom: 4, fontWeight: 600 }}>
+                {Math.round(interceptRate * 100)}% intercepted
+              </div>
+              <div style={{ fontFamily: theme.fonts.body, fontSize: 13, color: theme.colors.white60, lineHeight: 1.5 }}>
+                of tracked requests {range === "today" ? "today" : `in the last ${range}`}. {data.totalAllowed} let through.
+              </div>
+            </div>
+          </div>
+
+          <div style={kpiGridStyle}>
+            <StatCard label="Time Saved" value={data.timeSaved} />
+            <StatCard label="Peak Hours" value={data.peakHours} />
+            <StatCard label="Most Active" value={data.mostActive} />
+            <BandwidthCard
+              totalBytesIn={data.totalBytesIn}
+              totalBytesOut={data.totalBytesOut}
+            />
+          </div>
         </div>
 
-        <div style={statsGridStyle}>
-          <StatCard
-            label="Blocked"
-            value={String(data.totalBlocked)}
-            subtitle={`${range === "today" ? "today" : `last ${range}`}`}
-          />
-          <StatCard label="Time Saved" value={data.timeSaved} />
-          <StatCard label="Peak Hours" value={data.peakHours} />
-          <StatCard label="Most Active" value={data.mostActive} />
-          <BandwidthCard
-            totalBytesIn={data.totalBytesIn}
-            totalBytesOut={data.totalBytesOut}
-          />
+        <div style={sectionGap}>
+          <RinklerCluster apps={data.apps} onAppClick={handleAppClick} />
         </div>
 
         <div style={sectionGap}>
@@ -302,5 +343,49 @@ export default function DashboardClient({ email }: DashboardClientProps) {
         <InsightCard text={data.insight} onGenerate={handleGenerateInsight} />
       </div>
     </SkyBackground>
+  );
+}
+
+/** Signal-style progress ring (blue→violet) used for the hero intercept rate. */
+function Ring({
+  percent,
+  size,
+  stroke,
+  children,
+}: {
+  percent: number;
+  size: number;
+  stroke: number;
+  children?: ReactNode;
+}) {
+  const r = (size - stroke) / 2;
+  const circ = 2 * Math.PI * r;
+  const dash = Math.max(0.001, Math.min(1, percent)) * circ;
+  return (
+    <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
+      <svg width={size} height={size}>
+        <defs>
+          <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#5B7CFF" />
+            <stop offset="100%" stopColor="#8B5CF6" />
+          </linearGradient>
+        </defs>
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.10)" strokeWidth={stroke} />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="url(#ringGrad)"
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeDasharray={`${dash} ${circ}`}
+          transform={`rotate(-90 ${size / 2} ${size / 2})`}
+        />
+      </svg>
+      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        {children}
+      </div>
+    </div>
   );
 }
