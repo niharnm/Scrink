@@ -20,11 +20,17 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
   const [open, setOpen] = useState(false);
   const reveal = () => {
     setOpen(true);
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() =>
-        document.getElementById("more")?.scrollIntoView({ behavior: "smooth" })
-      )
-    );
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Let the content fade in first, then glide down slowly — calmer than a snap.
+    setTimeout(() => {
+      const el = document.getElementById("more");
+      if (!el) return;
+      if (reduce) {
+        el.scrollIntoView();
+        return;
+      }
+      slowScrollTo(el.getBoundingClientRect().top + window.scrollY, 1200);
+    }, 260);
   };
 
   return (
@@ -73,7 +79,7 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
         </section>
 
         {open && (
-          <>
+          <div className="reveal-content">
         {/* Hero */}
         <Reveal y={18}>
           <section id="more" style={{ ...section, paddingTop: "clamp(48px, 8vh, 90px)", paddingBottom: "clamp(72px, 12vh, 150px)" }}>
@@ -225,7 +231,7 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
             </div>
           </section>
         </Reveal>
-          </>
+          </div>
         )}
       </main>
 
@@ -245,6 +251,20 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
       )}
     </div>
   );
+}
+
+function slowScrollTo(targetY: number, duration: number) {
+  const startY = window.scrollY;
+  const dist = targetY - startY;
+  const start = performance.now();
+  const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2); // easeInOutCubic
+  const step = (now: number) => {
+    const p = Math.min(1, (now - start) / duration);
+    // "instant" bypasses the CSS smooth-scroll so our easing isn't fought.
+    window.scrollTo({ top: startY + dist * ease(p), behavior: "instant" as ScrollBehavior });
+    if (p < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 }
 
 function Rule() {
@@ -363,6 +383,9 @@ const footerLinks: CSSProperties = { display: "flex", gap: 24 };
 
 const css = `
   html { scroll-behavior: smooth; }
+  .reveal-content { animation: contentIn 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+  @keyframes contentIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .reveal-content { animation: none; } }
   .light-btn { transition: opacity 0.15s ease; }
   .light-btn:hover { opacity: 0.85; }
   .text-btn:hover { color: ${signal.textDim}; }
