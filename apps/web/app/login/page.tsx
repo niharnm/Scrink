@@ -13,6 +13,7 @@ export default function LoginPage() {
   const [callbackError, setCallbackError] = useState(false);
   const [oauthBusy, setOauthBusy] = useState<"google" | "apple" | null>(null);
   const [oauthError, setOauthError] = useState<string | null>(null);
+  const [waitCount, setWaitCount] = useState<number | null>(null);
 
   // Same Supabase backend as the iOS app, so signing in here with Apple/Google
   // lands on the same account — and your phone's data shows up in the dashboard.
@@ -43,6 +44,15 @@ export default function LoginPage() {
   const statusMessage = state && "message" in state ? state.message : null;
   useEffect(() => {
     setCallbackError(new URLSearchParams(window.location.search).has("error"));
+  }, []);
+
+  // Live waitlist count (graceful no-op if the RPC isn't deployed yet).
+  useEffect(() => {
+    createClient()
+      .rpc("waitlist_count")
+      .then(({ data, error }) => {
+        if (!error && typeof data === "number") setWaitCount(data);
+      });
   }, []);
 
   const containerStyle: CSSProperties = {
@@ -158,7 +168,15 @@ export default function LoginPage() {
         <Link href="/" style={wordmarkStyle}>
           Rinkler
         </Link>
-        <div style={subtitleStyle}>Sign in to sync your Focus System. Same account as the app.</div>
+        <div style={{ ...subtitleStyle, marginBottom: waitCount != null ? 10 : 30 }}>
+          join the waitlist. rinkler drops july 10 and we&apos;ll tell you the second it&apos;s live.
+        </div>
+        {waitCount != null && (
+          <div style={{ fontSize: 13.5, color: signal.textDim, marginBottom: 28 }}>
+            <span style={{ color: signal.text, fontFamily: signal.mono, fontWeight: 500 }}>{waitCount.toLocaleString()}</span>{" "}
+            {waitCount === 1 ? "person" : "people"} already in
+          </div>
+        )}
 
         {!shouldEnterCode && (
           <>
