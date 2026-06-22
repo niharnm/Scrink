@@ -152,6 +152,25 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
 
         <Rule />
 
+        {/* Your one screen time app */}
+        <Reveal>
+          <section style={section}>
+            <h2 style={h2}>your one screen time app.</h2>
+            <p style={statement}>
+              every other screen time app can do one thing: block a whole app.
+              block instagram and you lose your dms too. rinkler does that when
+              you want it, but it also reaches inside the apps and kills just the
+              parts that hook you, like reels and the for you page, while your
+              messages, search and posts keep working.
+            </p>
+            <p style={{ ...statement, color: signal.text, marginTop: 18 }}>
+              block whole apps, or block the feeds inside them. all from one place.
+            </p>
+          </section>
+        </Reveal>
+
+        <Rule />
+
         {/* How it works */}
         <Reveal>
           <section id="how" style={section}>
