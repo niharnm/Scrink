@@ -163,6 +163,10 @@ struct AppsScreen: View {
                 store: UserDefaults(suiteName: RinklerConstants.appGroupID))
     private var blockTikTok = true
 
+    @AppStorage(RinklerConstants.blockAdsTrackersEnabledKey,
+                store: UserDefaults(suiteName: RinklerConstants.appGroupID))
+    private var blockAdsTrackers = true
+
     var body: some View {
         ZStack {
             SignalBackground()
@@ -174,6 +178,27 @@ struct AppsScreen: View {
                     Text("Keep the parts you actually use. Kill the endless scroll.")
                         .font(RinklerFonts.sans(14, .regular))
                         .foregroundStyle(RinklerColors.signalTextDim)
+
+                    // Ads & trackers — applies across every app while protected.
+                    HStack(spacing: RinklerSpacing.md) {
+                        Image(systemName: "hand.raised.slash.fill")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(RinklerColors.signalBlue)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Ads & trackers")
+                                .font(RinklerFonts.sans(17, .semibold))
+                                .foregroundStyle(RinklerColors.signalText)
+                            Text("Blocked across every app while protection's on.")
+                                .font(RinklerFonts.sans(12, .regular))
+                                .foregroundStyle(RinklerColors.signalTextDim)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        Spacer(minLength: RinklerSpacing.sm)
+                        Toggle("", isOn: $blockAdsTrackers).labelsHidden().tint(RinklerColors.signalBlue)
+                    }
+                    .padding(RinklerSpacing.md)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .signalCard(cornerRadius: 18)
 
                     appCard("Instagram",
                             allowed: ["DMs", "Camera", "Posting", "Search"],

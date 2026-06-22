@@ -769,7 +769,7 @@ struct OnboardingFlow: View {
 
     private var permissionChapter: some View {
         chapterScaffold(title: "Quick heads up about the “VPN”",
-                        subtitle: "To block stuff inside your apps, Rinkler runs a filter right here on your phone. The catch: iOS makes any on-device filter show up as a “VPN,” so the next tap asks to add one. It's not a real VPN — nothing leaves your phone, and we can't see your traffic. It's just the only switch Apple gives us to do the blocking.") {
+                        subtitle: "To block stuff inside your apps, Rinkler runs a filter right here on your phone. iOS makes any on-device filter show up as a “VPN,” so the next tap asks to add one — but it's not a real VPN: nothing leaves your phone and we can't see your traffic. While it's on it also quietly kills ads and trackers. And it's not always-on — it only runs while you're protected and switches itself off when a session ends, so it's not sitting in the background.") {
             VStack(spacing: RinklerSpacing.md) {
                 SignalRing(progress: 0.66, lineWidth: 10) {
                     Image(systemName: "shield.lefthalf.filled")

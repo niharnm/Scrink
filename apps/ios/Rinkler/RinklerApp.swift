@@ -18,6 +18,7 @@ struct RinklerApp: App {
             .register(defaults: [
                 RinklerConstants.blockInstagramShortVideoEnabledKey: true,
                 RinklerConstants.blockTikTokShortVideoEnabledKey: true,
+                RinklerConstants.blockAdsTrackersEnabledKey: true,
             ])
 
         #if DEBUG

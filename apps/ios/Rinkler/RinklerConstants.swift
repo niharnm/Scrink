@@ -104,6 +104,9 @@ enum RinklerConstants {
     static let blockInstagramShortVideoEnabledKey = "blockReelsEnabled"
     static let blockTikTokShortVideoEnabledKey = "blockTikTokScrollEnabled"
     static let blockReelsEnabledKey = blockInstagramShortVideoEnabledKey
+    /// Ads/trackers blocker (on by default). Mirror of the tunnel constant so the
+    /// app target can read/write the same UserDefaults key.
+    static let blockAdsTrackersEnabledKey = "blockAdsTrackersEnabled"
     static let domainThresholdsKey = "domainThresholds"
     static let optionStatesKey = "optionStates"
 

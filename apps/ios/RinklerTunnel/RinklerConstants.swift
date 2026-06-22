@@ -48,6 +48,33 @@ enum RinklerConstants {
     static let trackedIPTTL: TimeInterval = 600   // 10 min — covers DNS TTL + reuse
     static let maxTrackedIPs = 4000
 
+    // MARK: - Ads & Trackers
+    // While protection is on, Rinkler also blocks well-known ad/tracker hosts at
+    // CONNECT (on by default). Curated to avoid hosts that double as core app
+    // APIs (e.g. graph.facebook.com, *.googleapis.com are intentionally absent).
+    static let blockAdsTrackersEnabledKey = "blockAdsTrackersEnabled"
+    static let adTrackerDomains: Set<String> = [
+        // Google ads / analytics
+        "doubleclick.net", "googlesyndication.com", "googleadservices.com",
+        "google-analytics.com", "googletagmanager.com", "googletagservices.com",
+        "adservice.google.com", "2mdn.net", "app-measurement.com",
+        // Ad exchanges / SSPs
+        "adnxs.com", "rubiconproject.com", "pubmatic.com", "openx.net",
+        "criteo.com", "criteo.net", "casalemedia.com", "rlcdn.com",
+        "adsrvr.org", "bidswitch.net", "mathtag.com", "3lift.com",
+        "amazon-adsystem.com", "moatads.com", "smartadserver.com",
+        // Native / recommendation ads
+        "taboola.com", "outbrain.com", "scorecardresearch.com",
+        "quantserve.com", "quantcount.com",
+        // Mobile ad SDKs
+        "applovin.com", "adcolony.com", "chartboost.com", "vungle.com",
+        "inmobi.com", "mopub.com", "unityads.unity3d.com", "supersonicads.com",
+        // Attribution / product-analytics trackers
+        "appsflyer.com", "adjust.com", "branch.io", "kochava.com",
+        "singular.net", "mixpanel.com", "amplitude.com", "segment.io",
+        "fullstory.com", "hotjar.com",
+    ]
+
     // MARK: - Logging
     static let logFileName = "tunnel_log.txt"
     static let maxLogSizeBytes = 512 * 1024
