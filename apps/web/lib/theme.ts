@@ -1,22 +1,29 @@
 export const theme = {
   colors: {
-    skyBlue: "#3A8DDE",
-    backArrow: "#0C6CC2",
+    // Living Sky accent — matches the iOS app + marketing site.
+    skyBlue: "#7F85FF", // periwinkle accent (legacy token name kept)
+    backArrow: "#5BE1C6", // aurora cyan
+    auroraCyan: "#5BE1C6",
+    auroraViolet: "#8A7CFF",
+    dawnGlow: "#F5C9A8",
     white: "#FFFFFF",
     white10: "rgba(255,255,255,0.1)",
     white15: "rgba(255,255,255,0.15)",
     white30: "rgba(255,255,255,0.3)",
-    white60: "rgba(255,255,255,0.6)",
+    white60: "rgba(255,255,255,0.62)",
   },
+  // Aurora gradient for primary actions.
+  auroraGradient: "linear-gradient(120deg, #5BE1C6, #8A7CFF)",
   gradient: {
-    stop1: "rgb(102,178,255)", // top
-    stop2: "rgb(89,166,242)",
-    stop3: "rgb(77,153,230)",
-    stop4: "rgb(64,140,217)", // bottom
+    stop1: "rgb(7,11,30)", // night top  #070B1E
+    stop2: "rgb(18,26,58)", // night mid  #121A3A
+    stop3: "rgb(18,26,58)",
+    stop4: "rgb(30,42,87)", // horizon    #1E2A57
   },
   fonts: {
-    display: "'Coolvetica', system-ui, sans-serif",
-    body: "'Coolvetica', system-ui, sans-serif",
+    display: "'Geist', system-ui, sans-serif",
+    body: "'Geist', system-ui, sans-serif",
+    mono: "'Geist Mono', ui-monospace, monospace",
   },
   fontSizes: {
     titleLarge: 64,

@@ -5,13 +5,14 @@ import { requestEmailCode, verifyEmailCode } from "./actions";
 import SkyBackground from "@/components/dashboard/SkyBackground";
 
 const theme = {
-  skyBlue: "#3A8DDE",
+  skyBlue: "#7F85FF",
+  aurora: "linear-gradient(120deg, #5BE1C6, #8A7CFF)",
   white: "#FFFFFF",
-  white10: "rgba(255,255,255,0.1)",
-  white30: "rgba(255,255,255,0.3)",
-  white60: "rgba(255,255,255,0.6)",
-  display: "'Coolvetica', system-ui, sans-serif",
-  body: "'Coolvetica', system-ui, sans-serif",
+  white10: "rgba(255,255,255,0.06)",
+  white30: "rgba(255,255,255,0.14)",
+  white60: "rgba(255,255,255,0.62)",
+  display: "'Geist', system-ui, sans-serif",
+  body: "'Geist', system-ui, sans-serif",
 };
 
 export default function LoginPage() {
@@ -42,11 +43,17 @@ export default function LoginPage() {
     width: "100%",
     maxWidth: 400,
     padding: 40,
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    borderRadius: 28,
+    backdropFilter: "blur(14px)",
   };
 
   const titleStyle: CSSProperties = {
     fontFamily: theme.display,
-    fontSize: 48,
+    fontSize: 44,
+    fontWeight: 700,
+    letterSpacing: "-0.5px",
     color: theme.white,
     textAlign: "center",
     marginBottom: 8,
@@ -54,11 +61,10 @@ export default function LoginPage() {
 
   const subtitleStyle: CSSProperties = {
     fontFamily: theme.body,
-    fontSize: 18,
+    fontSize: 17,
     color: theme.white60,
-    fontStyle: "italic",
     textAlign: "center",
-    marginBottom: 48,
+    marginBottom: 40,
   };
 
   const labelStyle: CSSProperties = {
@@ -72,7 +78,7 @@ export default function LoginPage() {
   const inputStyle: CSSProperties = {
     width: "100%",
     padding: 16,
-    borderRadius: 28,
+    borderRadius: 16,
     border: `1px solid ${theme.white30}`,
     background: theme.white10,
     color: theme.white,
@@ -85,12 +91,13 @@ export default function LoginPage() {
   const buttonStyle: CSSProperties = {
     width: "100%",
     padding: 16,
-    borderRadius: 28,
-    border: `2px solid ${theme.white}`,
-    background: theme.skyBlue,
-    color: theme.white,
+    borderRadius: 16,
+    border: "none",
+    background: theme.aurora,
+    color: "rgba(0,0,0,0.85)",
     fontFamily: theme.display,
-    fontSize: 22,
+    fontWeight: 600,
+    fontSize: 18,
     cursor: isPending ? "not-allowed" : "pointer",
     opacity: isPending ? 0.6 : 1,
     transition: "opacity 0.2s ease",

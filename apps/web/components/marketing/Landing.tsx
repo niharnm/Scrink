@@ -352,6 +352,8 @@ export default function Landing() {
             <a href="#story">Story Mode</a>
             <a href="#compare">vs Opal</a>
             <Link href="/dashboard">Dashboard</Link>
+            <Link href="/privacy">Privacy</Link>
+            <Link href="/terms">Terms</Link>
           </div>
         </footer>
       </div>
