@@ -183,6 +183,7 @@ struct RinklerApp: App {
                 strictMode.configure(vpn: vpnManager, commitment: commitment, screenTime: screenTime)
                 strictMode.tickIfExpired()
                 autoMode.configure(health: health, screenTime: screenTime)
+                await RuleRegistry.sync()   // hot-update the block rule pack
                 health.refreshAvailability()
                 if health.isAuthorized {
                     health.enableBackgroundDelivery {

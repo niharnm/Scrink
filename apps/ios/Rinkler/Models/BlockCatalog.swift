@@ -39,11 +39,32 @@ struct BlockApp: Identifiable, Codable, Hashable {
     let features: [BlockFeature]
 }
 
+/// A versioned rule pack — the unit the remote registry (Supabase `block_rules`)
+/// ships and the app caches, so endpoints can be updated without an App Store release.
+struct RulePack: Codable {
+    let version: String
+    let apps: [BlockApp]
+}
+
 enum BlockCatalog {
     /// Bump when the bundled rules change; a remote pack can supersede this.
     static let version = "2026.06.22"
+    /// App Group key holding the latest fetched RulePack (JSON).
+    static let cacheKey = "blockRules.cachedPack"
 
-    static let apps: [BlockApp] = [
+    /// The rules in effect: the remotely-fetched pack if we have one, else the
+    /// bundled default below. Lets `RuleRegistry` hot-update without a release.
+    static var apps: [BlockApp] {
+        if let data = UserDefaults(suiteName: RinklerConstants.appGroupID)?.data(forKey: cacheKey),
+           let pack = try? JSONDecoder().decode(RulePack.self, from: data),
+           !pack.apps.isEmpty {
+            return pack.apps
+        }
+        return bundled
+    }
+
+    /// The offline default rule pack, shipped in the binary.
+    static let bundled: [BlockApp] = [
         BlockApp(id: "instagram", name: "Instagram", symbol: "camera.fill", mostlyFeed: false, features: [
             BlockFeature(id: "reels", name: "Reels", blurb: "The short-video slot machine",
                          hosts: ["cdninstagram.com", "fbcdn.net", "fbvideo.net", "instagram.fbcdn.net"],
