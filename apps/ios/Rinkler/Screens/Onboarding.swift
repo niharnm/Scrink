@@ -1,6 +1,7 @@
 import SwiftUI
 import Combine
 import AuthenticationServices
+import UserNotifications
 
 // MARK: - Onboarding option models
 //
@@ -167,7 +168,7 @@ final class FocusSystemStore: ObservableObject {
     @Published var difficulty: Difficulty = .normal
 
     @Published var chapter: Int = 0
-    static let chapterCount = 10
+    static let chapterCount = 11
 
     // Result
     @Published private(set) var rules: [FocusRule] = []
@@ -229,6 +230,14 @@ final class FocusSystemStore: ObservableObject {
         if rules.isEmpty { generateSystem() }
         hasCompletedOnboarding = true
         defaults?.set(true, forKey: Keys.completed)
+    }
+
+    /// Clears the auto-generated presets so the user can start from a blank slate
+    /// and build their own rules. Used by the post-reveal "pick my own" option.
+    func clearRules() {
+        rules = []
+        signalScore = 50
+        persist()
     }
 
     /// Resets onboarding (Settings → for testing). Clears the saved profile.
@@ -485,6 +494,8 @@ struct OnboardingFlow: View {
     @State private var showSkipWarning = false
     @State private var social = SocialAuthService()
     @State private var authButtonsShown = false
+    @State private var showPresetPopup = false
+    @State private var presetPopupSeen = false
 
     /// The account step sits second-to-last: after the reveal (so the user sees
     /// their generated system first), before the final "first win" screen.
@@ -521,6 +532,71 @@ struct OnboardingFlow: View {
         } message: {
             Text("We'll set up safe defaults, but the system won't be tuned to you. You can always edit rules later.")
         }
+        .onChange(of: focusSystem.chapter) { _, newValue in
+            // One-time, right after the presets reveal: offer to clear them.
+            if newValue == 7 && !presetPopupSeen {
+                presetPopupSeen = true
+                withAnimation(.easeOut(duration: 0.25)) { showPresetPopup = true }
+            }
+        }
+        .overlay {
+            if showPresetPopup { presetPopup }
+        }
+    }
+
+    // MARK: Remove-presets popup (transient, shown once after the reveal)
+
+    private var presetPopup: some View {
+        ZStack {
+            Color.black.opacity(0.6)
+                .ignoresSafeArea()
+                .onTapGesture { withAnimation { showPresetPopup = false } }
+
+            VStack(spacing: RinklerSpacing.md) {
+                Text("Built from your answers")
+                    .font(RinklerFonts.sans(19, .bold))
+                    .foregroundStyle(RinklerColors.signalText)
+                    .multilineTextAlignment(.center)
+                Text("Not feeling these? Clear them and build your own from scratch — totally up to you.")
+                    .font(RinklerFonts.sans(14, .regular))
+                    .foregroundStyle(RinklerColors.signalTextDim)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                VStack(spacing: 10) {
+                    Button { withAnimation { showPresetPopup = false } } label: {
+                        Text("Use these")
+                            .font(RinklerFonts.sans(16, .semibold))
+                            .foregroundStyle(.black)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                            .background(RinklerColors.signalText)
+                            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+
+                    Button {
+                        focusSystem.clearRules()
+                        withAnimation { showPresetPopup = false }
+                    } label: {
+                        Text("Clear & pick my own")
+                            .font(RinklerFonts.sans(15, .medium))
+                            .foregroundStyle(RinklerColors.signalTextDim)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 44)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.top, RinklerSpacing.sm)
+            }
+            .padding(RinklerSpacing.lg)
+            .frame(maxWidth: 340)
+            .background(RinklerColors.signalCard)
+            .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
+            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .padding(RinklerSpacing.lg)
+        }
+        .transition(.opacity)
     }
 
     // MARK: Header (progress + signal ring)
@@ -568,7 +644,8 @@ struct OnboardingFlow: View {
         case 5: difficultyChapter
         case 6: permissionChapter
         case 7: revealChapter
-        case 8: authChapter
+        case 8: notificationsChapter
+        case 9: authChapter
         default: firstWinChapter
         }
     }
@@ -733,6 +810,12 @@ struct OnboardingFlow: View {
                 }
             }
         }
+        .onAppear {
+            if !presetPopupSeen {
+                presetPopupSeen = true
+                withAnimation(.easeOut(duration: 0.25)) { showPresetPopup = true }
+            }
+        }
     }
 
     private var firstWinChapter: some View {
@@ -755,6 +838,37 @@ struct OnboardingFlow: View {
                 .padding(.horizontal, RinklerSpacing.lg)
             Spacer(minLength: RinklerSpacing.xl)
         }
+    }
+
+    // MARK: Notifications chapter
+
+    private var notificationsChapter: some View {
+        chapterScaffold(title: "Want a couple of useful pings?",
+                        subtitle: "Two kinds, that's it: a heads-up right before a focus window starts, and a quick “you earned a ring” when you win one. No spam, no guilt-trips, no “you've been on your phone 3 hours” shaming.") {
+            VStack(spacing: RinklerSpacing.md) {
+                SignalRing(progress: 0.66, lineWidth: 10) {
+                    Image(systemName: "bell.badge")
+                        .font(.system(size: 38, weight: .semibold))
+                        .foregroundStyle(RinklerColors.signalBlue)
+                }
+                .frame(width: 150, height: 150)
+                .padding(.vertical, RinklerSpacing.md)
+
+                Button { focusSystem.next() } label: {
+                    Text("Not now")
+                        .font(RinklerFonts.sans(15, .medium))
+                        .foregroundStyle(RinklerColors.signalTextDim)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 44)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    private func requestNotifications() {
+        UNUserNotificationCenter.current()
+            .requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
     }
 
     // MARK: Account chapter (Apple / Google)
@@ -888,6 +1002,7 @@ struct OnboardingFlow: View {
         case 0: return "Let's go"
         case 6: return "Turn on the filter"
         case 7: return "Save my setup"
+        case 8: return "Turn on notifications"
         case FocusSystemStore.chapterCount - 1: return "Start my first session"
         default: return "Continue"
         }
@@ -897,6 +1012,9 @@ struct OnboardingFlow: View {
         switch focusSystem.chapter {
         case 6:
             vpnManager.requestPermission()
+            focusSystem.next()
+        case 8:
+            requestNotifications()
             focusSystem.next()
         case FocusSystemStore.chapterCount - 1:
             focusSystem.complete()
@@ -977,9 +1095,13 @@ struct OnboardingFlow: View {
     }
 
     private var rulesSummaryLine: String {
+        let keeps = (focusSystem.keeps.isEmpty ? ["DMs", "Search"] : focusSystem.keeps.prefix(3).map(\.title))
+        let cuts = (focusSystem.traps.isEmpty ? ["Reels", "TikTok FYP"] : focusSystem.traps.prefix(3).map(\.title))
         let n = focusSystem.rules.count
-        let names = focusSystem.rules.map(\.name).joined(separator: ", ")
-        return "Based on your answers, we created \(n) rule\(n == 1 ? "" : "s"): \(names)."
+        if n == 0 {
+            return "Cleared. Add your own rules whenever you're ready."
+        }
+        return "Keeping \(keeps.joined(separator: ", ")) — cutting \(cuts.joined(separator: ", ")). We turned that into \(n) rule\(n == 1 ? "" : "s")."
     }
 
     // MARK: Selection helpers
