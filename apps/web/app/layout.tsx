@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Rinkler",
-  description: "Rinkler privacy-first filtering dashboard",
+  title: "Rinkler — Scroll less, keep the useful parts",
+  description:
+    "Rinkler quietly interrupts Reels and TikTok on your device so you keep the useful parts of your apps and lose the infinite scroll. Private by design.",
 };
 
 export default function RootLayout({
@@ -46,6 +47,11 @@ export default function RootLayout({
                 width: 100%;
                 height: 100%;
                 overflow-x: hidden;
+              }
+              body {
+                background: #08090B;
+                color: #F8FAFC;
+                font-family: 'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
               }
             `,
           }}
