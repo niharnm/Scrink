@@ -21,36 +21,39 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
   const reveal = () => {
     setOpen(true);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    // Let the content fade in first, then glide down slowly — calmer than a snap.
-    setTimeout(() => {
+    // The page is already there below the splash; we just glide down to it so it
+    // feels like one calm scroll, not the whole thing popping in then jumping.
+    requestAnimationFrame(() => {
       const el = document.getElementById("more");
       if (!el) return;
       if (reduce) {
         el.scrollIntoView();
         return;
       }
-      slowScrollTo(el.getBoundingClientRect().top + window.scrollY, 1200);
-    }, 260);
+      slowScrollTo(el.getBoundingClientRect().top + window.scrollY, 1400);
+    });
   };
 
   return (
     <div style={page}>
       <style dangerouslySetInnerHTML={{ __html: css }} />
 
-      {/* Nav (revealed with the rest of the page) */}
+      {/* Nav (slides down when the page is revealed) */}
       {open && (
-        <header style={nav}>
-          <Link href="/" style={wordmark}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/rinkler-mark.png" alt="" width={22} height={22} style={{ display: "block" }} />
-            Rinkler
-          </Link>
-          <nav style={navRight} className="nav-links">
-            <a href="#how" style={navLink}>how</a>
-            <Link href="/privacy" style={navLink}>privacy</Link>
-            <Link href="/login" style={navLink}>log in</Link>
-            <Link href={ctaHref} style={lightBtn} className="light-btn">{ctaLabel}</Link>
-          </nav>
+        <header style={navBar} className="nav-in">
+          <div style={navInner}>
+            <Link href="/" style={wordmark}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/rinkler-mark.png" alt="" width={22} height={22} style={{ display: "block" }} />
+              Rinkler
+            </Link>
+            <nav style={navRight} className="nav-links">
+              <a href="#how" style={navLink}>how</a>
+              <Link href="/privacy" style={navLink}>privacy</Link>
+              <Link href="/login" style={navLink}>log in</Link>
+              <Link href={ctaHref} style={lightBtn} className="light-btn">{ctaLabel}</Link>
+            </nav>
+          </div>
         </header>
       )}
 
@@ -82,7 +85,7 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
           <div className="reveal-content">
         {/* Hero */}
         <Reveal y={18}>
-          <section id="more" style={{ ...section, paddingTop: "clamp(48px, 8vh, 90px)", paddingBottom: "clamp(72px, 12vh, 150px)" }}>
+          <section id="more" style={{ ...section, paddingTop: "clamp(92px, 12vh, 124px)", paddingBottom: "clamp(72px, 12vh, 150px)" }}>
             <h1 style={h1}>
               your phone isnt<br className="br-hide" /> the problem.
               <br />
@@ -263,7 +266,7 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
       {open && (
       <footer style={footer}>
         <span style={wordmark}>Rinkler</span>
-        <div style={footerLinks} className="nav-links">
+        <div style={footerLinks} className="footer-links">
           <a href="https://niharm.me" target="_blank" rel="noopener noreferrer" style={navLink}>about me</a>
           <Link href="/privacy" style={navLink}>privacy</Link>
           <Link href="/terms" style={navLink}>terms</Link>
@@ -347,19 +350,24 @@ const features = [
 const page: CSSProperties = { background: signal.bg, color: signal.text, fontFamily: signal.sans, minHeight: "100vh" };
 const main: CSSProperties = { maxWidth: 1080, margin: "0 auto", padding: "0 clamp(20px, 5vw, 40px)" };
 
-const nav: CSSProperties = {
-  position: "sticky",
+const navBar: CSSProperties = {
+  position: "fixed",
   top: 0,
-  zIndex: 10,
+  left: 0,
+  right: 0,
+  zIndex: 20,
+  background: "rgba(8,8,10,0.72)",
+  backdropFilter: "blur(12px)",
+  WebkitBackdropFilter: "blur(12px)",
+  borderBottom: `1px solid ${signal.border}`,
+};
+const navInner: CSSProperties = {
+  maxWidth: 1080 + 80,
+  margin: "0 auto",
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  padding: "16px clamp(20px, 5vw, 40px)",
-  maxWidth: 1080 + 80,
-  margin: "0 auto",
-  background: "rgba(8,8,10,0.8)",
-  backdropFilter: "blur(10px)",
-  borderBottom: `1px solid ${signal.border}`,
+  padding: "14px clamp(20px, 5vw, 40px)",
 };
 const wordmark: CSSProperties = { display: "inline-flex", alignItems: "center", gap: 8, fontSize: 17, fontWeight: 600, color: signal.text, textDecoration: "none", letterSpacing: "-0.01em" };
 const navRight: CSSProperties = { display: "flex", alignItems: "center", gap: 26 };
@@ -433,20 +441,20 @@ const footer: CSSProperties = {
   padding: "28px clamp(20px, 5vw, 40px)",
   borderTop: `1px solid ${signal.border}`,
 };
-const footerLinks: CSSProperties = { display: "flex", gap: 24 };
+const footerLinks: CSSProperties = { display: "flex", flexWrap: "wrap", gap: "12px 24px" };
 
 const css = `
   html { scroll-behavior: smooth; }
-  .reveal-content { animation: contentIn 0.9s cubic-bezier(0.22,1,0.36,1) both; }
-  @keyframes contentIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-  @media (prefers-reduced-motion: reduce) { .reveal-content { animation: none; } }
+  .nav-in { animation: navDown 0.6s cubic-bezier(0.22,1,0.36,1) both; }
+  @keyframes navDown { from { transform: translateY(-100%); opacity: 0; } to { transform: none; opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .nav-in { animation: none; } }
   .vscroll { animation: vscroll 130s linear infinite; }
   @keyframes vscroll { from { transform: translateY(0); } to { transform: translateY(-50%); } }
   @media (prefers-reduced-motion: reduce) { .vscroll { animation: none; } }
   .light-btn { transition: opacity 0.15s ease; }
   .light-btn:hover { opacity: 0.85; }
   .text-btn:hover { color: ${signal.textDim}; }
-  .nav-links a:hover { color: ${signal.text}; }
+  .nav-links a:hover, .footer-links a:hover { color: ${signal.text}; }
   @media (max-width: 720px) {
     .compare { grid-template-columns: 1fr !important; }
     .compare-right { padding-left: 0 !important; border-left: 0 !important; border-top: 1px solid ${signal.border}; padding-top: 28px; margin-top: 8px; }
