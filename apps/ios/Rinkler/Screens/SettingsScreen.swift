@@ -18,6 +18,7 @@ struct SettingsScreen: View {
     private var blockTikTokShortVideo: Bool = true
 
     @StateObject private var domainThresholds = DomainThresholdsStore()
+    @StateObject private var screenTime = ScreenTimeManager()
 
     @State private var showExtensionLog = false
 
@@ -32,6 +33,9 @@ struct SettingsScreen: View {
 
                     // VPN Toggle Button
                     vpnToggleButton
+
+                    // Permissions the app needs (Screen Time access, etc.)
+                    permissionsSection
 
                     // Focus System (rules created during onboarding)
                     focusSystemSection
@@ -118,6 +122,57 @@ struct SettingsScreen: View {
             return "PREPARING..."
         }
         return vpnManager.vpnStatus == .connected ? "STOP PROTECTION" : "START PROTECTION"
+    }
+
+    // MARK: - Permissions
+
+    private var permissionsSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("PERMISSIONS")
+                .font(RinklerFonts.sans(12, .semibold))
+                .foregroundStyle(RinklerColors.signalTextDim)
+
+            HStack(spacing: RinklerSpacing.md) {
+                Image(systemName: "hourglass")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(RinklerColors.signalBlue)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Screen Time access")
+                        .font(RinklerFonts.sans(15, .medium))
+                        .foregroundStyle(RinklerColors.signalText)
+                    Text(screenTime.isAuthorized
+                         ? "Granted — Rinkler can shield apps and show the block screen."
+                         : "Lets Rinkler shield apps and show the block screen over them.")
+                        .font(RinklerFonts.sans(12, .regular))
+                        .foregroundStyle(RinklerColors.signalTextDim)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: RinklerSpacing.sm)
+                if screenTime.isAuthorized {
+                    Text("Granted")
+                        .font(RinklerFonts.sans(13, .semibold))
+                        .foregroundStyle(RinklerColors.signalSuccess)
+                } else {
+                    Button {
+                        Task { await screenTime.requestAccess() }
+                    } label: {
+                        Text("Grant")
+                            .font(RinklerFonts.sans(13, .semibold))
+                            .foregroundStyle(.black)
+                            .padding(.horizontal, 16).frame(height: 34)
+                            .background(RinklerColors.signalText)
+                            .clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(RinklerSpacing.md)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(RinklerColors.signalCard)
+            .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        }
+        .onAppear { screenTime.refresh() }
     }
 
     // MARK: - Focus System
