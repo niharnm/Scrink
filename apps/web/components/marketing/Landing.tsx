@@ -49,7 +49,6 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
             <Link href={ctaHref} style={lightBtn} className="light-btn">{ctaLabel}</Link>
             <a href="#difference" style={textBtn} className="text-btn">Why it&apos;s different →</a>
           </div>
-          <p style={micro}>No account needed to try · filters locally, never reads your content</p>
         </section>
 
         <Rule />
@@ -287,7 +286,6 @@ const h2: CSSProperties = {
 };
 const lede: CSSProperties = { fontSize: "clamp(16px, 1.8vw, 19px)", lineHeight: 1.6, color: signal.textDim, maxWidth: 540, margin: 0 };
 const statement: CSSProperties = { fontSize: "clamp(19px, 2.6vw, 26px)", lineHeight: 1.45, color: signal.textDim, maxWidth: 820, margin: "26px 0 0", letterSpacing: "-0.01em" };
-const micro: CSSProperties = { fontFamily: signal.mono, fontSize: 12, color: signal.textFaint, marginTop: 22 };
 
 const ctaRow: CSSProperties = { display: "flex", flexWrap: "wrap", alignItems: "center", gap: 22, marginTop: 36 };
 const textBtn: CSSProperties = { color: signal.text, textDecoration: "none", fontSize: 15, fontWeight: 500 };
