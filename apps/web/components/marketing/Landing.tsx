@@ -21,7 +21,8 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
       {/* Nav */}
       <header style={nav}>
         <Link href="/" style={wordmark}>
-          <span style={dot} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/rinkler-mark.png" alt="Rinkler logo" width={30} height={30} style={{ display: "block" }} />
           Rinkler
         </Link>
         <nav style={navRight} className="nav-links">
