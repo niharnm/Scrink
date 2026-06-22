@@ -1,29 +1,24 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getSupabasePublicConfig } from "@/lib/supabase/config";
+
+// Public, unauthenticated liveness/readiness probe for load balancers and
+// uptime monitors. Returns no user data — only whether the deployment is up
+// and whether Supabase is configured. Allowlisted in middleware.
+export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const supabase = await createClient();
+  const supabaseConfigured = getSupabasePublicConfig() !== null;
 
-  const { data: claimsData, error: authError } = await supabase.auth.getClaims();
-
-  if (authError || !claimsData?.claims) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
-
-  const userId = claimsData.claims.sub as string;
-
-  const { data: profile, error: dbError } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", userId)
-    .single();
-
-  return NextResponse.json({
-    user: {
-      id: userId,
-      email: claimsData.claims.email,
+  return NextResponse.json(
+    {
+      status: "ok",
+      service: "rinkler-web",
+      supabase: supabaseConfigured ? "configured" : "unconfigured",
+      time: new Date().toISOString(),
     },
-    profile: dbError ? null : profile,
-    supabase: dbError ? "error" : "connected",
-  });
+    {
+      status: 200,
+      headers: { "Cache-Control": "no-store" },
+    }
+  );
 }

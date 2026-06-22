@@ -61,7 +61,7 @@ struct ControlScreen: View {
 
     var body: some View {
         ZStack {
-            RinklerColors.signalBackground.ignoresSafeArea()
+            SignalBackground()
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
                     Text("Start a Control Session")
@@ -165,7 +165,7 @@ struct AppsScreen: View {
 
     var body: some View {
         ZStack {
-            RinklerColors.signalBackground.ignoresSafeArea()
+            SignalBackground()
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
                     Text("Apps")
@@ -219,9 +219,7 @@ struct AppsScreen: View {
         }
         .padding(RinklerSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RinklerColors.signalCard)
-        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
-        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .signalCard(cornerRadius: 18)
     }
 
     private func appCardStatic(_ name: String, allowed: [String], blocked: [String]) -> some View {
@@ -243,9 +241,7 @@ struct AppsScreen: View {
         }
         .padding(RinklerSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RinklerColors.signalCard)
-        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
-        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .signalCard(cornerRadius: 18)
     }
 
     private func chipRow(_ label: String, _ items: [String], color: Color) -> some View {
@@ -297,7 +293,7 @@ struct RuleEditorView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                RinklerColors.signalBackground.ignoresSafeArea()
+                SignalBackground()
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
                         group("NAME") {
@@ -428,7 +424,7 @@ struct ProgressScreen: View {
 
     var body: some View {
         ZStack {
-            RinklerColors.signalBackground.ignoresSafeArea()
+            SignalBackground()
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
                     Text("Scroll Report")
@@ -454,9 +450,7 @@ struct ProgressScreen: View {
                     }
                     .padding(RinklerSpacing.md)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(RinklerColors.signalCard)
-                    .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
-                    .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    .signalCard(cornerRadius: 18)
 
                     ringsSection
                 }
@@ -554,9 +548,7 @@ struct ProgressScreen: View {
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity).padding(.vertical, RinklerSpacing.md)
-        .background(RinklerColors.signalCard)
-        .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .signalCard(cornerRadius: 16)
     }
 
     /// Reads the tunnel's cumulative blocked count from the shared stats file.

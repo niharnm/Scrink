@@ -5,14 +5,16 @@ struct LandingPage: View {
 
     var body: some View {
         ZStack {
-            RinklerColors.signalBackground.ignoresSafeArea()
+            SignalBackground()
 
-            // Decorative signal ring glow in the upper field.
-            SignalRing(progress: 0.72, lineWidth: 6)
-                .frame(width: 260, height: 260)
-                .opacity(0.35)
-                .blur(radius: 0.5)
-                .offset(x: 90, y: -260)
+            // Signature hero: a luminous signal ring rising in the upper field,
+            // partly off-screen so it reads as a large, present object rather
+            // than a small decoration.
+            SignalRing(progress: 0.72, lineWidth: 10)
+                .frame(width: 340, height: 340)
+                .opacity(0.9)
+                .offset(x: 120, y: -230)
+                .shadow(color: RinklerColors.signalViolet.opacity(0.4), radius: 40)
 
             VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
                 Spacer()
@@ -53,7 +55,12 @@ struct LandingPage: View {
                     .frame(height: 58)
                     .frame(maxWidth: .infinity)
                     .background(RinklerColors.signalGlow)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 18, style: .continuous)
+                            .strokeBorder(Color.white.opacity(0.18), lineWidth: 1)
+                    )
                     .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    .shadow(color: RinklerColors.signalBlue.opacity(0.5), radius: 22, y: 8)
                 }
                 .buttonStyle(.plain)
             }

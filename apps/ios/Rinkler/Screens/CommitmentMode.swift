@@ -96,76 +96,98 @@ struct CommitmentUnlockSheet: View {
     }
     private var canDisable: Bool { cooldownDone && wordMatches }
 
+    /// Cooldown fraction (0→1) so the ring fills as the wait elapses — the ring
+    /// *is* the timer.
+    private var cooldownFraction: Double {
+        cooldownDone ? 1 : 1 - Double(remaining) / Double(max(cooldownSeconds, 1))
+    }
+
     var body: some View {
         ZStack {
-            RinklerColors.livingGradient(clarity: 0.2).ignoresSafeArea()
+            SignalBackground(intensity: 1.15)
 
             VStack(spacing: RinklerSpacing.lg) {
                 Spacer()
 
-                Image(systemName: "lock.shield")
-                    .font(.system(size: 44, weight: .semibold))
-                    .foregroundStyle(RinklerColors.auroraCyan)
+                // Hero ring doubles as the cooldown gauge.
+                SignalRing(progress: max(cooldownFraction, 0.04), lineWidth: 10) {
+                    Image(systemName: cooldownDone ? "lock.open.fill" : "lock.fill")
+                        .font(.system(size: 34, weight: .semibold))
+                        .foregroundStyle(RinklerColors.signalBlue)
+                }
+                .frame(width: 148, height: 148)
+                .shadow(color: RinklerColors.signalViolet.opacity(0.4), radius: 30)
 
-                Text("You're locked in")
-                    .font(RinklerFonts.coolvetica(size: 26))
-                    .foregroundStyle(.white)
-
-                Text("You turned protection on with Commitment Mode. Sit with the urge for a moment before you turn it off.")
-                    .font(RinklerFonts.caption)
-                    .foregroundStyle(RinklerColors.white60)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, RinklerSpacing.lg)
+                VStack(spacing: 10) {
+                    Text("Sit with the urge.")
+                        .font(RinklerFonts.sans(28, .bold))
+                        .foregroundStyle(RinklerColors.signalText)
+                    Text("You armed protection on purpose. Give it a moment before you turn it off — the urge usually passes.")
+                        .font(RinklerFonts.sans(15, .regular))
+                        .foregroundStyle(RinklerColors.signalTextDim)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, RinklerSpacing.lg)
+                }
 
                 if !cooldownDone {
-                    Text(timeString(remaining))
-                        .font(RinklerFonts.coolvetica(size: 48))
-                        .foregroundStyle(.white)
-                        .contentTransition(.numericText())
-                    Text("until you can disable")
-                        .font(RinklerFonts.caption)
-                        .foregroundStyle(RinklerColors.white40)
+                    VStack(spacing: 4) {
+                        Text(timeString(remaining))
+                            .font(RinklerFonts.mono(52, .medium))
+                            .foregroundStyle(RinklerColors.signalText)
+                            .contentTransition(.numericText())
+                        Text("until you can turn it off")
+                            .font(RinklerFonts.sans(12, .medium))
+                            .foregroundStyle(RinklerColors.signalTextDim)
+                    }
+                    .padding(.vertical, RinklerSpacing.lg)
+                    .frame(maxWidth: .infinity)
+                    .signalCard(cornerRadius: 20)
+                    .padding(.horizontal, RinklerSpacing.lg)
                 } else {
                     VStack(spacing: RinklerSpacing.sm) {
                         Text("Type \(CommitmentStore.unlockWord) to confirm")
-                            .font(RinklerFonts.caption)
-                            .foregroundStyle(RinklerColors.white60)
+                            .font(RinklerFonts.sans(12, .medium))
+                            .foregroundStyle(RinklerColors.signalTextDim)
                         TextField("", text: $typed)
                             .textInputAutocapitalization(.characters)
                             .autocorrectionDisabled()
                             .multilineTextAlignment(.center)
-                            .font(RinklerFonts.coolvetica(size: 22))
-                            .foregroundStyle(.white)
-                            .padding(.vertical, RinklerSpacing.sm)
-                            .background(RinklerColors.surfaceRaised)
-                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                            .padding(.horizontal, RinklerSpacing.xl)
+                            .font(RinklerFonts.mono(22, .medium))
+                            .foregroundStyle(RinklerColors.signalText)
+                            .padding(.vertical, 14)
+                            .signalCard(cornerRadius: 14)
                     }
+                    .padding(.horizontal, RinklerSpacing.xl)
                 }
 
                 Spacer()
 
-                Button(action: onConfirm) {
-                    Text("Disable protection")
-                        .font(RinklerFonts.coolvetica(size: 17))
-                        .foregroundStyle(canDisable ? Color.black.opacity(0.85) : RinklerColors.white40)
+                // The healthy choice is the prominent one.
+                Button(action: onCancel) {
+                    Text("Stay protected")
+                        .font(RinklerFonts.sans(18, .semibold))
+                        .foregroundStyle(.black)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .background(canDisable ? RinklerColors.dawnGlow : RinklerColors.surface)
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .frame(height: 56)
+                        .background(RinklerColors.signalGlow)
+                        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        .shadow(color: RinklerColors.signalBlue.opacity(0.5), radius: 20, y: 8)
                 }
-                .disabled(!canDisable)
+                .buttonStyle(.plain)
                 .padding(.horizontal, RinklerSpacing.lg)
 
-                Button(action: onCancel) {
-                    Text("Stay locked in")
-                        .font(RinklerFonts.coolvetica(size: 16))
-                        .foregroundStyle(RinklerColors.auroraCyan)
+                // Turning off is the quiet, high-friction action.
+                Button(action: onConfirm) {
+                    Text("Turn off anyway")
+                        .font(RinklerFonts.sans(15, .medium))
+                        .foregroundStyle(canDisable ? RinklerColors.signalWarning : RinklerColors.signalTextDim.opacity(0.55))
                 }
+                .disabled(!canDisable)
 
-                Text("Heads up: iOS Settings → VPN can still switch Rinkler off. Commitment Mode only adds friction inside the app — it can't override the system.")
+                Text("iOS Settings → VPN can still switch Rinkler off. Commitment Mode only adds friction inside the app — it can't override the system.")
                     .font(.system(size: 11))
-                    .foregroundStyle(RinklerColors.white30)
+                    .foregroundStyle(RinklerColors.signalTextDim.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, RinklerSpacing.lg)
                     .padding(.bottom, RinklerSpacing.md)

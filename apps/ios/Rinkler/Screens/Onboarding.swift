@@ -487,7 +487,7 @@ struct OnboardingFlow: View {
 
     var body: some View {
         ZStack {
-            RinklerColors.signalBackground.ignoresSafeArea()
+            SignalBackground()
 
             VStack(spacing: RinklerSpacing.lg) {
                 header
@@ -570,7 +570,7 @@ struct OnboardingFlow: View {
 
     private var hookChapter: some View {
         VStack(alignment: .leading, spacing: RinklerSpacing.md) {
-            Spacer(minLength: RinklerSpacing.xl)
+            Spacer(minLength: RinklerSpacing.lg)
             Text("Your phone isn't the problem.\nThe infinite scroll is.")
                 .font(RinklerFonts.sans(34, .bold))
                 .foregroundStyle(RinklerColors.signalText)
@@ -579,7 +579,20 @@ struct OnboardingFlow: View {
                 .font(RinklerFonts.sans(16, .regular))
                 .foregroundStyle(RinklerColors.signalTextDim)
                 .fixedSize(horizontal: false, vertical: true)
-            Spacer(minLength: RinklerSpacing.xl)
+
+            Spacer(minLength: RinklerSpacing.lg)
+
+            // Signature hero ring — anchors the screen instead of an empty void.
+            SignalRing(progress: 0.66, lineWidth: 12) {
+                Image(systemName: "scope")
+                    .font(.system(size: 44, weight: .light))
+                    .foregroundStyle(RinklerColors.signalBlue)
+            }
+            .frame(width: 190, height: 190)
+            .frame(maxWidth: .infinity)
+            .shadow(color: RinklerColors.signalViolet.opacity(0.35), radius: 34)
+
+            Spacer(minLength: RinklerSpacing.lg)
         }
     }
 
@@ -956,7 +969,12 @@ struct OnboardingFlow: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
                 .background(RinklerColors.signalGlow)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .strokeBorder(Color.white.opacity(0.18), lineWidth: 1)
+                )
                 .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                .shadow(color: RinklerColors.signalBlue.opacity(0.5), radius: 20, y: 8)
         }
         .buttonStyle(.plain)
     }
@@ -995,7 +1013,7 @@ struct TodayDashboard: View {
 
     var body: some View {
         ZStack {
-            RinklerColors.signalBackground.ignoresSafeArea()
+            SignalBackground()
 
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
@@ -1059,9 +1077,7 @@ struct TodayDashboard: View {
             Spacer(minLength: 0)
         }
         .padding(RinklerSpacing.lg)
-        .background(RinklerColors.signalCard)
-        .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
-        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .signalCard(cornerRadius: 22)
     }
 
     private var nextWindowCard: some View {
