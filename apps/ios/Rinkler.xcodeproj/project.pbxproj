@@ -49,6 +49,7 @@
 		50C1A1AC0000000000000105 /* BlockSelectionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000104 /* BlockSelectionStore.swift */; };
 		50C1A1AC0000000000000107 /* RuleRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000106 /* RuleRegistry.swift */; };
 		50C1A1AC0000000000000109 /* FriendControlStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000108 /* FriendControlStore.swift */; };
+		50C1A1AC0000000000000115 /* BlockedAppsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000114 /* BlockedAppsStore.swift */; };
 		50C1A1AC000000000000010B /* FriendControlScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC000000000000010A /* FriendControlScreen.swift */; };
 		50C1A1AC0000000000000113 /* AuthOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000112 /* AuthOptionsView.swift */; };
 		50C1A1AC0000000000000081 /* StrictModeShieldController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1A1AC0000000000000080 /* StrictModeShieldController.swift */; };
@@ -176,6 +177,7 @@
 		50C1A1AC0000000000000104 /* BlockSelectionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockSelectionStore.swift; sourceTree = "<group>"; };
 		50C1A1AC0000000000000106 /* RuleRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleRegistry.swift; sourceTree = "<group>"; };
 		50C1A1AC0000000000000108 /* FriendControlStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendControlStore.swift; sourceTree = "<group>"; };
+		50C1A1AC0000000000000114 /* BlockedAppsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedAppsStore.swift; sourceTree = "<group>"; };
 		50C1A1AC000000000000010A /* FriendControlScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendControlScreen.swift; sourceTree = "<group>"; };
 		50C1A1AC0000000000000112 /* AuthOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthOptionsView.swift; sourceTree = "<group>"; };
 		50C1A1AC0000000000000080 /* StrictModeShieldController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrictModeShieldController.swift; sourceTree = "<group>"; };
@@ -359,6 +361,7 @@
 				50C1A1AC0000000000000104 /* BlockSelectionStore.swift */,
 				50C1A1AC0000000000000106 /* RuleRegistry.swift */,
 				50C1A1AC0000000000000108 /* FriendControlStore.swift */,
+				50C1A1AC0000000000000114 /* BlockedAppsStore.swift */,
 				50C1A1AC0000000000000080 /* StrictModeShieldController.swift */,
 				50C1A1AC0000000000000090 /* StrictModeActivityScheduler.swift */,
 				50C1A1AC00000000000000A0 /* HealthManager.swift */,
@@ -630,6 +633,7 @@
 				50C1A1AC0000000000000105 /* BlockSelectionStore.swift in Sources */,
 				50C1A1AC0000000000000107 /* RuleRegistry.swift in Sources */,
 				50C1A1AC0000000000000109 /* FriendControlStore.swift in Sources */,
+				50C1A1AC0000000000000115 /* BlockedAppsStore.swift in Sources */,
 				50C1A1AC000000000000010B /* FriendControlScreen.swift in Sources */,
 				50C1A1AC0000000000000113 /* AuthOptionsView.swift in Sources */,
 				50C1A1AC0000000000000081 /* StrictModeShieldController.swift in Sources */,

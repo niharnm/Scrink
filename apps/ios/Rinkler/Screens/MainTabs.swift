@@ -249,6 +249,9 @@ struct AppsScreen: View {
 
     @StateObject private var selection = BlockSelectionStore()
     @EnvironmentObject private var strictMode: StrictModeStore
+    @EnvironmentObject private var blockedApps: BlockedAppsStore
+    @EnvironmentObject private var screenTime: ScreenTimeManager
+    @State private var showAppPicker = false
 
     var body: some View {
         ZStack {
@@ -259,28 +262,7 @@ struct AppsScreen: View {
 
                     adsCard
 
-                    NavigationLink(value: Route.strictModeSetup) {
-                        HStack(spacing: RinklerSpacing.md) {
-                            Image(systemName: "lock.shield.fill")
-                                .font(.system(size: 18, weight: .semibold))
-                                .foregroundStyle(RinklerColors.signalBlue)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Lock whole apps")
-                                    .font(RinklerFonts.sans(16, .semibold))
-                                    .foregroundStyle(RinklerColors.signalText)
-                                Text("The hard block that actually holds. Pick any apps in Strict Mode.")
-                                    .font(RinklerFonts.sans(12, .regular))
-                                    .foregroundStyle(RinklerColors.signalTextDim)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                            Spacer(minLength: RinklerSpacing.sm)
-                            Image(systemName: "chevron.right").foregroundStyle(RinklerColors.signalTextFaint)
-                        }
-                        .padding(RinklerSpacing.md)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .signalCard(cornerRadius: 18)
-                    }
-                    .buttonStyle(.plain)
+                    wholeAppSection
 
                     HStack(alignment: .firstTextBaseline) {
                         SectionHeader(title: "Block feeds", subtitle: "Keeps DMs, search & profiles where it can.")
@@ -302,6 +284,71 @@ struct AppsScreen: View {
             }
         }
         .preferredColorScheme(nil)
+    }
+
+    private var wholeAppSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .firstTextBaseline) {
+                SectionHeader(title: "Block whole apps", subtitle: "The hard block — like Opal.")
+                Spacer()
+                if blockedApps.enabled && screenTime.isAuthorized && blockedApps.appCount > 0 {
+                    StatusPill(text: "ON", icon: "checkmark", tone: RinklerColors.signalSuccess)
+                }
+            }
+
+            if !screenTime.isAuthorized {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Turn on Screen Time so Rinkler can hard-block whole apps and read your real usage.")
+                        .font(RinklerFonts.sans(13, .regular))
+                        .foregroundStyle(RinklerColors.signalTextDim)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Button { Task { await screenTime.requestAccess(); blockedApps.apply() } } label: {
+                        Text("Connect Screen Time")
+                            .font(RinklerFonts.sans(15, .semibold))
+                            .foregroundStyle(RinklerColors.signalOnInk)
+                            .frame(maxWidth: .infinity).frame(height: 48)
+                            .background(RinklerColors.signalInk)
+                            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(RinklerSpacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .signalCard(cornerRadius: 16)
+            } else {
+                VStack(spacing: 10) {
+                    #if canImport(FamilyControls)
+                    Button { showAppPicker = true } label: {
+                        HStack(spacing: RinklerSpacing.md) {
+                            Image(systemName: "lock.shield.fill").foregroundStyle(RinklerColors.signalBlue)
+                            Text(blockedApps.appCount == 0 ? "Pick apps to block" : "\(blockedApps.appCount) blocked")
+                                .font(RinklerFonts.sans(15, .medium))
+                                .foregroundStyle(RinklerColors.signalText)
+                            Spacer()
+                            Image(systemName: "chevron.right").foregroundStyle(RinklerColors.signalTextFaint)
+                        }
+                        .padding(RinklerSpacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .signalCard(cornerRadius: 14)
+                    }
+                    .buttonStyle(.plain)
+                    .familyActivityPicker(isPresented: $showAppPicker,
+                                          selection: Binding(get: { blockedApps.selection },
+                                                             set: { blockedApps.setSelection($0) }))
+                    #endif
+                    Toggle(isOn: Binding(get: { blockedApps.enabled }, set: { blockedApps.setEnabled($0) })) {
+                        Text("Block them now")
+                            .font(RinklerFonts.sans(15, .medium))
+                            .foregroundStyle(RinklerColors.signalText)
+                    }
+                    .tint(RinklerColors.signalBlue)
+                    .disabled(strictMode.isActive)
+                }
+                .padding(RinklerSpacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .signalCard(cornerRadius: 16)
+            }
+        }
     }
 
     private var adsCard: some View {

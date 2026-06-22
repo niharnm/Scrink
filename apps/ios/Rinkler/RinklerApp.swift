@@ -12,6 +12,7 @@ struct RinklerApp: App {
     @StateObject private var health = HealthManager()
     @StateObject private var autoMode = AutoModeEngine()
     @StateObject private var friendControl = FriendControlStore()
+    @StateObject private var blockedApps = BlockedAppsStore()
     @State private var path = NavigationPath()
     @State private var authStore = AuthStore()
     @State private var showSplash = true
@@ -173,6 +174,7 @@ struct RinklerApp: App {
             .environmentObject(health)
             .environmentObject(autoMode)
             .environmentObject(friendControl)
+            .environmentObject(blockedApps)
             .preferredColorScheme(appearance.mode.colorScheme)
             .task {
                 SVGCache.shared.preload(svgNames: ["instagram"])
@@ -187,6 +189,7 @@ struct RinklerApp: App {
                 strictMode.tickIfExpired()
                 autoMode.configure(health: health, screenTime: screenTime)
                 friendControl.tick()        // pull any active friend-control limits
+                blockedApps.configure(screenTime: screenTime)   // re-apply whole-app shield
                 await RuleRegistry.sync()   // hot-update the block rule pack
                 health.refreshAvailability()
                 if health.isAuthorized {
