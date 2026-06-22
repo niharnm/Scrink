@@ -1077,9 +1077,7 @@ struct TodayDashboard: View {
             Spacer(minLength: 0)
         }
         .padding(RinklerSpacing.lg)
-        .background(RinklerColors.signalCard)
-        .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
-        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .signalCard(cornerRadius: 22)
     }
 
     private var nextWindowCard: some View {

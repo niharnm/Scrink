@@ -124,6 +124,40 @@ private struct Mote {
     }
 }
 
+// MARK: - Frosted card
+
+extension View {
+    /// Frosted "signal glass": a translucent blurred surface with a top-lit
+    /// hairline and a soft drop shadow, so cards read as raised glass over the
+    /// atmospheric background instead of flat fills (the Opal "pill" standard).
+    func signalCard(cornerRadius: CGFloat = 18) -> some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+        return self
+            .background(shape.fill(Color.white.opacity(0.05)))
+            .background(.ultraThinMaterial, in: shape)
+            .overlay(
+                shape.strokeBorder(
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.22), Color.white.opacity(0.04)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    ),
+                    lineWidth: 1
+                )
+            )
+            .clipShape(shape)
+            .shadow(color: Color.black.opacity(0.35), radius: 18, x: 0, y: 10)
+    }
+}
+
 #Preview {
-    SignalBackground()
+    ZStack {
+        SignalBackground()
+        VStack {
+            Text("Frosted card")
+                .foregroundStyle(.white)
+                .padding(40)
+                .signalCard(cornerRadius: 22)
+        }
+    }
 }
