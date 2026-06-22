@@ -25,16 +25,17 @@ const app = {
 export default function AppShowcase() {
   return (
     <section style={section}>
-      <h2 style={h2}>your whole setup, ready before you change a thing.</h2>
+      <h2 style={h2}>a setup that already gets you.</h2>
       <p style={lede}>
-        answer a few questions the first time you open it and rinkler builds your
-        rules, runs your sessions, and tracks every clean minute. all on your phone.
+        a quick personalized onboarding asks what pulls you in and when, then
+        builds your whole focus system before you change a single thing. your
+        rules, your sessions, your blocks, all ready to go.
       </p>
 
       <div style={row} className="phones">
+        <Phone label="Onboarding"><OnboardingScreen /></Phone>
         <Phone label="Today"><TodayScreen /></Phone>
         <Phone label="Apps"><AppsScreen /></Phone>
-        <Phone label="Session"><SessionScreen /></Phone>
       </div>
     </section>
   );
@@ -111,23 +112,50 @@ function AppsScreen() {
   );
 }
 
-function SessionScreen() {
+// The app's story-mode onboarding: a question chapter whose answers generate
+// the user's whole Focus System (matches Onboarding.swift's trapsChapter).
+function OnboardingScreen() {
+  const traps = [
+    { t: "Instagram Reels", on: true },
+    { t: "TikTok For You", on: true },
+    { t: "YouTube Shorts", on: false },
+    { t: "Instagram Explore", on: false },
+    { t: "Reddit Home Feed", on: true },
+    { t: "Snapchat Spotlight", on: false },
+    { t: "X / Twitter Feed", on: false },
+    { t: "Something else", on: false },
+  ];
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, paddingTop: 18 }}>
-      <div style={{ ...kicker, alignSelf: "flex-start" }}>FOCUSED SESSION</div>
-      <ScoreRing
-        size={150}
-        stroke={11}
-        value={0.72}
-        center={<><div style={{ fontFamily: signal.mono, fontSize: 34, color: app.text }}>18:24</div><div style={{ fontSize: 9, color: app.dim, letterSpacing: 1, marginTop: 2 }}>REMAINING</div></>}
-      />
-      <div style={{ fontSize: 13, color: app.dim, textAlign: "center" }}>Interrupting <span style={{ color: app.text }}>Reels · Shorts · TikTok</span></div>
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
-        {["Messages", "Search", "Maps"].map((k) => (
-          <span key={k} style={{ fontSize: 10, color: app.success, background: "rgba(99,210,151,0.12)", border: "1px solid rgba(99,210,151,0.3)", padding: "4px 10px", borderRadius: 999 }}>{k} kept</span>
+    <div style={{ display: "flex", flexDirection: "column", gap: 12, height: "100%" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <ScoreRing size={22} stroke={3} value={0.2} center={null} />
+          <span style={{ fontSize: 11, color: app.dim }}>Chapter 2 of 10</span>
+        </div>
+        <span style={{ fontSize: 11, color: app.dim }}>Skip</span>
+      </div>
+      <div style={{ fontSize: 18, fontWeight: 700, color: app.text, lineHeight: 1.15, marginTop: 2 }}>Which parts pull you in the most?</div>
+      <div style={{ fontSize: 11.5, color: app.dim, lineHeight: 1.4 }}>Pick all that apply. These are the surfaces we&apos;ll cut.</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 2 }}>
+        {traps.map((c) => (
+          <div
+            key={c.t}
+            style={{
+              fontSize: 10.5,
+              fontWeight: 500,
+              textAlign: "center",
+              padding: "10px 4px",
+              borderRadius: 12,
+              color: c.on ? app.text : app.dim,
+              background: c.on ? app.cardRaised : app.card,
+              border: `1px solid ${c.on ? app.blue : app.border}`,
+            }}
+          >
+            {c.t}
+          </div>
         ))}
       </div>
-      <div style={{ marginTop: 6, fontSize: 11, fontWeight: 600, color: "#08090B", background: app.glow, padding: "10px 0", borderRadius: 12, width: "100%", textAlign: "center" }}>Deep — can&apos;t end early</div>
+      <div style={{ marginTop: "auto", fontSize: 12, fontWeight: 600, color: "#08090B", background: app.glow, padding: "11px 0", borderRadius: 12, textAlign: "center" }}>Continue</div>
     </div>
   );
 }
