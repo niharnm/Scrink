@@ -1,8 +1,25 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "swap" });
-const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono", display: "swap" });
+// The exact Geist font files the iOS app bundles, so the site matches the app.
+const geist = localFont({
+  variable: "--font-geist",
+  display: "swap",
+  src: [
+    { path: "./fonts/Geist-Regular.ttf", weight: "400", style: "normal" },
+    { path: "./fonts/Geist-Medium.ttf", weight: "500", style: "normal" },
+    { path: "./fonts/Geist-SemiBold.ttf", weight: "600", style: "normal" },
+    { path: "./fonts/Geist-Bold.ttf", weight: "700", style: "normal" },
+  ],
+});
+const geistMono = localFont({
+  variable: "--font-geist-mono",
+  display: "swap",
+  src: [
+    { path: "./fonts/GeistMono-Regular.ttf", weight: "400", style: "normal" },
+    { path: "./fonts/GeistMono-Medium.ttf", weight: "500", style: "normal" },
+  ],
+});
 
 export const metadata: Metadata = {
   title: "Rinkler — Scroll less, keep the useful parts",

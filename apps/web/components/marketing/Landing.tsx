@@ -35,7 +35,6 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
       <main style={main}>
         {/* Hero */}
         <section style={{ ...section, paddingTop: "clamp(96px, 16vh, 200px)", paddingBottom: "clamp(72px, 12vh, 150px)" }}>
-          <Eyebrow>Coming to iOS — on-device &amp; private</Eyebrow>
           <h1 style={h1}>
             Your phone isn&apos;t<br className="br-hide" /> the problem.
             <br />
