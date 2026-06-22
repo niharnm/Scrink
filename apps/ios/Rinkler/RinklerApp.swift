@@ -13,6 +13,7 @@ struct RinklerApp: App {
     @StateObject private var autoMode = AutoModeEngine()
     @State private var path = NavigationPath()
     @State private var authStore = AuthStore()
+    @State private var showSplash = true
     @Environment(\.scenePhase) private var scenePhase
 
     /// DEBUG screenshot/dev deep-link, set from `-uiPreview <screen>`. nil in
@@ -51,6 +52,7 @@ struct RinklerApp: App {
 
     var body: some Scene {
         WindowGroup {
+            ZStack {
             Group {
                 if previewScreen == "commitment" {
                     CommitmentUnlockSheet(cooldownSeconds: 8, onConfirm: {}, onCancel: {})
@@ -191,6 +193,24 @@ struct RinklerApp: App {
             .onAppear {
                 vpnManager.setup()
             }
+
+                if showSplash && previewScreen == nil {
+                    SplashView(onFinished: {
+                        advanceAfterSplash()
+                        withAnimation(.easeInOut(duration: 0.45)) { showSplash = false }
+                    })
+                    .transition(.opacity)
+                    .zIndex(10)
+                }
+            }
         }
+    }
+
+    /// After the opening animation, walk straight into the app — no tap on the
+    /// landing page. Returning users land on Today; signed-out users hit sign-in;
+    /// first-timers fall through to onboarding (path stays empty).
+    private func advanceAfterSplash() {
+        guard focusSystem.hasCompletedOnboarding, path.isEmpty else { return }
+        path.append(authStore.isLoggedIn ? Route.today : Route.magicSignIn)
     }
 }
