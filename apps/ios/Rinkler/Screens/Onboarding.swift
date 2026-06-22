@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import AuthenticationServices
 
 // MARK: - Onboarding option models
 //
@@ -166,7 +167,7 @@ final class FocusSystemStore: ObservableObject {
     @Published var difficulty: Difficulty = .normal
 
     @Published var chapter: Int = 0
-    static let chapterCount = 9
+    static let chapterCount = 10
 
     // Result
     @Published private(set) var rules: [FocusRule] = []
@@ -452,14 +453,35 @@ private struct SelectChip: View {
     }
 }
 
+// MARK: - Google glyph
+
+/// A lightweight "G" mark for the Google button. Drop the official multicolor
+/// asset in `Assets.xcassets` (named "google-logo") and swap this for an
+/// `Image("google-logo")` when brand assets are available.
+private struct GoogleGlyph: View {
+    var body: some View {
+        Text("G")
+            .font(.system(size: 18, weight: .bold, design: .rounded))
+            .foregroundStyle(Color(red: 0.26, green: 0.52, blue: 0.96)) // Google blue
+            .frame(width: 20, height: 20)
+    }
+}
+
 // MARK: - Onboarding flow
 
 struct OnboardingFlow: View {
     @EnvironmentObject private var focusSystem: FocusSystemStore
     @EnvironmentObject private var vpnManager: VPNManager
+    @Environment(AuthStore.self) private var authStore
     var onFinish: () -> Void
 
     @State private var showSkipWarning = false
+    @State private var social = SocialAuthService()
+    @State private var authButtonsShown = false
+
+    /// The account step sits second-to-last: after the reveal (so the user sees
+    /// their generated system first), before the final "first win" screen.
+    private var authChapterIndex: Int { FocusSystemStore.chapterCount - 2 }
 
     private let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
 
@@ -539,6 +561,7 @@ struct OnboardingFlow: View {
         case 5: difficultyChapter
         case 6: permissionChapter
         case 7: revealChapter
+        case 8: authChapter
         default: firstWinChapter
         }
     }
@@ -715,11 +738,136 @@ struct OnboardingFlow: View {
         }
     }
 
+    // MARK: Account chapter (Apple / Google)
+
+    private var authChapter: some View {
+        VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
+            VStack(alignment: .leading, spacing: RinklerSpacing.sm) {
+                Text("Save your Focus System")
+                    .font(RinklerFonts.sans(28, .bold))
+                    .foregroundStyle(RinklerColors.signalText)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("Create an account so your rules, streak, and Signal Score follow you across devices — and so a weak moment can't wipe them.")
+                    .font(RinklerFonts.sans(15, .regular))
+                    .foregroundStyle(RinklerColors.signalTextDim)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            savedSystemPreview
+
+            VStack(spacing: 12) {
+                SignInWithAppleButton(.continue) { request in
+                    social.configureAppleRequest(request)
+                } onCompletion: { result in
+                    Task { if await social.handleApple(result) { onAuthSuccess() } }
+                }
+                .signInWithAppleButtonStyle(.white)
+                .frame(height: 54)
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .disabled(social.isLoading)
+
+                Button {
+                    Task { if await social.signInWithGoogle() { onAuthSuccess() } }
+                } label: {
+                    HStack(spacing: 10) {
+                        GoogleGlyph()
+                        Text("Continue with Google")
+                            .font(RinklerFonts.sans(17, .semibold))
+                            .foregroundStyle(.black)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 54)
+                    .background(Color.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                }
+                .buttonStyle(.plain)
+                .disabled(social.isLoading)
+
+                if social.isLoading {
+                    ProgressView()
+                        .tint(RinklerColors.signalTextDim)
+                        .padding(.top, 2)
+                }
+
+                if let error = social.errorMessage {
+                    Text(error)
+                        .font(RinklerFonts.sans(13, .regular))
+                        .foregroundStyle(RinklerColors.signalWarning)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .transition(.opacity)
+                }
+            }
+            .opacity(authButtonsShown ? 1 : 0)
+            .offset(y: authButtonsShown ? 0 : 18)
+            .animation(.easeOut(duration: 0.2), value: social.errorMessage)
+            .onAppear {
+                authButtonsShown = false
+                withAnimation(.easeOut(duration: 0.45).delay(0.12)) { authButtonsShown = true }
+            }
+
+            Text("Rinkler never posts on your behalf or reads your messages. Sign-in only secures your settings.")
+                .font(RinklerFonts.sans(12, .regular))
+                .foregroundStyle(RinklerColors.signalTextDim.opacity(0.85))
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// Compact card showing what the account will preserve.
+    private var savedSystemPreview: some View {
+        HStack(spacing: RinklerSpacing.md) {
+            SignalRing(progress: Double(focusSystem.signalScore) / 100.0, lineWidth: 6) {
+                Text("\(focusSystem.signalScore)")
+                    .font(RinklerFonts.mono(18, .medium))
+                    .foregroundStyle(RinklerColors.signalText)
+            }
+            .frame(width: 56, height: 56)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text("\(focusSystem.rules.count) rule\(focusSystem.rules.count == 1 ? "" : "s") ready to sync")
+                    .font(RinklerFonts.sans(15, .semibold))
+                    .foregroundStyle(RinklerColors.signalText)
+                Text(focusSystem.rules.isEmpty
+                     ? "Your Signal Score and streak"
+                     : focusSystem.rules.map(\.name).joined(separator: " · "))
+                    .font(RinklerFonts.sans(12, .regular))
+                    .foregroundStyle(RinklerColors.signalTextDim)
+                    .lineLimit(2)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(RinklerSpacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(RinklerColors.signalCard)
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
+    /// Records the freshly-stored session and advances to the final screen.
+    private func onAuthSuccess() {
+        authStore.refreshFromStoredSession()
+        focusSystem.next()
+    }
+
     // MARK: Footer CTA (one primary action per screen)
 
     @ViewBuilder private var footer: some View {
         VStack(spacing: 0) {
-            primaryButton(ctaTitle) { handlePrimary() }
+            if focusSystem.chapter == authChapterIndex {
+                // The account step's primary actions are the Apple/Google buttons;
+                // the footer only offers a low-emphasis skip.
+                Button { focusSystem.next() } label: {
+                    Text("Maybe later")
+                        .font(RinklerFonts.sans(15, .medium))
+                        .foregroundStyle(RinklerColors.signalTextDim)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 52)
+                }
+                .buttonStyle(.plain)
+                .disabled(social.isLoading)
+            } else {
+                primaryButton(ctaTitle) { handlePrimary() }
+            }
         }
         .padding(.horizontal, RinklerSpacing.lg)
     }
@@ -728,8 +876,8 @@ struct OnboardingFlow: View {
         switch focusSystem.chapter {
         case 0: return "Build My Focus System"
         case 6: return "Allow & Continue"
-        case 7: return "Start First Win"
-        case 8: return "Start First Session"
+        case 7: return "Save My System"
+        case FocusSystemStore.chapterCount - 1: return "Start First Session"
         default: return "Continue"
         }
     }
@@ -739,7 +887,7 @@ struct OnboardingFlow: View {
         case 6:
             vpnManager.requestPermission()
             focusSystem.next()
-        case 8:
+        case FocusSystemStore.chapterCount - 1:
             focusSystem.complete()
             onFinish()
         default:
