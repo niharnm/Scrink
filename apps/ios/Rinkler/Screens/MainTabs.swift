@@ -555,30 +555,34 @@ struct ProgressScreen: View {
             SignalBackground()
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
-                    Text("Scroll Report")
-                        .font(RinklerFonts.sans(26, .bold))
-                        .foregroundStyle(RinklerColors.signalText)
+                    SectionHeader(title: "Scroll report", subtitle: "What you've held off lately")
 
-                    HStack(spacing: 12) {
-                        statCard("\(noiseBlocked)", "Noise blocked")
-                        statCard("\(focusSystem.rules.count)", "Active rules")
-                        statCard("\(focusSystem.signalScore)", "Signal score")
-                    }
+                    RinklerStatRow(stats: [
+                        ("Pulls dodged", "\(noiseBlocked)", RinklerColors.signalBlue),
+                        ("Streak", "\(sessions.streak)d", nil),
+                        ("Focus hours", focusHoursLabel, nil),
+                    ])
+                    .padding(.vertical, RinklerSpacing.md)
+                    .frame(maxWidth: .infinity)
+                    .signalCard(cornerRadius: 20)
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("THIS WEEK")
-                            .font(RinklerFonts.sans(12, .semibold))
-                            .foregroundStyle(RinklerColors.signalTextDim)
-                        Text(noiseBlocked > 0
-                             ? "You've killed \(noiseBlocked) scroll pulls so far. Keep it running and that number keeps climbing."
-                             : "Nothing here yet. Start a session and your blocked scrolls + time saved show up here.")
+                    if !weekPoints.allSatisfy({ $0.value == 0 }) {
+                        VStack(alignment: .leading, spacing: RinklerSpacing.sm) {
+                            SectionHeader(title: "This week", subtitle: "Focused minutes per day")
+                            SignalChart(points: weekPoints)
+                        }
+                        .padding(RinklerSpacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .signalCard(cornerRadius: 20)
+                    } else {
+                        Text("Nothing here yet. Start a session and your blocked scrolls + time saved show up here.")
                             .font(RinklerFonts.sans(14, .regular))
                             .foregroundStyle(RinklerColors.signalTextDim)
                             .fixedSize(horizontal: false, vertical: true)
+                            .padding(RinklerSpacing.md)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .signalCard(cornerRadius: 18)
                     }
-                    .padding(RinklerSpacing.md)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .signalCard(cornerRadius: 18)
 
                     ringsSection
                 }
@@ -587,6 +591,23 @@ struct ProgressScreen: View {
         }
         .preferredColorScheme(nil)
         .onAppear(perform: loadStats)
+    }
+
+    private var focusHoursLabel: String {
+        let h = sessions.records.reduce(0.0) { $0 + $1.durationSeconds } / 3600
+        return h >= 10 ? "\(Int(h))h" : String(format: "%.1fh", h)
+    }
+
+    private var weekPoints: [(label: String, value: Double)] {
+        let cal = Calendar.current
+        let fmt = DateFormatter(); fmt.dateFormat = "EEEEE"
+        return (0..<7).reversed().map { offset in
+            let day = cal.date(byAdding: .day, value: -offset, to: Date()) ?? Date()
+            let mins = sessions.records
+                .filter { cal.isDate($0.startedAt, inSameDayAs: day) }
+                .reduce(0.0) { $0 + $1.durationSeconds } / 60
+            return (fmt.string(from: day), mins)
+        }
     }
 
     // MARK: Signal Rings (rewards)

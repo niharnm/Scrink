@@ -1128,6 +1128,7 @@ struct TodayDashboard: View {
     @EnvironmentObject private var focusSystem: FocusSystemStore
     @EnvironmentObject private var vpnManager: VPNManager
     @EnvironmentObject private var strictMode: StrictModeStore
+    @EnvironmentObject private var sessions: FocusSessionStore
 
     var onSettings: (() -> Void)? = nil
     var onStartSession: (() -> Void)? = nil
@@ -1142,7 +1143,9 @@ struct TodayDashboard: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
                     header
-                    scoreCard
+                    heroSection
+                    statsCard
+                    if !weekPoints.allSatisfy({ $0.value == 0 }) { weekCard }
                     nextWindowCard
                     rulesSection
                     protectionRow
@@ -1175,33 +1178,62 @@ struct TodayDashboard: View {
         }
     }
 
-    private var scoreCard: some View {
-        HStack(spacing: RinklerSpacing.lg) {
-            SignalRing(progress: Double(focusSystem.signalScore) / 100.0, lineWidth: 10) {
-                VStack(spacing: 0) {
-                    Text("\(focusSystem.signalScore)")
-                        .font(RinklerFonts.mono(30, .medium))
-                        .foregroundStyle(RinklerColors.signalText)
-                    Text("Signal")
-                        .font(RinklerFonts.sans(10, .medium))
-                        .foregroundStyle(RinklerColors.signalTextDim)
-                }
-            }
-            .frame(width: 104, height: 104)
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Scroll Control")
-                    .font(RinklerFonts.sans(17, .semibold))
+    private var heroSection: some View {
+        VStack(spacing: RinklerSpacing.md) {
+            ClaritySignal(streak: sessions.streak, size: 156)
+                .padding(.top, RinklerSpacing.sm)
+            VStack(spacing: 3) {
+                Text(sessions.streak > 0 ? "\(sessions.streak)-day streak" : "You're all set")
+                    .font(RinklerFonts.sans(20, .bold))
                     .foregroundStyle(RinklerColors.signalText)
-                Text("You're all set. Start a session, grab your first ring, and watch the score climb.")
+                Text(sessions.streak > 0
+                     ? "Keep it alive — start a session and the ring sharpens."
+                     : "Start a session and your signal starts to build.")
                     .font(RinklerFonts.sans(13, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
-                    .fixedSize(horizontal: false, vertical: true)
+                    .multilineTextAlignment(.center)
             }
-            Spacer(minLength: 0)
         }
-        .padding(RinklerSpacing.lg)
-        .signalCard(cornerRadius: 22)
+        .frame(maxWidth: .infinity)
+    }
+
+    private var statsCard: some View {
+        RinklerStatRow(stats: [
+            ("Focused today", focusedLabel, nil),
+            ("Pulls dodged", "\(sessions.todayDistractions)", RinklerColors.signalBlue),
+            ("Streak", "\(sessions.streak)d", nil),
+        ])
+        .padding(.vertical, RinklerSpacing.md)
+        .frame(maxWidth: .infinity)
+        .signalCard(cornerRadius: 20)
+    }
+
+    private var weekCard: some View {
+        VStack(alignment: .leading, spacing: RinklerSpacing.sm) {
+            SectionHeader(title: "This week", subtitle: "Focused minutes per day")
+            SignalChart(points: weekPoints)
+        }
+        .padding(RinklerSpacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .signalCard(cornerRadius: 20)
+    }
+
+    private var focusedLabel: String {
+        let m = Int(sessions.todayFocusSeconds / 60)
+        if m >= 60 { return "\(m / 60)h \(m % 60)m" }
+        return "\(m)m"
+    }
+
+    private var weekPoints: [(label: String, value: Double)] {
+        let cal = Calendar.current
+        let fmt = DateFormatter(); fmt.dateFormat = "EEEEE"
+        return (0..<7).reversed().map { offset in
+            let day = cal.date(byAdding: .day, value: -offset, to: Date()) ?? Date()
+            let mins = sessions.records
+                .filter { cal.isDate($0.startedAt, inSameDayAs: day) }
+                .reduce(0.0) { $0 + $1.durationSeconds } / 60
+            return (fmt.string(from: day), mins)
+        }
     }
 
     private var nextWindowCard: some View {
