@@ -94,17 +94,6 @@ struct MagicSignInScreen: View {
                     }
                     .disabled(service.isLoading || email.isEmpty)
                     .padding(.horizontal, RinklerSpacing.buttonHorizontalPadding)
-
-                    Button(action: onContinueOffline) {
-                        Text("Continue without cloud sync")
-                            .font(RinklerFonts.coolvetica(size: 16))
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, RinklerSpacing.sm)
-                            .background(Color.white.opacity(0.12))
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
-                    }
-                    .padding(.horizontal, RinklerSpacing.buttonHorizontalPadding)
                 }
                 
                 Spacer()

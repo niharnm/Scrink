@@ -76,7 +76,7 @@ struct ControlScreen: View {
                                         .font(RinklerFonts.mono(15, .medium))
                                         .foregroundStyle(duration == mins ? .black : RinklerColors.signalText)
                                         .frame(maxWidth: .infinity).frame(height: 46)
-                                        .background(duration == mins ? AnyView(RinklerColors.signalGlow) : AnyView(RinklerColors.signalCard))
+                                        .background(duration == mins ? AnyView(RinklerColors.signalText) : AnyView(RinklerColors.signalCard))
                                         .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: duration == mins ? 0 : 1))
                                         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                                 }
@@ -98,7 +98,7 @@ struct ControlScreen: View {
                             .font(RinklerFonts.sans(18, .semibold))
                             .foregroundStyle(.black)
                             .frame(maxWidth: .infinity).frame(height: 56)
-                            .background(RinklerColors.signalGlow)
+                            .background(RinklerColors.signalText)
                             .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                     }
                     .buttonStyle(.plain)

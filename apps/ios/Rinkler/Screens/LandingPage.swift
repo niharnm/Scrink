@@ -14,7 +14,6 @@ struct LandingPage: View {
                 .frame(width: 340, height: 340)
                 .opacity(0.9)
                 .offset(x: 120, y: -230)
-                .shadow(color: RinklerColors.signalViolet.opacity(0.4), radius: 40)
 
             VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
                 Spacer()
@@ -54,13 +53,12 @@ struct LandingPage: View {
                     .padding(.horizontal, RinklerSpacing.lg)
                     .frame(height: 58)
                     .frame(maxWidth: .infinity)
-                    .background(RinklerColors.signalGlow)
+                    .background(RinklerColors.signalText)
                     .overlay(
                         RoundedRectangle(cornerRadius: 18, style: .continuous)
                             .strokeBorder(Color.white.opacity(0.18), lineWidth: 1)
                     )
                     .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                    .shadow(color: RinklerColors.signalBlue.opacity(0.5), radius: 22, y: 8)
                 }
                 .buttonStyle(.plain)
             }

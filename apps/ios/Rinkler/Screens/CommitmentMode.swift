@@ -116,7 +116,6 @@ struct CommitmentUnlockSheet: View {
                         .foregroundStyle(RinklerColors.signalBlue)
                 }
                 .frame(width: 148, height: 148)
-                .shadow(color: RinklerColors.signalViolet.opacity(0.4), radius: 30)
 
                 VStack(spacing: 10) {
                     Text("Sit with the urge.")
@@ -170,9 +169,8 @@ struct CommitmentUnlockSheet: View {
                         .foregroundStyle(.black)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
-                        .background(RinklerColors.signalGlow)
+                        .background(RinklerColors.signalText)
                         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                        .shadow(color: RinklerColors.signalBlue.opacity(0.5), radius: 20, y: 8)
                 }
                 .buttonStyle(.plain)
                 .padding(.horizontal, RinklerSpacing.lg)

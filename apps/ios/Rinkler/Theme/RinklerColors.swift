@@ -98,19 +98,24 @@ enum RinklerColors {
     // from Opal's gem/orb gradients on purpose. The Living Sky tokens above stay
     // for the existing focus-session screens.
 
-    static let signalBackground = hex(0x08090B)
-    static let signalCard = hex(0x14161A)
-    static let signalCardRaised = hex(0x1B1E24)
-    static let signalBorder = hex(0x2A2E36)
-    static let signalText = hex(0xF8FAFC)
-    static let signalTextDim = hex(0x9CA3AF)
-    static let signalBlue = hex(0x5B7CFF)
+    // "Stark minimal" palette — matches the marketing site (lib/signal.ts):
+    // true-black canvas, off-white text, hairline rules, one accent used rarely.
+    // No gradient glows or gradient buttons (those read as generic/slop).
+    static let signalBackground = hex(0x08080A)   // near true black
+    static let signalCard = hex(0x0D0D0F)
+    static let signalCardRaised = hex(0x141416)
+    static let signalBorder = Color.white.opacity(0.08)        // hairline
+    static let signalBorderStrong = Color.white.opacity(0.16)
+    static let signalText = hex(0xECECEE)         // off-white, not pure
+    static let signalTextDim = hex(0x8A8A90)
+    static let signalTextFaint = hex(0x56565C)
+    static let signalBlue = hex(0x6E8BFF)         // accent — used sparingly
     static let signalViolet = hex(0x8B5CF6)
-    static let signalSuccess = hex(0x63D297)
-    static let signalWarning = hex(0xFFB454)
+    static let signalSuccess = hex(0x5FB98E)
+    static let signalWarning = hex(0xD8A24A)
 
-    /// The signal glow gradient (blue → violet). Used for the ring stroke and
-    /// the single primary action per screen.
+    /// Legacy gradient — kept so older references compile, but the stark UI uses
+    /// solid white/black buttons and a flat accent, not this.
     static let signalGlow = LinearGradient(
         colors: [signalBlue, signalViolet],
         startPoint: .topLeading,

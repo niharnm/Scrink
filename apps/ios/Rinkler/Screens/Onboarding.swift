@@ -424,10 +424,9 @@ struct SignalRing<Center: View>: View {
                 .stroke(RinklerColors.signalBorder, lineWidth: lineWidth)
             Circle()
                 .trim(from: 0, to: max(0.001, min(1, progress)))
-                .stroke(RinklerColors.signalGlow,
+                .stroke(RinklerColors.signalBlue,
                         style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
                 .rotationEffect(.degrees(-90))
-                .shadow(color: RinklerColors.signalBlue.opacity(0.45), radius: 14)
                 .animation(.easeInOut(duration: 0.5), value: progress)
             center()
         }
@@ -598,7 +597,6 @@ struct OnboardingFlow: View {
             }
             .frame(width: 190, height: 190)
             .frame(maxWidth: .infinity)
-            .shadow(color: RinklerColors.signalViolet.opacity(0.35), radius: 34)
 
             Spacer(minLength: RinklerSpacing.lg)
         }
@@ -875,17 +873,9 @@ struct OnboardingFlow: View {
     @ViewBuilder private var footer: some View {
         VStack(spacing: 0) {
             if focusSystem.chapter == authChapterIndex {
-                // The account step's primary actions are the Apple/Google buttons;
-                // the footer only offers a low-emphasis skip.
-                Button { focusSystem.next() } label: {
-                    Text("Maybe later")
-                        .font(RinklerFonts.sans(15, .medium))
-                        .foregroundStyle(RinklerColors.signalTextDim)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                }
-                .buttonStyle(.plain)
-                .disabled(social.isLoading)
+                // Account is required — the only way forward is signing in with the
+                // Apple/Google buttons above. No skip.
+                EmptyView()
             } else {
                 primaryButton(ctaTitle) { handlePrimary() }
             }
@@ -976,13 +966,12 @@ struct OnboardingFlow: View {
                 .foregroundStyle(.black)
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
-                .background(RinklerColors.signalGlow)
+                .background(RinklerColors.signalText)
                 .overlay(
                     RoundedRectangle(cornerRadius: 18, style: .continuous)
                         .strokeBorder(Color.white.opacity(0.18), lineWidth: 1)
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                .shadow(color: RinklerColors.signalBlue.opacity(0.5), radius: 20, y: 8)
         }
         .buttonStyle(.plain)
     }
@@ -1111,9 +1100,7 @@ struct TodayDashboard: View {
             }
             .padding(RinklerSpacing.lg)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(RinklerColors.signalBlue.opacity(0.12))
-            .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).strokeBorder(RinklerColors.signalBlue.opacity(0.4), lineWidth: 1))
-            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .signalCard(cornerRadius: 22)
         }
         .buttonStyle(.plain)
     }
@@ -1199,7 +1186,7 @@ struct TodayDashboard: View {
                     .font(RinklerFonts.sans(14, .semibold))
                     .foregroundStyle(vpnManager.vpnStatus == .connected ? RinklerColors.signalText : .black)
                     .padding(.horizontal, 18).frame(height: 36)
-                    .background(vpnManager.vpnStatus == .connected ? AnyView(RinklerColors.signalCardRaised) : AnyView(RinklerColors.signalGlow))
+                    .background(vpnManager.vpnStatus == .connected ? AnyView(RinklerColors.signalCardRaised) : AnyView(RinklerColors.signalText))
                     .clipShape(Capsule())
             }
             .buttonStyle(.plain)
