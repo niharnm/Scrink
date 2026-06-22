@@ -17,7 +17,12 @@ enum RinklerConstants {
     static let mtu: NSNumber = 1500
 
     // MARK: - tun2socks Configuration
-    static let tun2socksTaskStackSize = 24576
+    // HevSocks5Tunnel runs each session on a fixed-size coroutine stack. 24 KB
+    // was too small for the UDP forwarding path (hev_socks5_session_udp_fwd_b):
+    // the stack overflowed and the process jumped to an unmapped page, crashing
+    // the tunnel with EXC_BAD_ACCESS / "Failed to fault in a page with execute
+    // permissions". 86016 is the library's own default and the proven-safe value.
+    static let tun2socksTaskStackSize = 86016
     static let tun2socksTCPBufferSize = 4096
     static let tun2socksConnectTimeout = 5000
     static let tun2socksReadWriteTimeout = 60000
