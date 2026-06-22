@@ -63,7 +63,7 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
               <img src="/rinkler-mark.png" alt="" width={40} height={40} style={{ display: "block" }} />
               <span style={splashWord}>Rinkler</span>
             </div>
-            <p style={splashTag}>the app that kills the endless scroll, not your whole phone</p>
+            <p style={splashTag}>the app that kills the <EndlessScroll />, not your whole phone</p>
 
             <div style={{ marginTop: "clamp(28px, 5vh, 52px)" }}>
               <div style={countLabel}>launching in</div>
@@ -253,6 +253,20 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
   );
 }
 
+// "endless scroll" that literally scrolls vertically, forever.
+function EndlessScroll() {
+  const phrases = ["endless scroll", "endless scroll"]; // duplicated for a seamless loop
+  return (
+    <span style={vWrap}>
+      <span style={vInner} className="vscroll">
+        {phrases.map((p, i) => (
+          <span key={i} style={vLine}>{p}</span>
+        ))}
+      </span>
+    </span>
+  );
+}
+
 function slowScrollTo(targetY: number, duration: number) {
   const startY = window.scrollY;
   const dist = targetY - startY;
@@ -343,6 +357,19 @@ const splashTag: CSSProperties = { fontSize: "clamp(15px, 2.1vw, 19px)", color: 
 const countLabel: CSSProperties = { fontFamily: signal.mono, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: signal.textFaint, marginBottom: 18 };
 const learnMore: CSSProperties = { display: "inline-block", marginTop: 44, color: signal.textDim, textDecoration: "none", fontSize: 14, fontFamily: signal.mono, letterSpacing: "0.04em", background: "none", border: "none", cursor: "pointer", padding: 0 };
 
+/* vertical "endless scroll" ticker */
+const vWrap: CSSProperties = {
+  display: "inline-flex",
+  height: "1.2em",
+  lineHeight: 1.2,
+  overflow: "hidden",
+  verticalAlign: "-0.22em",
+  WebkitMaskImage: "linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent)",
+  maskImage: "linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent)",
+};
+const vInner: CSSProperties = { display: "flex", flexDirection: "column", willChange: "transform" };
+const vLine: CSSProperties = { height: "1.2em", lineHeight: 1.2, whiteSpace: "nowrap", color: signal.text, fontWeight: 600 };
+
 const section: CSSProperties = { padding: "clamp(64px, 10vh, 120px) 0" };
 const h1: CSSProperties = { fontSize: "clamp(42px, 8vw, 88px)", lineHeight: 1.0, fontWeight: 600, letterSpacing: "-0.04em", margin: 0, maxWidth: 980 };
 const h2: CSSProperties = { fontSize: "clamp(28px, 4.6vw, 48px)", lineHeight: 1.04, fontWeight: 600, letterSpacing: "-0.03em", margin: 0 };
@@ -386,6 +413,9 @@ const css = `
   .reveal-content { animation: contentIn 0.9s cubic-bezier(0.22,1,0.36,1) both; }
   @keyframes contentIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) { .reveal-content { animation: none; } }
+  .vscroll { animation: vscroll 2.6s linear infinite; }
+  @keyframes vscroll { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .vscroll { animation: none; } }
   .light-btn { transition: opacity 0.15s ease; }
   .light-btn:hover { opacity: 0.85; }
   .text-btn:hover { color: ${signal.textDim}; }
