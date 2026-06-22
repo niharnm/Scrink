@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { signal } from "@/lib/signal";
+import AppShowcase from "./AppShowcase";
 
 /**
  * Rinkler marketing landing — "stark minimal" direction: true black, left-aligned
@@ -51,6 +52,11 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
           </div>
           <p style={micro}>No account needed to try · filters locally, never reads your content</p>
         </section>
+
+        <Rule />
+
+        {/* App showcase */}
+        <AppShowcase />
 
         <Rule />
 
@@ -152,11 +158,11 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
         <section style={section}>
           <Eyebrow>Why I built this</Eyebrow>
           <p style={{ ...quote }}>
-            &ldquo;I lost too many evenings to Reels, and every blocker I tried
-            treated me like a child — lock everything, feel guilty, turn it off.
-            So I built the one I actually wanted: it quietly removes the trap and
-            trusts me with the rest. Real numbers, no shame, nothing leaving your
-            phone.&rdquo;
+            &ldquo;I&apos;d open my phone to answer one text and resurface forty
+            minutes later with no idea what I&apos;d even watched. I didn&apos;t
+            want to be locked out of Instagram — I just wanted the part that was
+            eating me gone, and everything else left alone. Nobody had built that,
+            so I did.&rdquo;
           </p>
           <div style={{ ...colLabel, marginTop: 20 }}>— the maker of Rinkler</div>
         </section>
