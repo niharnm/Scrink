@@ -26,11 +26,6 @@ struct MagicSignInScreen: View {
                     .padding(.top, RinklerSpacing.xl)
 
                     AuthOptionsView(onSuccess: onSignedIn)
-
-                    Text("Rinkler never posts for you or reads your messages. Signing in just keeps your settings safe.")
-                        .font(RinklerFonts.sans(12, .regular))
-                        .foregroundStyle(RinklerColors.signalTextFaint)
-                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(.horizontal, RinklerSpacing.lg)
                 .padding(.bottom, RinklerSpacing.xxl)
