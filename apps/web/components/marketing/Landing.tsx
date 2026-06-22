@@ -362,7 +362,7 @@ const learnMore: CSSProperties = { display: "inline-block", marginTop: 44, color
 /* vertical "endless scroll" ticker — lines touch (no gap) so the loop is
    truly continuous, with masked top/bottom edges. */
 const vWrap: CSSProperties = {
-  display: "inline-flex",
+  display: "inline-block",
   height: "1em",
   lineHeight: 1,
   overflow: "hidden",
@@ -370,8 +370,8 @@ const vWrap: CSSProperties = {
   WebkitMaskImage: "linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent)",
   maskImage: "linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent)",
 };
-const vInner: CSSProperties = { display: "flex", flexDirection: "column", willChange: "transform" };
-const vLine: CSSProperties = { height: "1em", lineHeight: 1, whiteSpace: "nowrap", color: signal.text, fontWeight: 600 };
+const vInner: CSSProperties = { display: "block", willChange: "transform" };
+const vLine: CSSProperties = { display: "block", height: "1em", lineHeight: 1, whiteSpace: "nowrap", color: signal.text, fontWeight: 600 };
 
 const section: CSSProperties = { padding: "clamp(64px, 10vh, 120px) 0" };
 const h1: CSSProperties = { fontSize: "clamp(42px, 8vw, 88px)", lineHeight: 1.0, fontWeight: 600, letterSpacing: "-0.04em", margin: 0, maxWidth: 980 };
