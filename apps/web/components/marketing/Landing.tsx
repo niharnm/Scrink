@@ -5,10 +5,14 @@ import { signal } from "@/lib/signal";
 /**
  * Public marketing landing page for Rinkler, in the app's "Signal" identity.
  * Server component — no client JS needed; hover/entrance effects are CSS only.
+ *
+ * Voice: sharp, honest, a clear point of view. It borrows the proven moves of
+ * the category (villain framing, transformation, a concrete differentiator)
+ * without faking social proof — there are no invented users, reviews, or press.
  */
 export default function Landing({ loggedIn }: { loggedIn: boolean }) {
   const ctaHref = loggedIn ? "/dashboard" : "/login";
-  const ctaLabel = loggedIn ? "Open dashboard" : "Get started";
+  const ctaLabel = loggedIn ? "Open dashboard" : "Get early access";
 
   return (
     <div style={page}>
@@ -21,6 +25,7 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
           Rinkler
         </Link>
         <nav style={navRight} className="nav-links">
+          <a href="#difference" style={navLink}>Why it&apos;s different</a>
           <a href="#how" style={navLink}>How it works</a>
           <a href="#privacy" style={navLink}>Privacy</a>
           <Link href={ctaHref} style={navBtn} className="btn-primary">{ctaLabel}</Link>
@@ -30,25 +35,64 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
       {/* Hero */}
       <section style={hero}>
         <div style={glowOrb} aria-hidden />
-        <span style={pill} className="fade" data-d="0">Coming to iOS</span>
+        <span style={pill} className="fade" data-d="0">Coming to iOS · on-device &amp; private</span>
         <h1 style={h1} className="fade hero-h1" data-d="1">
           Your phone isn&apos;t the problem.
           <br />
           <span style={{ color: signal.textDim }}>The infinite scroll is.</span>
         </h1>
         <p style={lede} className="fade" data-d="2">
-          Rinkler quietly interrupts Reels and TikTok — so you keep the useful
-          parts of your apps and lose the trap designed to pull you in.
+          Rinkler interrupts the feeds engineered to swallow your evenings —
+          Reels, TikTok — and leaves everything you actually opened the app for.
+          DMs, search, messages: untouched.
         </p>
         <div style={ctaRow} className="fade" data-d="3">
           <Link href={ctaHref} style={primaryBtn} className="btn-primary">{ctaLabel}</Link>
-          <a href="#how" style={ghostBtn} className="btn-ghost">See how it works</a>
+          <a href="#difference" style={ghostBtn} className="btn-ghost">Why it&apos;s different</a>
+        </div>
+        <p style={microNote} className="fade" data-d="3">No account needed to try · filters locally, never reads your content</p>
+      </section>
+
+      {/* The problem — villain framing */}
+      <section style={section}>
+        <SectionHeading kicker="THE REAL FIGHT" title="You're not weak. It's rigged." />
+        <p style={{ ...bigPara }}>
+          You opened Instagram to answer one message. Forty minutes later you&apos;re
+          watching a stranger restore a rusted wrench. That&apos;s not a willpower
+          failure — the feed is tuned by hundreds of engineers and an A/B test for
+          every pixel, all pointed at one goal: the next swipe. Going up against
+          that with &quot;just put the phone down&quot; was never a fair fight.
+        </p>
+        <p style={{ ...bigPara, color: signal.text, marginTop: 18 }}>
+          Rinkler evens the odds — at the one layer the feed can&apos;t talk you out of.
+        </p>
+      </section>
+
+      {/* The difference — scalpel vs hammer */}
+      <section id="difference" style={section}>
+        <SectionHeading kicker="WHY IT'S DIFFERENT" title="A scalpel, not a hammer" />
+        <p style={{ ...lede, maxWidth: 720, marginTop: 0 }}>
+          Most screen-time apps are all-or-nothing. You block Instagram, then
+          unblock it ten minutes later to send a DM — and you&apos;re right back in
+          the feed. That&apos;s why people rage-quit blockers within a week. Rinkler
+          cuts only the short-video feed and leaves the rest working, so there&apos;s
+          nothing to rage-quit.
+        </p>
+        <div style={compareGrid} className="grid-2">
+          <div style={{ ...card, borderColor: "rgba(255,107,107,0.28)" }} className="card">
+            <div style={{ ...tag, color: "#FF8585", background: "rgba(255,107,107,0.12)", borderColor: "rgba(255,107,107,0.3)" }}>Blanket blockers</div>
+            {compareBad.map((t) => <CompareRow key={t} text={t} good={false} />)}
+          </div>
+          <div style={{ ...card, borderColor: "rgba(91,124,255,0.4)" }} className="card">
+            <div style={{ ...tag, color: signal.blue, background: "rgba(91,124,255,0.12)", borderColor: "rgba(91,124,255,0.3)" }}>Rinkler</div>
+            {compareGood.map((t) => <CompareRow key={t} text={t} good />)}
+          </div>
         </div>
       </section>
 
       {/* How it works */}
       <section id="how" style={section}>
-        <SectionHeading kicker="HOW IT WORKS" title="Built around you in three steps" />
+        <SectionHeading kicker="HOW IT WORKS" title="Set it once. It holds the line for you." />
         <div style={steps} className="grid-3">
           {howSteps.map((s, i) => (
             <div key={s.title} style={card} className="card">
@@ -62,7 +106,7 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
 
       {/* Features */}
       <section style={section}>
-        <SectionHeading kicker="WHY IT WORKS" title="Sharp, not heavy-handed" />
+        <SectionHeading kicker="UNDER THE HOOD" title="Honest by design" />
         <div style={featGrid} className="grid-2">
           {features.map((f) => (
             <div key={f.title} style={card} className="card">
@@ -78,21 +122,39 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
       <section id="privacy" style={privacyBand}>
         <SectionHeading kicker="PRIVACY BY DESIGN" title="It filters on your device. It never reads your content." center />
         <p style={{ ...lede, textAlign: "center", margin: "0 auto", maxWidth: 640 }}>
-          Rinkler uses an on-device filter — a private VPN configuration that
-          never routes your traffic to a server. It only looks at where a
-          connection is going and how big a stream is, not what&apos;s inside.
-          No messages read, no content stored, nothing sold.
+          The filter runs locally — a private configuration that never routes your
+          traffic through a server. It sees where a connection is going and how big
+          a stream is, never what&apos;s inside. No messages read, nothing stored,
+          nothing sold.
         </p>
         <div style={{ textAlign: "center", marginTop: 28 }}>
           <Link href="/privacy" style={ghostBtn} className="btn-ghost">Read the privacy policy</Link>
         </div>
       </section>
 
+      {/* Founder note — authenticity over fake social proof */}
+      <section style={section}>
+        <div style={{ ...card, padding: "clamp(28px, 5vw, 48px)", background: signal.cardRaised }}>
+          <div style={{ ...kickerStyle, marginBottom: 18 }}>
+            <span style={dot} />
+            WHY I BUILT THIS
+          </div>
+          <p style={{ ...bigPara, color: signal.text }}>
+            &quot;I lost too many evenings to Reels, and every blocker I tried treated me
+            like a child — lock everything, feel guilty, turn it off. So I built the
+            tool I actually wanted: one that quietly removes the trap and trusts me
+            with the rest. Rinkler is that, shipped honestly — real numbers, no
+            shame, nothing leaving your phone.&quot;
+          </p>
+          <p style={{ ...cardBody, marginTop: 16, color: signal.textDim }}>— the maker of Rinkler</p>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section style={finalCta}>
         <h2 style={ctaTitle}>Take back your attention.</h2>
-        <p style={{ ...lede, textAlign: "center", maxWidth: 520 }}>
-          Start with ten minutes and win your first Signal Ring.
+        <p style={{ ...lede, textAlign: "center", maxWidth: 520, marginTop: 8 }}>
+          Coming to iOS. Get early access and win your first ten quiet minutes.
         </p>
         <Link href={ctaHref} style={primaryBtn} className="btn-primary">{ctaLabel}</Link>
       </section>
@@ -116,36 +178,58 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
 
 function SectionHeading({ kicker, title, center }: { kicker: string; title: string; center?: boolean }) {
   return (
-    <div style={{ textAlign: center ? "center" : "left", marginBottom: 36 }}>
+    <div style={{ textAlign: center ? "center" : "left", marginBottom: 32 }}>
       <div style={{ ...kickerStyle, justifyContent: center ? "center" : "flex-start" }}>
         <span style={dot} />
         {kicker}
       </div>
-      <h2 style={{ ...h2, maxWidth: center ? 680 : undefined, marginInline: center ? "auto" : undefined }}>{title}</h2>
+      <h2 style={{ ...h2, maxWidth: center ? 700 : undefined, marginInline: center ? "auto" : undefined }}>{title}</h2>
     </div>
   );
 }
 
+function CompareRow({ text, good }: { text: string; good: boolean }) {
+  return (
+    <div style={compareRow}>
+      <span style={{ ...compareMark, color: good ? signal.success : "#FF8585" }}>{good ? "→" : "×"}</span>
+      <span style={compareText}>{text}</span>
+    </div>
+  );
+}
+
+const compareBad = [
+  "Block the whole app — including the DMs you need",
+  "Unblock it for a second, fall right back in",
+  "Guilt-trips and lockouts you resent",
+  "Quietly deleted within a week",
+];
+const compareGood = [
+  "Cut only the short-video feed",
+  "Keep messages, search, and posts working",
+  "No shame — just real numbers and quiet wins",
+  "Sticks, because there's nothing to rage-quit",
+];
+
 const howSteps = [
   {
     title: "Build your Focus System",
-    body: "Answer a few questions about what pulls you in and when. Rinkler generates rules tuned to you — Homework Mode, Night Lock, a clean morning start.",
+    body: "Answer a few quick questions about what pulls you in and when. Rinkler turns them into rules tuned to you — Homework Mode, Night Lock, a clean morning start — before you touch a single setting.",
   },
   {
     title: "Start a Control Session",
-    body: "One tap. Choose how strict: Gentle, Focused, or a locked Deep session you can't quit early. Your rules also run on a schedule, even when the app is closed.",
+    body: "One tap. Pick Gentle, Focused, or a locked Deep session you can't quit early. Your rules also run on a schedule, so the line holds even when the app is closed.",
   },
   {
     title: "Watch your Signal grow",
-    body: "Real focused time and blocked pulls add up. Earn Signal Rings, build streaks, and see exactly how much scroll you cut — no fabricated numbers.",
+    body: "Real focused time and interrupted feeds add up. Earn Signal Rings, build a streak, and see exactly how much scroll you cut — measured, never guessed.",
   },
 ];
 
 const features = [
-  { icon: "◓", title: "On-device & private", body: "Filtering happens locally on your phone. Traffic never routes through our servers and we don't read what's inside it." },
-  { icon: "✓", title: "Keep the useful parts", body: "Rinkler cuts the infinite short-video feeds while keeping DMs, search, and messages working. It's not an all-or-nothing block." },
-  { icon: "◷", title: "Schedules that hold", body: "Your windows run on time without the app being open, so the line holds when you're most likely to slip." },
-  { icon: "◎", title: "Honest numbers", body: "Every stat is measured, not estimated. Real time saved, real streams interrupted — and no shame when you slip." },
+  { icon: "◓", title: "On-device & private", body: "Filtering happens locally on your phone. Your traffic never routes through our servers, and we never read what's inside it." },
+  { icon: "✓", title: "Surgical, not blunt", body: "It targets the infinite short-video feed specifically — not your whole phone — so the useful parts of every app keep working." },
+  { icon: "◷", title: "Schedules that hold", body: "Your windows run on time without the app open, so protection is already up when you're most likely to slip." },
+  { icon: "◎", title: "Real numbers, no shame", body: "Every stat is measured on-device, not estimated. Honest time saved, honest streams interrupted — and no lecture when you slip." },
 ];
 
 /* ---------- styles ---------- */
@@ -189,9 +273,10 @@ const dot: CSSProperties = {
   background: signal.glow,
   boxShadow: `0 0 12px ${signal.blue}`,
   display: "inline-block",
+  flexShrink: 0,
 };
 
-const navRight: CSSProperties = { display: "flex", alignItems: "center", gap: 28 };
+const navRight: CSSProperties = { display: "flex", alignItems: "center", gap: 26 };
 const navLink: CSSProperties = { color: signal.textDim, textDecoration: "none", fontSize: 15 };
 const navBtn: CSSProperties = {
   padding: "9px 18px",
@@ -209,7 +294,7 @@ const hero: CSSProperties = {
   flexDirection: "column",
   alignItems: "center",
   textAlign: "center",
-  padding: "clamp(72px, 13vw, 150px) clamp(20px, 5vw, 64px) clamp(60px, 9vw, 110px)",
+  padding: "clamp(72px, 13vw, 150px) clamp(20px, 5vw, 64px) clamp(56px, 8vw, 96px)",
   overflow: "hidden",
 };
 
@@ -234,7 +319,7 @@ const pill: CSSProperties = {
   background: signal.card,
   color: signal.textDim,
   fontSize: 13,
-  letterSpacing: "0.06em",
+  letterSpacing: "0.04em",
   marginBottom: 26,
 };
 
@@ -255,6 +340,14 @@ const lede: CSSProperties = {
   color: signal.textDim,
   marginTop: 24,
   maxWidth: 620,
+};
+
+const microNote: CSSProperties = {
+  position: "relative",
+  marginTop: 20,
+  fontSize: 13,
+  color: signal.textDim,
+  opacity: 0.8,
 };
 
 const ctaRow: CSSProperties = { position: "relative", display: "flex", flexWrap: "wrap", gap: 14, justifyContent: "center", marginTop: 38 };
@@ -281,7 +374,7 @@ const ghostBtn: CSSProperties = {
   fontWeight: 600,
 };
 
-const section: CSSProperties = { padding: "clamp(56px, 9vw, 110px) clamp(20px, 5vw, 64px)", maxWidth: 1120, margin: "0 auto" };
+const section: CSSProperties = { padding: "clamp(56px, 9vw, 104px) clamp(20px, 5vw, 64px)", maxWidth: 1120, margin: "0 auto" };
 
 const kickerStyle: CSSProperties = {
   display: "flex",
@@ -296,8 +389,11 @@ const kickerStyle: CSSProperties = {
 
 const h2: CSSProperties = { fontSize: "clamp(28px, 4.5vw, 44px)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.1, margin: 0 };
 
+const bigPara: CSSProperties = { fontSize: "clamp(18px, 2.6vw, 24px)", lineHeight: 1.5, color: signal.textDim, maxWidth: 780, margin: 0, letterSpacing: "-0.01em" };
+
 const steps: CSSProperties = { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 };
 const featGrid: CSSProperties = { display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 };
+const compareGrid: CSSProperties = { display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20, marginTop: 32 };
 
 const card: CSSProperties = {
   background: signal.card,
@@ -305,6 +401,20 @@ const card: CSSProperties = {
   borderRadius: 20,
   padding: 28,
 };
+
+const tag: CSSProperties = {
+  display: "inline-block",
+  fontSize: 13,
+  fontWeight: 600,
+  padding: "5px 12px",
+  borderRadius: 999,
+  border: "1px solid",
+  marginBottom: 18,
+};
+
+const compareRow: CSSProperties = { display: "flex", gap: 12, alignItems: "flex-start", padding: "9px 0" };
+const compareMark: CSSProperties = { fontSize: 16, fontWeight: 700, lineHeight: 1.5, flexShrink: 0, width: 16 };
+const compareText: CSSProperties = { fontSize: 15.5, lineHeight: 1.5, color: signal.textDim };
 
 const stepNum: CSSProperties = { fontFamily: signal.mono, fontSize: 15, color: signal.blue, marginBottom: 16 };
 const featIcon: CSSProperties = {
@@ -325,7 +435,7 @@ const cardTitle: CSSProperties = { fontSize: 19, fontWeight: 600, margin: "0 0 8
 const cardBody: CSSProperties = { fontSize: 15, lineHeight: 1.6, color: signal.textDim, margin: 0 };
 
 const privacyBand: CSSProperties = {
-  padding: "clamp(64px, 10vw, 120px) clamp(20px, 5vw, 64px)",
+  padding: "clamp(64px, 10vw, 116px) clamp(20px, 5vw, 64px)",
   background: "radial-gradient(120% 100% at 50% 0%, rgba(91,124,255,0.08), transparent 60%)",
   borderTop: `1px solid ${signal.border}`,
   borderBottom: `1px solid ${signal.border}`,
@@ -335,7 +445,7 @@ const finalCta: CSSProperties = {
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  gap: 22,
+  gap: 14,
   textAlign: "center",
   padding: "clamp(72px, 11vw, 130px) clamp(20px, 5vw, 64px)",
 };
@@ -362,12 +472,12 @@ const css = `
   .fade[data-d="3"] { animation-delay: 0.26s; }
   @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
   .card { transition: transform 0.2s ease, border-color 0.2s ease; }
-  .card:hover { transform: translateY(-3px); border-color: rgba(91,124,255,0.5); }
+  .card:hover { transform: translateY(-3px); }
   .btn-primary { transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease; }
   .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(91,124,255,0.5); }
   .btn-ghost { transition: border-color 0.2s ease, background 0.2s ease; }
   .btn-ghost:hover { border-color: rgba(91,124,255,0.5); background: #1B1E24; }
-  a[href]:hover { color: #F8FAFC; }
+  .nav-links a[href^="#"]:hover, .nav-links a[href^="/"]:not(.btn-primary):hover { color: #F8FAFC; }
   @media (max-width: 860px) { .grid-3 { grid-template-columns: 1fr !important; } }
   @media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr !important; } .nav-links a:not(:last-child) { display: none; } }
   @media (prefers-reduced-motion: reduce) { .fade { animation: none; opacity: 1; transform: none; } }

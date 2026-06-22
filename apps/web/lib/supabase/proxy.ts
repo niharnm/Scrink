@@ -2,15 +2,22 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { getSupabasePublicConfig } from "./config";
 
+/**
+ * Public routes that must be reachable without signing in: the marketing
+ * landing (`/`), the privacy policy, and the auth screens themselves.
+ * Everything else (the dashboard, analytics APIs) still requires a session.
+ */
+function isPublicPath(pathname: string): boolean {
+  if (pathname === "/") return true;
+  return ["/login", "/auth", "/privacy"].some((p) => pathname.startsWith(p));
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
   const config = getSupabasePublicConfig();
 
   if (!config) {
-    if (
-      !request.nextUrl.pathname.startsWith("/login") &&
-      !request.nextUrl.pathname.startsWith("/auth")
-    ) {
+    if (!isPublicPath(request.nextUrl.pathname)) {
       const url = request.nextUrl.clone();
       url.pathname = "/login";
       return NextResponse.redirect(url);
@@ -43,11 +50,7 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth")
-  ) {
+  if (!user && !isPublicPath(request.nextUrl.pathname)) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
