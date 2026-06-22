@@ -39,7 +39,10 @@ final class BlockSelectionStore: ObservableObject {
     }
 
     /// Flattens enabled features → the host set the tunnel blocks at CONNECT.
+    /// Unions in any feeds a friend is currently enforcing, so a user toggle never
+    /// drops the friend's blocks (and vice-versa).
     private func resolveHosts() {
-        defaults?.set(BlockCatalog.hosts(forEnabled: enabled), forKey: RinklerConstants.blockedHostsKey)
+        let friend = Set(defaults?.stringArray(forKey: RinklerConstants.friendBlockFeaturesKey) ?? [])
+        defaults?.set(BlockCatalog.hosts(forEnabled: enabled.union(friend)), forKey: RinklerConstants.blockedHostsKey)
     }
 }

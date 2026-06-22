@@ -115,6 +115,12 @@ enum RinklerConstants {
     /// The user's enabled feed selections ("appId/featureId" set) — shared between
     /// BlockSelectionStore and friend-control so both resolve the same way.
     static let blockSelectionFeaturesKey = "blockSelection.features"
+    /// Feeds a friend is enforcing right now (separate from the user's own set, so
+    /// they never clobber each other — blockedHosts is the union of both).
+    static let friendBlockFeaturesKey = "friendControl.features"
+    /// Local copy of the friend window end (epoch) so the device can self-heal /
+    /// restore at expiry without a network round-trip.
+    static let friendWindowEndKey = "friendControl.windowEnd"
 
     // MARK: - Strict Mode (total lockdown) keys
     static let strictModeEnabledKey = "strictModeEnabled"

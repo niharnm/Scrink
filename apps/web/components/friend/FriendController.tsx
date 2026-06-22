@@ -31,17 +31,23 @@ export default function FriendController({ userId }: { userId: string; email: st
   const loadAfterRedeem = useCallback(
     async (p: Pairing) => {
       // Active rule pack → which apps/feeds exist to toggle.
-      const { data: packRow } = await supabase
+      const { data: packRow, error: packErr } = await supabase
         .from("block_rules")
         .select("pack")
         .eq("is_active", true)
         .limit(1)
         .maybeSingle();
-      const packApps: App[] = (packRow?.pack?.apps ?? []).map((a: App) => ({
-        id: a.id,
-        name: a.name,
-        features: a.features.map((f) => ({ id: f.id, name: f.name, blurb: f.blurb })),
-      }));
+      if (packErr) setError("Couldn't load the app list — try refreshing.");
+      const rawApps: App[] = Array.isArray(packRow?.pack?.apps) ? packRow!.pack.apps : [];
+      const packApps: App[] = rawApps
+        .map((a) => ({
+          id: String(a?.id ?? ""),
+          name: String(a?.name ?? ""),
+          features: Array.isArray(a?.features)
+            ? a.features.map((f) => ({ id: String(f?.id ?? ""), name: String(f?.name ?? ""), blurb: String(f?.blurb ?? "") }))
+            : [],
+        }))
+        .filter((a) => a.id && a.features.length > 0);
       setApps(packApps);
 
       // Limits already set on this pairing.
@@ -57,6 +63,27 @@ export default function FriendController({ userId }: { userId: string; email: st
     },
     [supabase]
   );
+
+  // Rehydrate an in-progress session on refresh (the code is single-use, so we
+  // recover via the pairing the friend already holds, not by re-redeeming).
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("friend_pairings")
+        .select("id,owner_user_id,window_end")
+        .eq("friend_user_id", userId)
+        .eq("revoked", false)
+        .gt("window_end", new Date().toISOString())
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (data?.id) {
+        const p: Pairing = { pairing_id: data.id, owner_user_id: data.owner_user_id, window_end: data.window_end };
+        setPairing(p);
+        await loadAfterRedeem(p);
+      }
+    })();
+  }, [supabase, userId, loadAfterRedeem]);
 
   async function redeem() {
     setBusy(true);

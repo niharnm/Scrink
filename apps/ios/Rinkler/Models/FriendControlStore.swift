@@ -26,7 +26,6 @@ final class FriendControlStore: ObservableObject {
 
     private let defaults = UserDefaults(suiteName: RinklerConstants.appGroupID)
     private let client = SupabaseAuthClient.shared
-    private let snapshotKey = "friendControl.ownerSnapshot"   // owner's own feed set
     private var ticker: AnyCancellable?
 
     private let decoder = JSONDecoder()
@@ -73,7 +72,9 @@ final class FriendControlStore: ObservableObject {
     }
 
     func refresh() async {
-        guard let uid = client.loadSession()?.userID else { return }
+        // Restore is decoupled from auth: if signed out with a window still
+        // applied, clear it rather than leaving the friend's blocks stuck on.
+        guard let uid = client.loadSession()?.userID else { restoreIfNeeded(); return }
         do {
             let (req, _) = try await client.authenticatedRESTRequest(
                 path: "friend_pairings", method: "GET",
@@ -113,11 +114,21 @@ final class FriendControlStore: ObservableObject {
 
     /// Called on launch + foreground.
     func tick() {
-        if isControlled { if ticker == nil { startTicker() } }
+        // Self-heal: if the window has already passed (known locally), drop the
+        // friend's blocks even with no network or session.
+        if let end = defaults?.object(forKey: RinklerConstants.friendWindowEndKey) as? Double,
+           Date().timeIntervalSince1970 >= end {
+            restoreIfNeeded()
+        }
+        if isControlled, ticker == nil { startTicker() }
         Task { await refresh() }
     }
 
-    // MARK: - Apply / restore (writes the App Group knobs the tunnel reads)
+    // MARK: - Apply / restore
+    //
+    // The friend's feeds live in their OWN App Group key, never the user's
+    // selection — blockedHosts is the union of both. So the Apps tab and friend
+    // control can't clobber each other, and there's no snapshot to get stale.
 
     private func applyLimits(pairingID: String, ownerID: String) async {
         do {
@@ -131,26 +142,29 @@ final class FriendControlStore: ObservableObject {
             let (data, resp) = try await URLSession.shared.data(for: req)
             guard (resp as? HTTPURLResponse)?.statusCode == 200 else { return }
             let limits = try decoder.decode([Limit].self, from: data)
-            let friendKeys = Set(limits.filter { $0.enabled }.map { "\($0.app_id)/\($0.feature_id)" })
-
-            // Snapshot the owner's own set once, when control begins.
-            if defaults?.object(forKey: snapshotKey) == nil {
-                defaults?.set(defaults?.stringArray(forKey: RinklerConstants.blockSelectionFeaturesKey) ?? [], forKey: snapshotKey)
+            let friendKeys = limits.filter { $0.enabled }.map { "\($0.app_id)/\($0.feature_id)" }
+            defaults?.set(friendKeys, forKey: RinklerConstants.friendBlockFeaturesKey)
+            if let end = pairing?.windowEnd {
+                defaults?.set(end.timeIntervalSince1970, forKey: RinklerConstants.friendWindowEndKey)
             }
-            let ownSet = Set(defaults?.stringArray(forKey: snapshotKey) ?? [])
-            let merged = ownSet.union(friendKeys)   // a friend can only ADD blocks
-            defaults?.set(Array(merged), forKey: RinklerConstants.blockSelectionFeaturesKey)
-            defaults?.set(BlockCatalog.hosts(forEnabled: merged), forKey: RinklerConstants.blockedHostsKey)
+            resolveBlockedHosts()
             appliedCount = friendKeys.count
         } catch { /* keep */ }
     }
 
     private func restoreIfNeeded() {
-        guard let snap = defaults?.stringArray(forKey: snapshotKey) else { return }
-        defaults?.set(snap, forKey: RinklerConstants.blockSelectionFeaturesKey)
-        defaults?.set(BlockCatalog.hosts(forEnabled: Set(snap)), forKey: RinklerConstants.blockedHostsKey)
-        defaults?.removeObject(forKey: snapshotKey)
+        guard defaults?.object(forKey: RinklerConstants.friendBlockFeaturesKey) != nil else { return }
+        defaults?.removeObject(forKey: RinklerConstants.friendBlockFeaturesKey)
+        defaults?.removeObject(forKey: RinklerConstants.friendWindowEndKey)
+        resolveBlockedHosts()
         appliedCount = 0
+    }
+
+    /// blockedHosts = hosts(owner's feeds ∪ friend's feeds).
+    private func resolveBlockedHosts() {
+        let user = Set(defaults?.stringArray(forKey: RinklerConstants.blockSelectionFeaturesKey) ?? [])
+        let friend = Set(defaults?.stringArray(forKey: RinklerConstants.friendBlockFeaturesKey) ?? [])
+        defaults?.set(BlockCatalog.hosts(forEnabled: user.union(friend)), forKey: RinklerConstants.blockedHostsKey)
     }
 
     // MARK: - Helpers
