@@ -3,8 +3,11 @@ import NetworkExtension
 import StoreKit
 
 struct SettingsScreen: View {
+    var onLogout: (() -> Void)? = nil
+
     @Environment(\.dismiss) private var dismiss
     @Environment(\.requestReview) private var requestReview
+    @Environment(AuthStore.self) private var authStore
     @EnvironmentObject private var vpnManager: VPNManager
     @EnvironmentObject private var commitment: CommitmentStore
     @EnvironmentObject private var focusSystem: FocusSystemStore
@@ -15,6 +18,7 @@ struct SettingsScreen: View {
     @EnvironmentObject private var health: HealthManager
 
     @State private var showResetOnboarding = false
+    @State private var showSignOut = false
     @State private var legalDoc: LegalContent.Doc?
 
     @AppStorage(RinklerConstants.blockInstagramShortVideoEnabledKey,
@@ -69,6 +73,9 @@ struct SettingsScreen: View {
 
                     // Privacy, Terms, Contact, Version
                     aboutSection
+
+                    // Sign in / out
+                    accountSection
 
                     #if DEBUG
                     appLogSection
@@ -299,6 +306,49 @@ struct SettingsScreen: View {
                 .foregroundStyle(RinklerColors.signalTextFaint)
                 .frame(maxWidth: .infinity)
                 .padding(.top, 2)
+        }
+    }
+
+    // MARK: - Account
+
+    private var accountSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("ACCOUNT")
+                .font(RinklerFonts.sans(12, .semibold))
+                .foregroundStyle(RinklerColors.signalTextDim)
+
+            Button {
+                if authStore.isLoggedIn { showSignOut = true } else { onLogout?() }
+            } label: {
+                HStack(spacing: RinklerSpacing.md) {
+                    Image(systemName: authStore.isLoggedIn ? "rectangle.portrait.and.arrow.right" : "person.crop.circle")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(authStore.isLoggedIn ? RinklerColors.signalWarning : RinklerColors.signalBlue)
+                        .frame(width: 22)
+                    Text(authStore.isLoggedIn ? "Sign out" : "Sign in")
+                        .font(RinklerFonts.sans(15, .medium))
+                        .foregroundStyle(authStore.isLoggedIn ? RinklerColors.signalWarning : RinklerColors.signalText)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(RinklerColors.signalTextFaint)
+                }
+                .padding(.horizontal, RinklerSpacing.md)
+                .frame(height: 52)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(RinklerColors.signalCard)
+                .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            }
+            .buttonStyle(.plain)
+        }
+        .alert("Sign out of Rinkler?", isPresented: $showSignOut) {
+            Button("Cancel", role: .cancel) {}
+            Button("Sign out", role: .destructive) {
+                Task { await authStore.logout(); onLogout?() }
+            }
+        } message: {
+            Text("Your rules and history stay on this device. You can sign back in anytime.")
         }
     }
 

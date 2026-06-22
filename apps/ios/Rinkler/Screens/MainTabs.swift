@@ -63,68 +63,156 @@ struct ControlScreen: View {
         ZStack {
             SignalBackground()
             ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
-                    Text("Start a session")
-                        .font(RinklerFonts.sans(26, .bold))
-                        .foregroundStyle(RinklerColors.signalText)
-
-                    labeledGroup("HOW LONG") {
-                        HStack(spacing: 10) {
-                            ForEach(durations, id: \.self) { mins in
-                                Button { duration = mins } label: {
-                                    Text("\(mins)m")
-                                        .font(RinklerFonts.mono(15, .medium))
-                                        .foregroundStyle(duration == mins ? RinklerColors.signalOnInk : RinklerColors.signalText)
-                                        .frame(maxWidth: .infinity).frame(height: 46)
-                                        .background(duration == mins ? AnyView(RinklerColors.signalInk) : AnyView(RinklerColors.signalCard))
-                                        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: duration == mins ? 0 : 1))
-                                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-                    }
-
-                    labeledGroup("WHAT GOES") {
-                        flow(disappears, color: RinklerColors.signalWarning)
-                    }
-
-                    labeledGroup("WHAT STAYS") {
-                        flow(keeps, color: RinklerColors.signalSuccess)
-                    }
-
-                    Button { onStart?() } label: {
-                        Text("Start")
-                            .font(RinklerFonts.sans(18, .semibold))
-                            .foregroundStyle(RinklerColors.signalOnInk)
-                            .frame(maxWidth: .infinity).frame(height: 56)
-                            .background(RinklerColors.signalInk)
-                            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.top, RinklerSpacing.sm)
-
-                    Text("Hit start and these blocks kick in right on your phone. That's the whole thing.")
+                VStack(alignment: .leading, spacing: RinklerSpacing.md) {
+                    header
+                    heroCard
+                    changesCard
+                    quickLinks
+                    startButton
+                    Text("Start it and these blocks kick in right on your phone — nothing leaves your device.")
                         .font(RinklerFonts.sans(12, .regular))
                         .foregroundStyle(RinklerColors.signalTextDim)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 2)
                 }
                 .padding(RinklerSpacing.lg)
+                .padding(.bottom, 40)
             }
         }
         .preferredColorScheme(nil)
     }
 
-    private func labeledGroup<C: View>(_ title: String, @ViewBuilder content: () -> C) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(title)
-                .font(RinklerFonts.sans(12, .semibold))
+    // MARK: Header
+
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("CONTROL")
+                .font(RinklerFonts.sans(13, .semibold))
+                .tracking(2)
                 .foregroundStyle(RinklerColors.signalTextDim)
-            content()
+            Text("Set up a focus session")
+                .font(RinklerFonts.sans(25, .bold))
+                .foregroundStyle(RinklerColors.signalText)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.bottom, 2)
+    }
+
+    // MARK: Hero — duration as the headline number
+
+    private var heroCard: some View {
+        VStack(spacing: RinklerSpacing.md) {
+            Text("FOCUS FOR")
+                .font(RinklerFonts.sans(12, .semibold))
+                .tracking(2)
+                .foregroundStyle(RinklerColors.signalTextFaint)
+
+            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                Text("\(duration)")
+                    .font(.system(size: 68, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(RinklerColors.signalText)
+                    .contentTransition(.numericText())
+                Text("min")
+                    .font(RinklerFonts.sans(20, .semibold))
+                    .foregroundStyle(RinklerColors.signalTextDim)
+            }
+
+            HStack(spacing: 8) {
+                ForEach(durations, id: \.self) { mins in
+                    Button { withAnimation(.snappy) { duration = mins } } label: {
+                        Text("\(mins)m")
+                            .font(RinklerFonts.mono(14, .medium))
+                            .foregroundStyle(duration == mins ? RinklerColors.signalOnInk : RinklerColors.signalText)
+                            .frame(maxWidth: .infinity).frame(height: 42)
+                            .background(duration == mins ? AnyView(RinklerColors.signalInk) : AnyView(RinklerColors.signalCardRaised))
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .padding(.vertical, RinklerSpacing.lg)
+        .padding(.horizontal, RinklerSpacing.md)
+        .frame(maxWidth: .infinity)
+        .signalCard(cornerRadius: 24)
+    }
+
+    // MARK: What changes — one organized card
+
+    private var changesCard: some View {
+        VStack(spacing: 0) {
+            changeRow("DISAPPEARS", disappears, color: RinklerColors.signalWarning, icon: "eye.slash.fill")
+            Divider().overlay(RinklerColors.signalBorder).padding(.horizontal, RinklerSpacing.md)
+            changeRow("STAYS OPEN", keeps, color: RinklerColors.signalSuccess, icon: "checkmark.circle.fill")
+        }
+        .signalCard(cornerRadius: 20)
+    }
+
+    private func changeRow(_ title: String, _ items: [String], color: Color, icon: String) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(color)
+                Text(title)
+                    .font(RinklerFonts.sans(12, .semibold))
+                    .tracking(1)
+                    .foregroundStyle(color.opacity(0.95))
+            }
+            FlowChips(items: items, color: color)
+        }
+        .padding(RinklerSpacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    // MARK: Quick links (Jomo-style action tiles)
+
+    private var quickLinks: some View {
+        HStack(spacing: 12) {
+            linkTile("Strict Mode", "Lock it for a window", icon: "lock.shield.fill", route: .strictModeSetup)
+            linkTile("Adjust limits", "Apps & thresholds", icon: "slider.horizontal.3", route: .settings)
         }
     }
 
-    private func flow(_ items: [String], color: Color) -> some View {
-        FlowChips(items: items, color: color)
+    private func linkTile(_ title: String, _ subtitle: String, icon: String, route: Route) -> some View {
+        NavigationLink(value: route) {
+            VStack(alignment: .leading, spacing: 8) {
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(RinklerColors.signalBlue)
+                Text(title)
+                    .font(RinklerFonts.sans(15, .semibold))
+                    .foregroundStyle(RinklerColors.signalText)
+                Text(subtitle)
+                    .font(RinklerFonts.sans(11, .regular))
+                    .foregroundStyle(RinklerColors.signalTextDim)
+                    .lineLimit(1)
+            }
+            .padding(RinklerSpacing.md)
+            .frame(maxWidth: .infinity, minHeight: 96, alignment: .leading)
+            .signalCard(cornerRadius: 18)
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: Start
+
+    private var startButton: some View {
+        Button { onStart?() } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "bolt.fill").font(.system(size: 15, weight: .bold))
+                Text("Start \(duration)-min session")
+                    .font(RinklerFonts.sans(18, .semibold))
+            }
+            .foregroundStyle(RinklerColors.signalOnInk)
+            .frame(maxWidth: .infinity).frame(height: 56)
+            .background(RinklerColors.signalInk)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .padding(.top, RinklerSpacing.xs)
     }
 }
 

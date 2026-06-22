@@ -67,6 +67,8 @@ struct RinklerApp: App {
                     LegalScreen(doc: LegalContent.terms)
                 } else if previewScreen == "strict" {
                     NavigationStack { StrictModeSetupScreen() }
+                } else if previewScreen == "control" {
+                    NavigationStack { ControlScreen() }
                 } else if focusSystem.hasCompletedOnboarding {
                     NavigationStack(path: $path) {
                         LandingPage(onGo: {
@@ -136,7 +138,10 @@ struct RinklerApp: App {
                                     path.append(Route.today)
                                 })
                             case .settings:
-                                SettingsScreen()
+                                SettingsScreen(onLogout: {
+                                    path = NavigationPath()
+                                    path.append(Route.magicSignIn)
+                                })
                             case .strictModeSetup:
                                 StrictModeSetupScreen()
                             case .trafficDashboard:
