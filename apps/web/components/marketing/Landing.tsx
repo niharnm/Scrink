@@ -89,9 +89,11 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
               <span style={{ color: signal.textFaint }}>the feed is.</span>
             </h1>
             <p style={{ ...lede, marginTop: 28 }}>
-              Rinkler cuts the endless Reels and TikToks that eat your night, and
-              leaves the stuff you actually opened the app for. DMs, search,
-              messages, all still there.
+              you sit down to chill for a sec and somehow its 1am and you cant
+              even remember what you watched. yeah, we know that one too well.
+              Rinkler quietly takes the Reels and TikToks doing that to you, and
+              leaves the stuff you actually came for. your DMs, your search, your
+              people. all still there.
             </p>
             <div style={ctaRow}>
               <Link href={ctaHref} style={lightBtn} className="light-btn">{ctaLabel}</Link>
@@ -111,16 +113,17 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
         {/* The real fight */}
         <Reveal>
           <section style={section}>
-            <h2 style={h2}>youre not weak. its rigged.</h2>
+            <h2 style={h2}>hey, youre not weak. its rigged.</h2>
             <p style={statement}>
-              you open Instagram to answer one text. forty minutes later youre
-              watching some guy fix a rusted wrench and you dont even know how you
-              got there. thats not you being lazy. the feed is built by hundreds of
-              engineers testing every pixel to keep you swiping. you were never
-              gonna beat that with willpower.
+              you opened Instagram to send one text. forty minutes later youre
+              watching some random guy fix a rusted wrench like wait, how did i
+              even get here. thats not you being lazy or having no self control.
+              theres a whole building of people whose actual job is to keep you
+              swiping. nobody beats that with willpower. not you, not us, nobody.
             </p>
             <p style={{ ...statement, color: signal.text, marginTop: 20 }}>
-              Rinkler evens it out, at the one spot the feed cant talk you out of.
+              so we built something to stand in for you, right at the one spot the
+              feed cant talk its way around.
             </p>
           </section>
         </Reveal>
@@ -132,10 +135,11 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
           <section id="difference" style={section}>
             <h2 style={h2}>it cuts the feed, not the whole app.</h2>
             <p style={{ ...lede, maxWidth: 680, marginTop: 20 }}>
-              most blockers are all or nothing. you block Instagram, then unblock
-              it to send one dm, and youre right back in the feed. thats why people
-              delete them in a week. Rinkler only cuts the short video feed and
-              leaves everything else working. theres nothing to ragequit.
+              you already know how the other ones go. you block Instagram, then you
+              gotta text someone back, so you unblock it, and poof, theres your
+              hour. so you delete it by friday. we didnt want to make that. Rinkler
+              just takes the endless feed and leaves the rest of the app alone, so
+              theres nothing to ragequit and you actually keep it around.
             </p>
             <div style={compareGrid} className="compare">
               <div style={{ paddingRight: 32 }}>
@@ -157,14 +161,14 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
           <section style={section}>
             <h2 style={h2}>your one screen time app.</h2>
             <p style={statement}>
-              every other screen time app can do one thing: block a whole app.
-              block Instagram and you lose your DMs too. Rinkler does that when
-              you want it, but it also reaches inside the apps and kills just the
-              parts that hook you, like Reels and the For You page, while your
-              messages, search and posts keep working.
+              every other app out there does one thing: block the whole app. cool,
+              but now you cant text your friend either. Rinkler can do that when you
+              want, but it also goes inside the apps and takes just the parts that
+              hook you, like Reels and the For You page, while your messages, search
+              and posts all keep working.
             </p>
             <p style={{ ...statement, color: signal.text, marginTop: 18 }}>
-              block whole apps, or block the feeds inside them. all from one place.
+              block whole apps, or just the feeds inside them. its all yours.
             </p>
           </section>
         </Reveal>
@@ -174,7 +178,7 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
         {/* How it works */}
         <Reveal>
           <section id="how" style={section}>
-            <h2 style={h2}>set it up once, it handles the rest.</h2>
+            <h2 style={h2}>you do it once, it takes it from there.</h2>
             <div style={{ marginTop: 40 }}>
               {howSteps.map((s, i) => (
                 <div key={s.title} style={stepRow} className="step-row">
@@ -211,11 +215,12 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
         {/* Privacy */}
         <Reveal>
           <section style={section}>
-            <h2 style={{ ...h2, maxWidth: 760 }}>it runs on your phone and never reads your stuff.</h2>
+            <h2 style={{ ...h2, maxWidth: 760 }}>its just you and your phone. we never see your stuff.</h2>
             <p style={{ ...lede, maxWidth: 640, marginTop: 20 }}>
-              the filter runs locally. your traffic never goes through a server. it
-              only sees where a connection is headed and how big it is, never whats
-              inside. no messages read, nothing stored, nothing sold.
+              the filter runs right there on your device. your traffic never comes
+              to us, and we only ever see where something is headed, never whats
+              inside it. nobody reads your messages, nothing gets saved, nothing
+              gets sold. promise.
             </p>
             <Link href="/privacy" style={{ ...textBtn, display: "inline-block", marginTop: 24 }} className="text-btn">
               read the privacy policy →
@@ -243,8 +248,8 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
         {/* Final CTA */}
         <Reveal>
           <section style={{ ...section, paddingTop: "clamp(80px, 13vh, 160px)", paddingBottom: "clamp(80px, 13vh, 160px)" }}>
-            <h2 style={{ ...h2, fontSize: "clamp(34px, 6vw, 64px)" }}>get your time back.</h2>
-            <p style={{ ...lede, marginTop: 18 }}>launching July 10. get early access and win your first ten quiet minutes.</p>
+            <h2 style={{ ...h2, fontSize: "clamp(34px, 6vw, 64px)" }}>lets get your nights back.</h2>
+            <p style={{ ...lede, marginTop: 18 }}>Rinkler drops July 10. grab early access and win back your first ten quiet minutes.</p>
             <div style={{ ...ctaRow, marginTop: 32 }}>
               <Link href={ctaHref} style={lightBtn} className="light-btn">{ctaLabel}</Link>
             </div>
@@ -316,26 +321,26 @@ function CompareRow({ text, good }: { text: string; good: boolean }) {
 
 const compareBad = [
   "blocks the whole app, DMs and all",
-  "you unlock it for a sec and fall back in",
-  "guilt trips and lockouts you hate",
-  "deleted within a week",
+  "you unlock it for one sec and fall right back in",
+  "guilt trips and lockouts you start to hate",
+  "deleted by friday",
 ];
 const compareGood = [
-  "only cuts the short video feed",
-  "DMs, search and posts still work",
-  "no shame, just real numbers",
-  "sticks, theres nothing to ragequit",
+  "takes just the endless feed",
+  "your DMs, search and posts still work",
+  "no shame, ever, just whats real",
+  "you actually keep it around",
 ];
 const howSteps = [
-  { title: "build your setup", body: "answer a few questions when you first open the app and Rinkler makes the rules for you. Homework Mode, Night Lock, a clean morning. you dont touch a single setting." },
-  { title: "start a session", body: "one tap. pick how strict you want it, from chill to a locked deep session you cant quit early. it runs on a schedule too, so it kicks in even when the app is closed." },
-  { title: "watch it stack up", body: "real focused time and blocked feeds add up. build a streak and see exactly how much scroll you cut. its all real, nothing made up." },
+  { title: "tell it about you", body: "when you first open it, it asks a few quick things, like whats pulling you in and when youre most likely to cave. then it just builds your whole setup for you. Homework Mode, Night Lock, a calmer morning. you dont have to figure out a single thing." },
+  { title: "start whenever you want", body: "one tap and youre in. go easy on yourself, or lock in deep when you really need to, totally your call. it runs on a schedule too, so its already working even when you forget about it." },
+  { title: "watch it add up", body: "real time you got back, real feeds it caught for you. build a streak, feel it stack up. no fake numbers, and zero lecture when you slip, because honestly we all do." },
 ];
 const features = [
-  { title: "stays on your phone", body: "everything runs on your device. your traffic never hits our servers and we never look inside it." },
-  { title: "cuts the feed, not the app", body: "it goes after the endless short video feed, not your whole phone, so the useful parts of every app still work." },
-  { title: "runs on a schedule", body: "your windows kick in on time even with the app closed, so its already on right when youd usually slip." },
-  { title: "real numbers", body: "every stat is measured on your phone, not guessed. real time saved, real feeds blocked, no lecture when you slip." },
+  { title: "it stays with you", body: "everything runs right on your phone. your stuff never leaves it, and we genuinely never see whats inside." },
+  { title: "it cuts the feed, not the app", body: "it goes after the endless feed, not your whole phone, so every part you actually use still works." },
+  { title: "it shows up on time", body: "your windows kick in on their own, even with the app closed, so its already there right when youd usually cave." },
+  { title: "it keeps it real", body: "every number comes straight from your phone, measured not guessed. real time saved, and no lecture on your off days." },
 ];
 
 /* ---------- styles ---------- */
