@@ -33,11 +33,11 @@ export default function Error({
       >
         <p
           style={{
-            fontFamily: theme.fonts.body,
-            fontSize: 14,
-            letterSpacing: 2,
+            fontFamily: theme.fonts.mono,
+            fontSize: 12,
+            letterSpacing: "0.16em",
             textTransform: "uppercase",
-            color: theme.colors.skyBlue,
+            color: theme.colors.white60,
           }}
         >
           Something went wrong
@@ -52,9 +52,9 @@ export default function Error({
         >
           We hit an unexpected error.
         </h1>
-        <p style={{ fontSize: 18, color: theme.colors.white60, maxWidth: 480 }}>
+        <p style={{ fontSize: 17, color: theme.colors.white60, maxWidth: 480, lineHeight: 1.55 }}>
           The issue has been logged. You can try again, and if it keeps
-          happening, reach us at hello@rinkler.app.
+          happening, reach us at nihar.manchikalapudi@gmail.com.
         </p>
         {error.digest ? (
           <p
@@ -71,16 +71,16 @@ export default function Error({
           onClick={reset}
           style={{
             marginTop: 8,
-            height: 52,
-            padding: "0 32px",
-            borderRadius: 26,
+            height: 46,
+            padding: "0 26px",
+            borderRadius: 10,
             border: "none",
             cursor: "pointer",
-            background: `linear-gradient(120deg, ${theme.colors.skyBlue}, ${theme.colors.backArrow})`,
-            color: "#fff",
+            background: theme.colors.white,
+            color: "#08080A",
             fontWeight: 600,
-            fontSize: 18,
-            fontFamily: theme.fonts.display,
+            fontSize: 15,
+            fontFamily: theme.fonts.body,
           }}
         >
           Try again
