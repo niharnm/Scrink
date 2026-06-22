@@ -26,6 +26,7 @@ struct RinklerApp: App {
             switch args[i + 1] {
             case "journey": p.append(Route.home); p.append(Route.storyJourney)
             case "settings": p.append(Route.home); p.append(Route.settings)
+            case "signin": p.append(Route.magicSignIn)
             default: p.append(Route.home)
             }
             _path = State(initialValue: p)

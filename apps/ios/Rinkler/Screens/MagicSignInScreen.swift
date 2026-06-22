@@ -63,7 +63,10 @@ struct MagicSignInScreen: View {
                             .padding(.horizontal, RinklerSpacing.buttonHorizontalPadding)
                     }
                     
-                    Button(action: {
+                    AuroraButton(
+                        title: service.isLoading ? "SENDING…" : "SEND CODE",
+                        enabled: !service.isLoading && !email.isEmpty
+                    ) {
                         Task {
                             do {
                                 try await service.sendMagicCode(email: email)
@@ -72,28 +75,8 @@ struct MagicSignInScreen: View {
                                 // Error is handled by service.errorMessage
                             }
                         }
-                    }) {
-                        HStack {
-                            if service.isLoading {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            } else {
-                                Text("SEND CODE")
-                                    .font(RinklerFonts.buttonText)
-                                    .foregroundStyle(.white)
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
-                        .frame(height: RinklerSpacing.buttonHeight)
-                        .background(service.isLoading || email.isEmpty ? Color.gray.opacity(0.5) : RinklerColors.skyBlue)
-                        .clipShape(RoundedRectangle(cornerRadius: RinklerSpacing.buttonCornerRadius))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: RinklerSpacing.buttonCornerRadius)
-                                .strokeBorder(Color.white, lineWidth: 2)
-                        )
                     }
-                    .disabled(service.isLoading || email.isEmpty)
-                    .padding(.horizontal, RinklerSpacing.buttonHorizontalPadding)
+                    .padding(.horizontal, RinklerSpacing.xl)
 
                     Button(action: onContinueOffline) {
                         Text("Continue without cloud sync")

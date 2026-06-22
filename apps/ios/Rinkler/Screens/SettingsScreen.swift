@@ -72,11 +72,11 @@ struct SettingsScreen: View {
 
     private var vpnStatusSection: some View {
         VStack(spacing: RinklerSpacing.sm) {
-            Image(systemName: vpnManager.vpnStatus == .connected ? "shield.fill" : "shield.slash.fill")
+            Image(systemName: vpnManager.vpnStatus == .connected ? "shield.lefthalf.filled" : "shield.slash")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 60, height: 60)
-                .foregroundColor(vpnManager.vpnStatus == .connected ? .green : .gray)
+                .frame(width: 56, height: 56)
+                .foregroundStyle(vpnManager.vpnStatus == .connected ? RinklerColors.auroraCyan : RinklerColors.white40)
 
             HStack(spacing: RinklerSpacing.sm) {
                 Circle()
@@ -92,20 +92,17 @@ struct SettingsScreen: View {
     // MARK: - VPN Toggle
 
     private var vpnToggleButton: some View {
-        Button(action: { vpnManager.toggleVPN() }) {
-            Text(vpnButtonTitle)
-                .font(RinklerFonts.pupok(size: 24))
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, RinklerSpacing.md)
-                .background(vpnManager.vpnStatus == .connected ? Color.red : RinklerColors.skyBlue)
-                .clipShape(RoundedRectangle(cornerRadius: RinklerSpacing.buttonCornerRadius))
-                .overlay(
-                    RoundedRectangle(cornerRadius: RinklerSpacing.buttonCornerRadius)
-                        .strokeBorder(Color.white, lineWidth: 1)
-                )
+        Group {
+            if vpnManager.vpnStatus == .connected {
+                GhostButton(title: vpnButtonTitle, tint: RinklerColors.dawnGlow) {
+                    vpnManager.toggleVPN()
+                }
+            } else {
+                AuroraButton(title: vpnButtonTitle, enabled: !vpnManager.isPreparingProfile) {
+                    vpnManager.toggleVPN()
+                }
+            }
         }
-        .disabled(vpnManager.isPreparingProfile)
     }
 
     private var vpnButtonTitle: String {
@@ -139,6 +136,7 @@ struct SettingsScreen: View {
             Spacer()
             Toggle("", isOn: isOn)
                 .labelsHidden()
+                .tint(RinklerColors.auroraCyan)
         }
     }
 

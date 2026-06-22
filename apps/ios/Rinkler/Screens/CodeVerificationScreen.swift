@@ -86,7 +86,10 @@ struct CodeVerificationScreen: View {
                             .padding(.horizontal, RinklerSpacing.buttonHorizontalPadding)
                     }
                     
-                    Button(action: {
+                    AuroraButton(
+                        title: service.isLoading ? "VERIFYING…" : "VERIFY",
+                        enabled: !service.isLoading && code.replacingOccurrences(of: " ", with: "").count == 6
+                    ) {
                         Task {
                             do {
                                 let isValid = try await service.verifyCode(code, email: email)
@@ -98,28 +101,8 @@ struct CodeVerificationScreen: View {
                                 // Error is handled by service.errorMessage
                             }
                         }
-                    }) {
-                        HStack {
-                            if service.isLoading {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            } else {
-                                Text("VERIFY")
-                                    .font(RinklerFonts.buttonText)
-                                    .foregroundStyle(.white)
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
-                        .frame(height: RinklerSpacing.buttonHeight)
-                        .background(service.isLoading || code.replacingOccurrences(of: " ", with: "").count != 6 ? Color.gray.opacity(0.5) : RinklerColors.skyBlue)
-                        .clipShape(RoundedRectangle(cornerRadius: RinklerSpacing.buttonCornerRadius))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: RinklerSpacing.buttonCornerRadius)
-                                .strokeBorder(Color.white, lineWidth: 2)
-                        )
                     }
-                    .disabled(service.isLoading || code.replacingOccurrences(of: " ", with: "").count != 6)
-                    .padding(.horizontal, RinklerSpacing.buttonHorizontalPadding)
+                    .padding(.horizontal, RinklerSpacing.xl)
                     
                     // Resend code option
                     Button(action: {
