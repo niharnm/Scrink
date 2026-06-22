@@ -1,21 +1,26 @@
 /**
- * Rinkler "Signal" identity for the web — mirrors the iOS app's redesign:
- * a near-black control-panel surface with a single blue→violet signal glow.
- * Kept as a plain token object so it can drive inline styles (this app has no
- * Tailwind), matching the existing pattern in lib/theme.ts.
+ * Rinkler web design tokens — "stark minimal" direction: true-black canvas,
+ * near-monochrome, one restrained accent used sparingly, hairline rules, big
+ * confident Geist type. Deliberately no gradient glows or gradient buttons
+ * (those read as generic). Token keys are kept stable for existing imports.
  */
 export const signal = {
-  bg: "#08090B",
-  card: "#14161A",
-  cardRaised: "#1B1E24",
-  border: "#2A2E36",
-  text: "#F8FAFC",
-  textDim: "#9CA3AF",
-  blue: "#5B7CFF",
+  bg: "#08080A", // near true black
+  bgElev: "#0D0D0F",
+  card: "#0D0D0F",
+  cardRaised: "#141416",
+  border: "rgba(255,255,255,0.08)", // hairline
+  borderStrong: "rgba(255,255,255,0.16)",
+  text: "#ECECEE", // off-white, not pure
+  textDim: "#8A8A90",
+  textFaint: "#56565C",
+  accent: "#6E8BFF", // used rarely (a dot, a focus ring, a single underline)
+  blue: "#6E8BFF",
   violet: "#8B5CF6",
-  success: "#63D297",
-  warning: "#FFB454",
-  glow: "linear-gradient(135deg, #5B7CFF 0%, #8B5CF6 100%)",
+  success: "#5FB98E",
+  warning: "#D8A24A",
+  // Kept for backwards-compat; the stark UI uses solid white/black buttons, not this.
+  glow: "#ECECEE",
   sans:
     "var(--font-geist), system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
   mono: "var(--font-geist-mono), ui-monospace, 'SF Mono', Menlo, Consolas, monospace",

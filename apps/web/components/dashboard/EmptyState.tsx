@@ -90,7 +90,7 @@ export default function EmptyState() {
   return (
     <div style={wrap}>
       <Ring percent={0.18} size={120} stroke={10} gradId="emptyRing">
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#5B7CFF" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#ECECEE" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 12a9 9 0 1 0 9-9" />
           <path d="M12 7v5l3 2" />
         </svg>

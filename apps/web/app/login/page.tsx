@@ -54,57 +54,30 @@ export default function LoginPage() {
     padding: 24,
     background: signal.bg,
     fontFamily: signal.sans,
-    position: "relative",
-    overflow: "hidden",
-  };
-
-  const glow: CSSProperties = {
-    position: "absolute",
-    top: "-30%",
-    left: "50%",
-    transform: "translateX(-50%)",
-    width: "min(680px, 95vw)",
-    height: 460,
-    background: "radial-gradient(closest-side, rgba(91,124,255,0.25), rgba(139,92,246,0.08) 55%, transparent 75%)",
-    filter: "blur(20px)",
-    pointerEvents: "none",
   };
 
   const cardStyle: CSSProperties = {
-    position: "relative",
     width: "100%",
-    maxWidth: 420,
-    padding: 36,
-    background: signal.card,
-    border: `1px solid ${signal.border}`,
-    borderRadius: 24,
+    maxWidth: 380,
+    padding: 4,
   };
 
   const wordmarkStyle: CSSProperties = {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 9,
-    fontSize: 24,
-    fontWeight: 700,
+    display: "inline-block",
+    fontSize: 22,
+    fontWeight: 600,
     color: signal.text,
     letterSpacing: "-0.01em",
     textDecoration: "none",
-    marginBottom: 6,
-  };
-
-  const dotStyle: CSSProperties = {
-    width: 9,
-    height: 9,
-    borderRadius: "50%",
-    background: signal.glow,
-    boxShadow: `0 0 12px ${signal.blue}`,
+    marginBottom: 8,
   };
 
   const subtitleStyle: CSSProperties = {
     fontFamily: signal.sans,
-    fontSize: 15,
+    fontSize: 14.5,
     color: signal.textDim,
-    marginBottom: 32,
+    marginBottom: 30,
+    lineHeight: 1.5,
   };
 
   const labelStyle: CSSProperties = {
@@ -118,26 +91,26 @@ export default function LoginPage() {
 
   const inputStyle: CSSProperties = {
     width: "100%",
-    padding: 14,
-    borderRadius: 12,
+    padding: 13,
+    borderRadius: 10,
     border: `1px solid ${signal.border}`,
-    background: signal.cardRaised,
+    background: signal.card,
     color: signal.text,
     fontFamily: signal.sans,
-    fontSize: 16,
+    fontSize: 15,
     outline: "none",
     boxSizing: "border-box",
   };
 
   const buttonStyle: CSSProperties = {
     width: "100%",
-    padding: 15,
-    borderRadius: 12,
+    padding: 14,
+    borderRadius: 10,
     border: "none",
-    background: signal.glow,
-    color: "#fff",
+    background: signal.text,
+    color: "#08080A",
     fontFamily: signal.sans,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: 600,
     cursor: isPending ? "not-allowed" : "pointer",
     opacity: isPending ? 0.6 : 1,
@@ -181,10 +154,8 @@ export default function LoginPage() {
 
   return (
     <div style={containerStyle}>
-      <div style={glow} aria-hidden />
       <div style={cardStyle}>
         <Link href="/" style={wordmarkStyle}>
-          <span style={dotStyle} />
           Rinkler
         </Link>
         <div style={subtitleStyle}>Sign in to sync your Focus System. Same account as the app.</div>
@@ -198,8 +169,8 @@ export default function LoginPage() {
                 disabled={oauthBusy !== null}
                 style={{
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-                  width: "100%", height: 48, borderRadius: 12, border: "none",
-                  cursor: oauthBusy ? "default" : "pointer", background: "#fff", color: "#000",
+                  width: "100%", height: 46, borderRadius: 10, border: "none",
+                  cursor: oauthBusy ? "default" : "pointer", background: signal.text, color: "#08080A",
                   fontFamily: signal.sans, fontSize: 15, fontWeight: 600, opacity: oauthBusy ? 0.7 : 1,
                 }}
               >
@@ -212,8 +183,8 @@ export default function LoginPage() {
                 disabled={oauthBusy !== null}
                 style={{
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-                  width: "100%", height: 48, borderRadius: 12, cursor: oauthBusy ? "default" : "pointer",
-                  background: signal.cardRaised, color: signal.text, border: `1px solid ${signal.border}`,
+                  width: "100%", height: 46, borderRadius: 10, cursor: oauthBusy ? "default" : "pointer",
+                  background: "transparent", color: signal.text, border: `1px solid ${signal.borderStrong}`,
                   fontFamily: signal.sans, fontSize: 15, fontWeight: 600, opacity: oauthBusy ? 0.7 : 1,
                 }}
               >
