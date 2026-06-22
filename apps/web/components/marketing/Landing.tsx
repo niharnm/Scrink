@@ -167,7 +167,7 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
         </div>
         <div style={footerLinks} className="nav-links">
           <Link href="/privacy" style={navLink}>Privacy</Link>
-          <a href="mailto:hello@rinkler.app" style={navLink}>Support</a>
+          <a href="mailto:nihar.manchikalapudi@gmail.com" style={navLink}>Support</a>
           <Link href="/login" style={navLink}>Log in</Link>
         </div>
         <span style={{ color: signal.textDim, fontSize: 13 }}>© 2026 Rinkler</span>

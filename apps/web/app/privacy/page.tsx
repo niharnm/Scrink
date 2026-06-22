@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: "How Rinkler handles your data: on-device filtering, minimal metadata, no content, no selling.",
 };
 
-const CONTACT = "hello@rinkler.app";
+const CONTACT = "nihar.manchikalapudi@gmail.com";
 const EFFECTIVE = "June 2026";
 
 export default function PrivacyPage() {
