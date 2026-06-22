@@ -191,6 +191,14 @@ final class FocusSystemStore: ObservableObject {
         let d = UserDefaults(suiteName: RinklerConstants.appGroupID)
         hasCompletedOnboarding = d?.bool(forKey: Keys.completed) ?? false
         loadProfile()
+
+        #if DEBUG
+        // Screenshot/QA hook: -obChapter N jumps onboarding to a chapter.
+        let args = ProcessInfo.processInfo.arguments
+        if let i = args.firstIndex(of: "-obChapter"), i + 1 < args.count, let n = Int(args[i + 1]) {
+            chapter = max(0, min(n, Self.chapterCount - 1))
+        }
+        #endif
     }
 
     // MARK: Navigation
@@ -575,7 +583,7 @@ struct OnboardingFlow: View {
                 .font(RinklerFonts.sans(34, .bold))
                 .foregroundStyle(RinklerColors.signalText)
                 .fixedSize(horizontal: false, vertical: true)
-            Text("We'll help you keep the useful parts of your apps — DMs, search, messages — and block the parts designed to pull you in.")
+            Text("Takes a minute. We'll figure out what's eating your time, then set things up so the endless feeds are gone but the stuff you actually use — DMs, search, all that — still works.")
                 .font(RinklerFonts.sans(16, .regular))
                 .foregroundStyle(RinklerColors.signalTextDim)
                 .fixedSize(horizontal: false, vertical: true)
@@ -597,8 +605,8 @@ struct OnboardingFlow: View {
     }
 
     private var trapsChapter: some View {
-        chapterScaffold(title: "Which parts pull you in the most?",
-                        subtitle: "Pick all that apply. These are the surfaces we'll cut.") {
+        chapterScaffold(title: "What sucks you in the most?",
+                        subtitle: "Pick whatever's true — these are the parts we'll cut.") {
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(Trap.allCases) { trap in
                     SelectChip(label: trap.title, selected: focusSystem.traps.contains(trap)) {
@@ -610,8 +618,8 @@ struct OnboardingFlow: View {
     }
 
     private var keepChapter: some View {
-        chapterScaffold(title: "What should always stay available?",
-                        subtitle: "We're not deleting your phone — we separate useful from addictive.") {
+        chapterScaffold(title: "What do you want to keep?",
+                        subtitle: "We're not nuking your apps — just the time-sink parts. The rest stays.") {
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(KeepItem.allCases) { item in
                     SelectChip(label: item.title, selected: focusSystem.keeps.contains(item)) {
@@ -623,7 +631,7 @@ struct OnboardingFlow: View {
     }
 
     private var goalChapter: some View {
-        chapterScaffold(title: "What are you trying to protect?",
+        chapterScaffold(title: "What are you trying to get back?",
                         subtitle: "Pick what matters most right now.") {
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(Goal.allCases) { goal in
@@ -636,8 +644,8 @@ struct OnboardingFlow: View {
     }
 
     private var dangerChapter: some View {
-        chapterScaffold(title: "When do you usually lose control?",
-                        subtitle: "We'll guard these windows automatically.") {
+        chapterScaffold(title: "When do you usually fall in?",
+                        subtitle: "We'll lock things down automatically during these times.") {
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(DangerTime.allCases) { time in
                     SelectChip(label: time.title, selected: focusSystem.dangerTimes.contains(time)) {
@@ -649,8 +657,8 @@ struct OnboardingFlow: View {
     }
 
     private var difficultyChapter: some View {
-        chapterScaffold(title: "How strict should we be?",
-                        subtitle: "You can change this per rule later.") {
+        chapterScaffold(title: "How hard should we go?",
+                        subtitle: "You can change this anytime.") {
             VStack(spacing: 12) {
                 ForEach(Difficulty.allCases) { level in
                     Button { focusSystem.difficulty = level } label: {
@@ -685,8 +693,8 @@ struct OnboardingFlow: View {
     }
 
     private var permissionChapter: some View {
-        chapterScaffold(title: "Arm your attention shield",
-                        subtitle: "Rinkler filters traffic locally on this device — nothing leaves your phone. iOS will ask to add a VPN configuration. That's what does the blocking.") {
+        chapterScaffold(title: "Quick heads up about the “VPN”",
+                        subtitle: "To block stuff inside your apps, Rinkler runs a filter right here on your phone. The catch: iOS makes any on-device filter show up as a “VPN,” so the next tap asks to add one. It's not a real VPN — nothing leaves your phone, and we can't see your traffic. It's just the only switch Apple gives us to do the blocking.") {
             VStack(spacing: RinklerSpacing.md) {
                 SignalRing(progress: 0.66, lineWidth: 10) {
                     Image(systemName: "shield.lefthalf.filled")
@@ -696,7 +704,7 @@ struct OnboardingFlow: View {
                 .frame(width: 150, height: 150)
                 .padding(.vertical, RinklerSpacing.md)
 
-                Text("Allow it on the next screen so your rules can actually hold.")
+                Text("Tap below, then hit Allow when iOS asks. That's the thing that lets Rinkler actually block stuff.")
                     .font(RinklerFonts.sans(14, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
                     .multilineTextAlignment(.center)
@@ -705,7 +713,7 @@ struct OnboardingFlow: View {
     }
 
     private var revealChapter: some View {
-        chapterScaffold(title: "Your Focus System is ready.",
+        chapterScaffold(title: "Done — here's your setup.",
                         subtitle: rulesSummaryLine) {
             VStack(spacing: RinklerSpacing.lg) {
                 SignalRing(progress: Double(focusSystem.signalScore) / 100.0, lineWidth: 12) {
@@ -739,7 +747,7 @@ struct OnboardingFlow: View {
             }
             .frame(width: 150, height: 150)
 
-            Text("First Signal Ring unlocked")
+            Text("Nice — first ring earned")
                 .font(RinklerFonts.sans(22, .semibold))
                 .foregroundStyle(RinklerColors.signalText)
             Text("Setup Complete. Start with 10 minutes and win your first ring.")
@@ -887,10 +895,10 @@ struct OnboardingFlow: View {
 
     private var ctaTitle: String {
         switch focusSystem.chapter {
-        case 0: return "Build My Focus System"
-        case 6: return "Allow & Continue"
-        case 7: return "Save My System"
-        case FocusSystemStore.chapterCount - 1: return "Start First Session"
+        case 0: return "Let's go"
+        case 6: return "Turn on the filter"
+        case 7: return "Save my setup"
+        case FocusSystemStore.chapterCount - 1: return "Start my first session"
         default: return "Continue"
         }
     }
