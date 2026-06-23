@@ -34,6 +34,10 @@ enum RinklerConstants {
     static let udpRelayTimeout: TimeInterval = 5.0
     static let tcpRelayTimeout: TimeInterval = 120.0
     static let maxConnections = 500
+    // Each FWD_UDP datagram spins up a transient outbound NWConnection + timeout
+    // timer. Without a cap, a client that streams many UDP frames over one TCP
+    // connection can exhaust sockets/timers and starve the serial relay queue.
+    static let maxConcurrentUDPRelays = 256
     static let statsInterval: TimeInterval = 10.0
 
     // MARK: - QUIC / UDP Blocking

@@ -52,6 +52,7 @@ final class SOCKSProxyServer {
     private let log = TunnelLogger.shared
     private var connectionCount = 0      // total connections ever (used as ID)
     private var activeConnectionCount = 0 // currently open connections
+    private var activeUDPRelays = 0       // in-flight FWD_UDP relays (queue-confined)
 
     // Thread-safe actual port (written on queue, read from outside)
     private let _actualPort = OSAllocatedUnfairLock(initialState: UInt16(0))
@@ -255,7 +256,11 @@ final class SOCKSProxyServer {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         guard let data = try? encoder.encode(trafficData) else { return }
-        try? data.write(to: fileURL, options: .atomic)
+        // This file holds browsing metadata (per-connection hosts + SNI). Protect it
+        // at rest with the strongest class compatible with a tunnel that must keep
+        // writing while the device is locked: .completeUnlessOpen lets us create/append
+        // while locked but keeps the file encrypted when it isn't already open.
+        try? data.write(to: fileURL, options: [.atomic, .completeFileProtectionUnlessOpen])
     }
 
     // MARK: - Connection Handling
@@ -555,7 +560,18 @@ final class SOCKSProxyServer {
             return
         }
 
+        // Bound concurrent UDP relays so a flood of frames over one TCP connection
+        // can't exhaust sockets/timers and starve the serial queue. Drop this
+        // datagram (UDP is lossy by design) and keep reading the next frame.
+        guard activeUDPRelays < RinklerConstants.maxConcurrentUDPRelays else {
+            self.log.log("UDP #\(id): relay limit reached (\(activeUDPRelays)/\(RinklerConstants.maxConcurrentUDPRelays)), dropping datagram")
+            self.statsErrors += 1
+            self.readUDPFrameLength(client: client, id: id)
+            return
+        }
+
         let udp = NWConnection(host: NWEndpoint.Host(host), port: nwPort, using: .udp)
+        activeUDPRelays += 1
 
         // Guard against double-continuation from timeout vs completion race
         var completed = false
@@ -563,6 +579,7 @@ final class SOCKSProxyServer {
             self?.queue.async {
                 guard let self = self, !completed else { return }
                 completed = true
+                self.activeUDPRelays -= 1
                 udp.cancel()
 
                 if let frame = responseFrame {
