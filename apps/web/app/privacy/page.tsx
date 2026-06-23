@@ -75,6 +75,7 @@ const sections: { title: string; body: Block[] }[] = [
         "We do not read the contents of your messages, posts, photos, or the pages you visit.",
         "To show your dashboard and sync settings, we store a small amount of metadata about blocked connections (destination hostnames, byte counts, timestamps, block status), tied to your account.",
         "We use Supabase (database + auth) and Apple / Google sign-in. We do not sell your data or use it for ads.",
+        "If you turn on Automatic Mode, Rinkler reads a few Apple Health metrics on your device only — they're never sent to us or anyone else.",
       ],
     ],
   },
@@ -97,6 +98,7 @@ const sections: { title: string; body: Block[] }[] = [
         "Aggregate summaries (counts and time saved)",
       ],
       "Focus settings — your rules, schedules, strictness, streaks, and session history (stored on your device and, if signed in, synced to your account).",
+      "Health data (only if you turn on Automatic Mode) — with your permission, Rinkler reads Apple Health metrics like heart-rate variability, resting heart rate, and activity (steps, exercise, Move) to spot stressed or low-movement moments and tighten your limits on their own. This is processed entirely on your device; raw health data is never uploaded, never sent to our servers, and never leaves your phone. Only a derived baseline is kept locally. You can turn it off any time in Settings or revoke access in the Health app.",
       "We do NOT collect the contents of your traffic, messages, posts, photos, browsing, full URLs, request bodies, packet contents, your location, contacts, microphone, or camera.",
     ],
   },
@@ -110,7 +112,7 @@ const sections: { title: string; body: Block[] }[] = [
   {
     title: "Retention & deletion",
     body: [
-      "Usage metadata is retained to show your history and is bounded over time. You can delete your account and associated data by emailing us. Deleting the app removes on-device data (rules, history, the VPN configuration).",
+      "Usage metadata is retained to show your history and is bounded over time. You can permanently delete your account and all its data right in the app — Settings → Account → Request account deletion (we email you a code to confirm) — or by emailing us. Deleting the app removes on-device data (rules, history, the VPN configuration).",
     ],
   },
   {

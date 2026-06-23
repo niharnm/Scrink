@@ -29,6 +29,7 @@ enum LegalContent {
                     "We do not read the contents of your messages, posts, photos, or the pages you visit.",
                     "To show your dashboard and sync settings, we store a small amount of metadata about blocked connections (destination hostnames, byte counts, timestamps, block status), tied to your account.",
                     "We use Supabase (database + auth) and Apple / Google sign-in. We do not sell your data or use it for ads.",
+                    "If you turn on Automatic Mode, Rinkler reads a few Apple Health metrics on your device only — they're never sent to us or anyone else.",
                 ]),
             ]),
             ("How the on-device filter works", [
@@ -45,6 +46,7 @@ enum LegalContent {
                     "Aggregate summaries (counts and time saved)",
                 ]),
                 .text("Focus settings — your rules, schedules, strictness, streaks, and session history (stored on your device and, if signed in, synced to your account)."),
+                .text("Health data (only if you turn on Automatic Mode) — with your permission, Rinkler reads Apple Health metrics like heart-rate variability, resting heart rate, and activity (steps, exercise, Move) to spot stressed or low-movement moments and tighten your limits on their own. This is processed entirely on your device; raw health data is never uploaded, never sent to our servers, and never leaves your phone. Only a derived baseline is kept locally. You can turn it off any time in Settings or revoke access in the Health app."),
                 .text("We do NOT collect the contents of your traffic, messages, posts, photos, browsing, full URLs, request bodies, packet contents, your location, contacts, microphone, or camera."),
             ]),
             ("Who we share it with", [
@@ -52,7 +54,7 @@ enum LegalContent {
                 .text("Optional AI insights (off by default): Rinkler can generate written insights from your aggregate dashboard stats using a third-party AI provider. This is disabled by default and only runs if you explicitly opt in; only aggregate numbers, never raw events or content, are sent."),
             ]),
             ("Retention & deletion", [
-                .text("Usage metadata is retained to show your history and is bounded over time. You can delete your account and associated data by emailing us. Deleting the app removes on-device data (rules, history, the VPN configuration)."),
+                .text("Usage metadata is retained to show your history and is bounded over time. You can permanently delete your account and all its data right in the app — Settings → Account → Request account deletion (we email you a code to confirm) — or by emailing us. Deleting the app removes on-device data (rules, history, the VPN configuration)."),
             ]),
             ("Security", [
                 .text("Auth tokens are stored in the iOS Keychain. Connections to our backend use HTTPS/TLS. Database access is restricted per-user with row-level security, so you can only read your own data."),
@@ -71,7 +73,7 @@ enum LegalContent {
 
     static let terms = Doc(
         title: "Terms of Service",
-        lead: "The plain-English version is first; the rest fills in the details. Questions? Email \(contactEmail).",
+        lead: "These terms cover your use of Rinkler. By using the app or this site, you agree to them — if you don't agree, please don't use Rinkler. The plain-English version is first; the rest fills in the details. Questions? Email \(contactEmail).",
         sections: [
             ("The short version", [
                 .bullets([
