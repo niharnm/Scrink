@@ -73,6 +73,8 @@ struct RinklerApp: App {
                     NavigationStack { ControlScreen() }
                 } else if previewScreen == "apps" {
                     NavigationStack { AppsScreen() }
+                } else if previewScreen == "progress" {
+                    NavigationStack { ProgressScreen() }
                 } else if previewScreen == "friend" {
                     NavigationStack { FriendControlScreen() }
                 } else if previewScreen == "signin" {
