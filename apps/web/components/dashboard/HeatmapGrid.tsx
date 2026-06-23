@@ -5,6 +5,7 @@ import { theme } from "@/lib/theme";
 
 interface HeatmapGridProps {
   data: number[][];
+  title?: string;
 }
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -18,7 +19,7 @@ function intensityToColor(value: number): string {
   return `rgba(255,255,255,${(0.035 + v * 0.62).toFixed(3)})`;
 }
 
-export default function HeatmapGrid({ data }: HeatmapGridProps) {
+export default function HeatmapGrid({ data, title = "Activity Heatmap" }: HeatmapGridProps) {
   const cardStyle: CSSProperties = {
     background: theme.colors.white10,
     borderRadius: 20,
@@ -68,7 +69,7 @@ export default function HeatmapGrid({ data }: HeatmapGridProps) {
 
   return (
     <div style={cardStyle}>
-      <div style={titleStyle}>Activity Heatmap</div>
+      <div style={titleStyle}>{title}</div>
       <div style={gridStyle}>
         <div />
         {HOURS.map((h, i) => (
