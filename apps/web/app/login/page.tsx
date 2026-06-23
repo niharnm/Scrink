@@ -13,6 +13,56 @@ type TurnstileApi = {
 };
 const getTurnstile = () => (window as unknown as { turnstile?: TurnstileApi }).turnstile;
 
+// Two swordsmen ambush the captcha the moment it clears, chase it off-screen, then
+// shove the header back into place. Pure CSS choreography, ~2.2s, reduced-motion safe.
+const CAPTCHA_CSS = `
+@keyframes rinkPulse{0%,100%{opacity:1}50%{opacity:.3}}
+.cap-wrap{overflow:hidden}
+.cap-wrap.dying{animation:capCollapse 2.2s ease forwards}
+@keyframes capCollapse{0%,72%{max-height:60px;opacity:1;margin-bottom:14px}100%{max-height:0;opacity:0;margin-bottom:0}}
+.cap-chip{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;border:1px solid ${signal.border};background:${signal.card};margin-bottom:14px}
+.cap-chip.ok{border-color:rgba(91,209,122,.35)}
+.cap-chip.dying{animation:capDie 2.2s ease-in forwards}
+@keyframes capDie{0%,34%{transform:none;opacity:1}40%{transform:translateX(-7px) rotate(-4deg)}47%{transform:translateX(9px) rotate(4deg)}54%{transform:translateX(-5px) rotate(-3deg)}60%{transform:translateX(3px) rotate(2deg)}70%{transform:translate(150%,-12%) rotate(40deg);opacity:.85}100%{transform:translate(195%,28%) rotate(72deg);opacity:0}}
+.cap-dot{width:8px;height:8px;border-radius:50%;background:${signal.textDim};flex-shrink:0;animation:rinkPulse 1.4s ease-in-out infinite}
+.cap-check{color:#5BD17A;font-size:14px;font-weight:700;flex-shrink:0}
+.cap-text{font-size:13.5px;color:${signal.textDim};flex:1}
+.cap-text.ok{color:${signal.text}}
+.cap-brand{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.32)}
+.rink-hdr.shoved{animation:hdrShove 2.2s ease forwards}
+@keyframes hdrShove{0%,80%{transform:translateY(0)}87%{transform:translateY(11px)}94%{transform:translateY(-3px)}100%{transform:translateY(0)}}
+.slay-overlay{position:absolute;left:0;right:0;top:92px;height:50px;pointer-events:none;z-index:5}
+.runner{position:absolute;top:0;left:50%}
+.runner.l{animation:slayL 2.2s cubic-bezier(.4,0,.45,1) forwards}
+.runner.r{animation:slayR 2.2s cubic-bezier(.4,0,.45,1) forwards}
+@keyframes slayL{0%{transform:translate(-210px,0);opacity:0}10%{opacity:1}30%{transform:translate(-62px,0)}40%{transform:translate(-54px,-3px)}52%{transform:translate(-62px,0)}72%{transform:translate(-62px,0);opacity:1}87%{transform:translate(-36px,-150px);opacity:1}100%{transform:translate(-28px,-250px);opacity:0}}
+@keyframes slayR{0%{transform:translate(210px,0) scaleX(-1);opacity:0}10%{opacity:1}30%{transform:translate(30px,0) scaleX(-1)}40%{transform:translate(22px,-3px) scaleX(-1)}52%{transform:translate(30px,0) scaleX(-1)}72%{transform:translate(30px,0) scaleX(-1);opacity:1}87%{transform:translate(6px,-150px) scaleX(-1);opacity:1}100%{transform:translate(-2px,-250px) scaleX(-1);opacity:0}}
+.legA{transform-origin:17px 30px;animation:legSwA .26s linear infinite}
+.legB{transform-origin:17px 30px;animation:legSwB .26s linear infinite}
+@keyframes legSwA{0%,100%{transform:rotate(18deg)}50%{transform:rotate(-18deg)}}
+@keyframes legSwB{0%,100%{transform:rotate(-18deg)}50%{transform:rotate(18deg)}}
+.sword-arm{transform-origin:17px 19px;animation:slash 2.2s ease forwards}
+@keyframes slash{0%,32%{transform:rotate(0)}37%{transform:rotate(-70deg)}44%{transform:rotate(55deg)}52%{transform:rotate(0)}100%{transform:rotate(0)}}
+@media (prefers-reduced-motion:reduce){.cap-wrap.dying,.cap-chip.dying,.rink-hdr.shoved,.runner.l,.runner.r,.sword-arm,.legA,.legB,.cap-dot{animation:none}}
+`;
+
+function Stickman() {
+  return (
+    <svg width="32" height="42" viewBox="0 0 40 48" fill="none" stroke="#ECECEE" strokeWidth="2.3" strokeLinecap="round" aria-hidden>
+      <circle cx="17" cy="9" r="5.5" fill="#ECECEE" stroke="none" />
+      <line x1="17" y1="14.5" x2="17" y2="30" />
+      <line className="legA" x1="17" y1="30" x2="10" y2="45" />
+      <line className="legB" x1="17" y1="30" x2="24" y2="45" />
+      <line x1="17" y1="20" x2="8" y2="26" />
+      <g className="sword-arm">
+        <line x1="17" y1="19" x2="29" y2="14" />
+        <line x1="29" y1="14" x2="38" y2="5" strokeWidth="2.7" />
+        <line x1="27" y1="16.5" x2="31" y2="12.5" />
+      </g>
+    </svg>
+  );
+}
+
 export default function LoginPage() {
   const [requestState, requestAction, requestPending] = useActionState(requestEmailCode, null);
   const [verifyState, verifyAction, verifyPending] = useActionState(verifyEmailCode, null);
@@ -26,6 +76,7 @@ export default function LoginPage() {
   const widgetId = useRef<string | null>(null);
   // When a captcha is configured, hold actions until we have a token.
   const captchaReady = !siteKey || captchaToken.length > 0;
+  const [slay, setSlay] = useState<"idle" | "run" | "done">("idle");
 
   // Render the Turnstile widget once its script loads (explicit mode).
   const renderTurnstile = () => {
@@ -37,6 +88,10 @@ export default function LoginPage() {
       "expired-callback": () => setCaptchaToken(""),
       "error-callback": () => setCaptchaToken(""),
       theme: "dark",
+      size: "flexible",
+      // Invisible for normal visitors — only suspicious traffic ever sees a box.
+      // We surface our own status chip instead of the default Cloudflare widget.
+      appearance: "interaction-only",
     });
   };
 
@@ -78,6 +133,18 @@ export default function LoginPage() {
       setCaptchaToken("");
     }
   }, [requestState]);
+  // The little ambush: the first time the captcha clears, send in the swordsmen.
+  useEffect(() => {
+    if (!captchaToken || slay !== "idle") return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      setSlay("done");
+      return;
+    }
+    setSlay("run");
+    const id = setTimeout(() => setSlay("done"), 2400);
+    return () => clearTimeout(id);
+  }, [captchaToken, slay]);
 
   const containerStyle: CSSProperties = {
     display: "flex",
@@ -94,6 +161,7 @@ export default function LoginPage() {
     width: "100%",
     maxWidth: 380,
     padding: 4,
+    position: "relative",
   };
 
   const wordmarkStyle: CSSProperties = {
@@ -189,23 +257,46 @@ export default function LoginPage() {
   return (
     <div style={containerStyle}>
       <div style={cardStyle}>
-        <Link href="/" style={wordmarkStyle}>
-          Rinkler
-        </Link>
-        <div style={subtitleStyle}>
-          hop on the waitlist. Rinkler drops July 10, and youll be first to know the second its ready.
+        <div className={slay === "run" ? "rink-hdr shoved" : "rink-hdr"}>
+          <Link href="/" style={wordmarkStyle}>
+            Rinkler
+          </Link>
+          <div style={subtitleStyle}>
+            hop on the waitlist. Rinkler drops July 10, and youll be first to know the second its ready.
+          </div>
         </div>
 
         {!shouldEnterCode && (
           <>
             {siteKey && (
               <>
+                <style>{CAPTCHA_CSS}</style>
                 <Script
                   src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
                   strategy="afterInteractive"
                   onLoad={renderTurnstile}
                 />
-                <div ref={widgetRef} style={{ marginBottom: 14 }} />
+                {slay !== "done" && (
+                  <div className={slay === "run" ? "cap-wrap dying" : "cap-wrap"}>
+                    <div className={`cap-chip${captchaToken ? " ok" : ""}${slay === "run" ? " dying" : ""}`}>
+                      {captchaToken ? <span className="cap-check">✓</span> : <span className="cap-dot" />}
+                      <span className={`cap-text${captchaToken ? " ok" : ""}`}>
+                        {captchaToken ? "youre human, nice" : "making sure youre human…"}
+                      </span>
+                      <span className="cap-brand">Cloudflare</span>
+                    </div>
+                  </div>
+                )}
+                {/* Turnstile renders here — kept mounted so tokens keep refreshing.
+                    Invisible for normal visitors (interaction-only); a real challenge,
+                    if ever needed, shows up here dark + full-width. */}
+                <div ref={widgetRef} />
+                {slay === "run" && (
+                  <div className="slay-overlay" aria-hidden>
+                    <div className="runner l"><Stickman /></div>
+                    <div className="runner r"><Stickman /></div>
+                  </div>
+                )}
               </>
             )}
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
