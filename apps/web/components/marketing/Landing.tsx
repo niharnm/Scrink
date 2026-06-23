@@ -154,23 +154,7 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
                 {compareGood.map((t) => <CompareRow key={t} text={t} good />)}
               </div>
             </div>
-          </section>
-        </Reveal>
-
-        <Rule />
-
-        {/* Your one screen time app */}
-        <Reveal>
-          <section style={section}>
-            <h2 style={h2}>your one screen time app.</h2>
-            <p style={statement}>
-              every other app out there does one thing: block the whole app. cool,
-              but now you cant text your friend either. Rinkler can do that when you
-              want, but it also goes inside the apps and takes just the parts that
-              hook you, like Reels and the For You page, while your messages, search
-              and posts all keep working.
-            </p>
-            <p style={{ ...statement, color: signal.text, marginTop: 18 }}>
+            <p style={{ ...statement, color: signal.text, marginTop: 30 }}>
               block whole apps, or just the feeds inside them. its all yours.
             </p>
           </section>
@@ -190,23 +174,6 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
                     <div style={stepTitle}>{s.title}</div>
                     <div style={stepBody}>{s.body}</div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        </Reveal>
-
-        <Rule />
-
-        {/* Honest */}
-        <Reveal>
-          <section style={section}>
-            <h2 style={h2}>how it actually works.</h2>
-            <div style={featGrid} className="feat-grid">
-              {features.map((f) => (
-                <div key={f.title}>
-                  <div style={featTitle}>{f.title}</div>
-                  <div style={featBody}>{f.body}</div>
                 </div>
               ))}
             </div>
@@ -339,12 +306,6 @@ const howSteps = [
   { title: "start whenever you want", body: "one tap and youre in. go easy on yourself, or lock in deep when you really need to, totally your call. it runs on a schedule too, so its already working even when you forget about it." },
   { title: "watch it add up", body: "real time you got back, real feeds it caught for you. build a streak, feel it stack up. no fake numbers, and zero lecture when you slip, because honestly we all do." },
 ];
-const features = [
-  { title: "it stays with you", body: "everything runs right on your phone. your stuff never leaves it, and we genuinely never see whats inside." },
-  { title: "it cuts the feed, not the app", body: "it goes after the endless feed, not your whole phone, so every part you actually use still works." },
-  { title: "it shows up on time", body: "your windows kick in on their own, even with the app closed, so its already there right when youd usually cave." },
-  { title: "it keeps it real", body: "every number comes straight from your phone, measured not guessed. real time saved, and no lecture on your off days." },
-];
 
 /* ---------- styles ---------- */
 const page: CSSProperties = { background: signal.bg, color: signal.text, fontFamily: signal.sans, minHeight: "100vh" };
@@ -424,9 +385,6 @@ const stepNum: CSSProperties = { fontFamily: signal.mono, fontSize: 14, color: s
 const stepTitle: CSSProperties = { fontSize: 19, fontWeight: 600, color: signal.text, letterSpacing: "-0.01em" };
 const stepBody: CSSProperties = { fontSize: 15, lineHeight: 1.6, color: signal.textDim, marginTop: 8 };
 
-const featGrid: CSSProperties = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px 56px", marginTop: 44 };
-const featTitle: CSSProperties = { fontSize: 17, fontWeight: 600, color: signal.text, marginBottom: 8, letterSpacing: "-0.01em" };
-const featBody: CSSProperties = { fontSize: 14.5, lineHeight: 1.6, color: signal.textDim };
 
 const quote: CSSProperties = { fontSize: "clamp(20px, 2.8vw, 28px)", lineHeight: 1.45, color: signal.text, maxWidth: 820, fontWeight: 400, letterSpacing: "-0.01em", margin: "20px 0 0" };
 
@@ -458,7 +416,6 @@ const css = `
   @media (max-width: 720px) {
     .compare { grid-template-columns: 1fr !important; }
     .compare-right { padding-left: 0 !important; border-left: 0 !important; border-top: 1px solid ${signal.border}; padding-top: 28px; margin-top: 8px; }
-    .feat-grid { grid-template-columns: 1fr !important; }
     .nav-links a:not(:last-child) { display: none; }
     .br-hide { display: none; }
   }
