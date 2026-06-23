@@ -13,20 +13,21 @@ type TurnstileApi = {
 };
 const getTurnstile = () => (window as unknown as { turnstile?: TurnstileApi }).turnstile;
 
-// Easter egg: when the captcha clears, two swordsmen charge in, chase it off-screen,
-// then run up and around to shove the header back into place. If it gets rejected,
-// a lone swordsman whiffs, the captcha dodges, and you try again. Pure CSS,
-// reduced-motion safe. Kill ~3.4s, reject ~1.9s.
+// Easter egg: when the captcha clears, two swordsmen charge in, collide with the
+// block, climb around its ends (rotating as they scale the sides), run across the
+// top, slash it off, then shove the header back into place. If it gets rejected, a
+// lone swordsman whiffs, the captcha dodges, and you go again. Pure CSS,
+// reduced-motion safe. Kill ~3.8s, reject ~1.9s.
 const CAPTCHA_CSS = `
 @keyframes rinkPulse{0%,100%{opacity:1}50%{opacity:.3}}
 .cap-wrap{overflow:hidden}
-.cap-wrap.dying{animation:capCollapse 3.4s ease forwards}
-@keyframes capCollapse{0%,52%{max-height:60px;opacity:1;margin-bottom:14px}60%,100%{max-height:0;opacity:0;margin-bottom:0}}
+.cap-wrap.dying{animation:capCollapse 3.8s ease forwards}
+@keyframes capCollapse{0%,64%{max-height:60px;opacity:1;margin-bottom:14px}72%,100%{max-height:0;opacity:0;margin-bottom:0}}
 .cap-chip{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;border:1px solid ${signal.border};background:${signal.card};margin-bottom:14px}
 .cap-chip.ok{border-color:rgba(91,209,122,.35)}
 .cap-chip.bad{border-color:rgba(255,107,107,.5)}
-.cap-chip.dying{animation:capDie 3.4s ease-in forwards}
-@keyframes capDie{0%,20%{transform:none;opacity:1}26%{transform:translateX(-7px) rotate(-4deg)}31%{transform:translateX(9px) rotate(4deg)}37%{transform:translateX(-6px) rotate(-3deg)}43%{transform:translateX(4px) rotate(2deg)}52%{transform:translate(150%,-12%) rotate(40deg);opacity:.85}60%,100%{transform:translate(210%,30%) rotate(80deg);opacity:0}}
+.cap-chip.dying{animation:capDie 3.8s ease-in forwards;transform-origin:center}
+@keyframes capDie{0%,14%{transform:none;opacity:1}18%{transform:scaleX(.95)}24%{transform:scaleX(1)}50%{transform:translateX(-3px) rotate(-2deg)}56%{transform:translateX(3px) rotate(2deg)}60%{transform:translateX(-4px) rotate(-2deg)}64%{transform:translate(45%,55%) rotate(22deg);opacity:.9}80%,100%{transform:translate(175%,150%) rotate(66deg);opacity:0}}
 .cap-chip.dodging{animation:capDodge 1.9s ease}
 @keyframes capDodge{0%,24%{transform:none}30%{transform:translate(13px,-5px) rotate(2deg)}38%{transform:translateX(-4px)}46%{transform:translateX(4px)}54%{transform:translateX(-6px)}62%{transform:translateX(5px)}70%{transform:translateX(-3px)}100%{transform:none}}
 .cap-dot{width:8px;height:8px;border-radius:50%;background:${signal.textDim};flex-shrink:0;animation:rinkPulse 1.4s ease-in-out infinite}
@@ -36,26 +37,26 @@ const CAPTCHA_CSS = `
 .cap-text.ok{color:${signal.text}}
 .cap-text.bad{color:#FF8C8C}
 .cap-brand{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.32)}
-.rink-hdr.shoved{animation:hdrShove 3.4s ease forwards}
-@keyframes hdrShove{0%,78%{transform:translateY(0)}85%{transform:translateY(16px)}92%{transform:translateY(-4px)}100%{transform:translateY(0)}}
+.rink-hdr.shoved{animation:hdrShove 3.8s ease forwards}
+@keyframes hdrShove{0%,82%{transform:translateY(0)}88%{transform:translateY(16px)}94%{transform:translateY(-4px)}100%{transform:translateY(0)}}
 .slay-overlay{position:absolute;left:0;right:0;top:92px;height:50px;pointer-events:none;z-index:5}
 .runner{position:absolute;top:0;left:50%}
 .bob{display:inline-block;animation:bob .24s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-.runner.l{animation:slayL 3.4s linear forwards}
-.runner.r{animation:slayR 3.4s linear forwards}
+.runner.l{animation:slayL 3.8s linear forwards}
+.runner.r{animation:slayR 3.8s linear forwards}
 .runner.whiff{animation:whiff 1.9s ease-in forwards}
-@keyframes slayL{0%{transform:translate(-210px,0);opacity:0}8%{opacity:1}22%{transform:translate(-62px,0)}28%{transform:translate(-52px,-3px)}34%{transform:translate(-62px,0)}48%{transform:translate(-142px,6px)}60%{transform:translate(-150px,-72px)}70%{transform:translate(-118px,-132px)}80%{transform:translate(-72px,-150px)}86%{transform:translate(-64px,-134px)}92%{transform:translate(-92px,-148px)}100%{transform:translate(-205px,-160px);opacity:0}}
-@keyframes slayR{0%{transform:translate(210px,0) scaleX(-1);opacity:0}8%{opacity:1}22%{transform:translate(30px,0) scaleX(-1)}28%{transform:translate(20px,-3px) scaleX(-1)}34%{transform:translate(30px,0) scaleX(-1)}48%{transform:translate(110px,6px) scaleX(-1)}60%{transform:translate(118px,-72px) scaleX(-1)}70%{transform:translate(86px,-132px) scaleX(-1)}80%{transform:translate(40px,-150px) scaleX(-1)}86%{transform:translate(32px,-134px) scaleX(-1)}92%{transform:translate(60px,-148px) scaleX(-1)}100%{transform:translate(173px,-160px) scaleX(-1);opacity:0}}
+@keyframes slayL{0%{transform:translate(-230px,18px) rotate(0);opacity:0}6%{opacity:1}18%{transform:translate(-184px,18px) rotate(0)}21%{transform:translate(-196px,18px)}25%{transform:translate(-182px,18px)}33%{transform:translate(-176px,-6px) rotate(-55deg)}40%{transform:translate(-168px,-30px) rotate(-90deg)}45%{transform:translate(-150px,-34px) rotate(0)}57%{transform:translate(-44px,-34px) rotate(0)}61%{transform:translate(-34px,-30px)}66%{transform:translate(-44px,-34px)}76%{transform:translate(-64px,-86px)}84%{transform:translate(-72px,-150px)}89%{transform:translate(-64px,-134px)}100%{transform:translate(-205px,-150px);opacity:0}}
+@keyframes slayR{0%{transform:translate(230px,18px) scaleX(-1) rotate(0);opacity:0}6%{opacity:1}18%{transform:translate(184px,18px) scaleX(-1)}21%{transform:translate(196px,18px) scaleX(-1)}25%{transform:translate(182px,18px) scaleX(-1)}33%{transform:translate(176px,-6px) scaleX(-1) rotate(-55deg)}40%{transform:translate(168px,-30px) scaleX(-1) rotate(-90deg)}45%{transform:translate(150px,-34px) scaleX(-1)}57%{transform:translate(44px,-34px) scaleX(-1)}61%{transform:translate(34px,-30px) scaleX(-1)}66%{transform:translate(44px,-34px) scaleX(-1)}76%{transform:translate(64px,-86px) scaleX(-1)}84%{transform:translate(72px,-150px) scaleX(-1)}89%{transform:translate(64px,-134px) scaleX(-1)}100%{transform:translate(205px,-150px) scaleX(-1);opacity:0}}
 @keyframes whiff{0%{transform:translate(-200px,0) rotate(0);opacity:0}12%{opacity:1}30%{transform:translate(-34px,0) rotate(0)}40%{transform:translate(-20px,-4px) rotate(0)}52%{transform:translate(46px,-6px) rotate(18deg)}66%{transform:translate(120px,16px) rotate(150deg)}100%{transform:translate(245px,52px) rotate(350deg);opacity:0}}
 .legA{transform-origin:17px 30px;animation:legSwA .24s linear infinite}
 .legB{transform-origin:17px 30px;animation:legSwB .24s linear infinite}
 @keyframes legSwA{0%,100%{transform:rotate(20deg)}50%{transform:rotate(-20deg)}}
 @keyframes legSwB{0%,100%{transform:rotate(-20deg)}50%{transform:rotate(20deg)}}
 .sword-arm{transform-origin:17px 19px}
-.runner.l .sword-arm,.runner.r .sword-arm{animation:slash 3.4s ease forwards}
+.runner.l .sword-arm,.runner.r .sword-arm{animation:slash 3.8s ease forwards}
 .runner.whiff .sword-arm{animation:slashW 1.9s ease forwards}
-@keyframes slash{0%,22%{transform:rotate(0)}26%{transform:rotate(-70deg)}32%{transform:rotate(55deg)}40%{transform:rotate(0)}100%{transform:rotate(0)}}
+@keyframes slash{0%,57%{transform:rotate(0)}61%{transform:rotate(-72deg)}65%{transform:rotate(58deg)}70%{transform:rotate(0)}100%{transform:rotate(0)}}
 @keyframes slashW{0%,30%{transform:rotate(0)}38%{transform:rotate(-78deg)}46%{transform:rotate(62deg)}56%{transform:rotate(0)}100%{transform:rotate(0)}}
 @media (prefers-reduced-motion:reduce){.cap-wrap.dying,.cap-chip.dying,.cap-chip.dodging,.rink-hdr.shoved,.runner,.bob,.sword-arm,.legA,.legB,.cap-dot{animation:none}}
 `;
@@ -159,7 +160,7 @@ export default function LoginPage() {
       return;
     }
     setPhase("slaying");
-    const id = setTimeout(() => setPhase("won"), 3500);
+    const id = setTimeout(() => setPhase("won"), 3900);
     return () => clearTimeout(id);
   }, [captchaToken, phase]);
   // Rejected/expired: a lone swordsman whiffs, the captcha dodges, you go again.
