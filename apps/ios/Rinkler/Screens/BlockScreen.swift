@@ -16,12 +16,18 @@ struct BlockScreen: View {
     var pullsDodged: Int = 0
     var minutesReclaimed: Int = 0
     var streakDays: Int = 0
+    /// The thing the user said they'd rather be doing (from onboarding goals).
+    /// When set, it's used as a personalized nudge instead of a generic line.
+    var goal: String? = nil
     /// Quiet escape that routes to the gamified unblock. nil hides it.
     var onLetMeIn: (() -> Void)? = nil
     /// Primary "I'm good" dismiss. nil hides it.
     var onDone: (() -> Void)? = nil
 
     @State private var fade = false
+    // Rotate the headline so the block screen never becomes a "loading screen"
+    // people learn to wait out (the #1 way friction blockers go stale).
+    @State private var variant = 0
 
     var body: some View {
         ZStack {
@@ -45,15 +51,25 @@ struct BlockScreen: View {
                     .animation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true), value: fade)
 
                 VStack(spacing: 10) {
-                    Text("\(surface) is quiet now.")
+                    Text(headlines[variant % headlines.count])
                         .font(RinklerFonts.sans(30, .bold))
                         .foregroundStyle(RinklerColors.signalText)
+                        .multilineTextAlignment(.center)
                     Text("Rinkler cut the \(appName) feed. DMs and search still work — there's just nothing left here to suck you in.")
                         .font(RinklerFonts.sans(15, .regular))
                         .foregroundStyle(RinklerColors.signalTextDim)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.horizontal, RinklerSpacing.lg)
+                    if let goal, !goal.isEmpty {
+                        Text("You said you'd rather \(goal). Go do that.")
+                            .font(RinklerFonts.sans(14, .semibold))
+                            .foregroundStyle(RinklerColors.signalBlue)
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.horizontal, RinklerSpacing.lg)
+                            .padding(.top, 2)
+                    }
                 }
 
                 // The win — blocking is a score, not a punishment.
@@ -95,7 +111,20 @@ struct BlockScreen: View {
             }
             .padding(.vertical, RinklerSpacing.xl)
         }
-        .onAppear { fade = true }
+        .onAppear {
+            fade = true
+            variant = Int.random(in: 0..<headlines.count)
+        }
+    }
+
+    private var headlines: [String] {
+        [
+            "\(surface) is quiet now.",
+            "Nothing left to scroll.",
+            "That's the feed — gone.",
+            "Dead air. Nice.",
+            "\(surface)'s off. You're good.",
+        ]
     }
 
     private var timeLabel: String {
@@ -130,5 +159,6 @@ private struct Flatline: Shape {
 
 #Preview {
     BlockScreen(appName: "Instagram", surface: "Reels", pullsDodged: 47,
-                minutesReclaimed: 72, streakDays: 5, onLetMeIn: {}, onDone: {})
+                minutesReclaimed: 72, streakDays: 5, goal: "hit the gym",
+                onLetMeIn: {}, onDone: {})
 }

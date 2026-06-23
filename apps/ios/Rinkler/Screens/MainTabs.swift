@@ -252,6 +252,7 @@ struct AppsScreen: View {
     @EnvironmentObject private var blockedApps: BlockedAppsStore
     @EnvironmentObject private var screenTime: ScreenTimeManager
     @State private var showAppPicker = false
+    @State private var showScreenTimePriming = false
 
     var body: some View {
         ZStack {
@@ -302,7 +303,7 @@ struct AppsScreen: View {
                         .font(RinklerFonts.sans(13, .regular))
                         .foregroundStyle(RinklerColors.signalTextDim)
                         .fixedSize(horizontal: false, vertical: true)
-                    Button { Task { await screenTime.requestAccess(); blockedApps.apply() } } label: {
+                    Button { showScreenTimePriming = true } label: {
                         Text("Connect Screen Time")
                             .font(RinklerFonts.sans(15, .semibold))
                             .foregroundStyle(RinklerColors.signalOnInk)
@@ -311,6 +312,11 @@ struct AppsScreen: View {
                             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                     }
                     .buttonStyle(.plain)
+                    .sheet(isPresented: $showScreenTimePriming) {
+                        ScreenTimePrimingView(onContinue: {
+                            Task { await screenTime.requestAccess(); blockedApps.apply() }
+                        })
+                    }
                 }
                 .padding(RinklerSpacing.md)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -596,6 +602,7 @@ struct ProgressScreen: View {
     @EnvironmentObject private var sessions: FocusSessionStore
     @EnvironmentObject private var screenTime: ScreenTimeManager
     @State private var noiseBlocked = 0
+    @State private var showScreenTimePriming = false
 
     var body: some View {
         ZStack {
@@ -652,7 +659,7 @@ struct ProgressScreen: View {
         } else {
             VStack(alignment: .leading, spacing: 10) {
                 SectionHeader(title: "Your real screen time", subtitle: "Straight from iOS, once you connect it.")
-                Button { Task { await screenTime.requestAccess() } } label: {
+                Button { showScreenTimePriming = true } label: {
                     Text("Connect Screen Time")
                         .font(RinklerFonts.sans(15, .semibold))
                         .foregroundStyle(RinklerColors.signalOnInk)
@@ -661,6 +668,9 @@ struct ProgressScreen: View {
                         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                 }
                 .buttonStyle(.plain)
+                .sheet(isPresented: $showScreenTimePriming) {
+                    ScreenTimePrimingView(onContinue: { Task { await screenTime.requestAccess() } })
+                }
             }
             .padding(RinklerSpacing.md)
             .frame(maxWidth: .infinity, alignment: .leading)

@@ -70,7 +70,8 @@ struct RinklerApp: App {
                     CommitmentUnlockSheet(cooldownSeconds: 8, onConfirm: {}, onCancel: {})
                 } else if previewScreen == "block" {
                     BlockScreen(appName: "Instagram", surface: "Reels", pullsDodged: 47,
-                                minutesReclaimed: 72, streakDays: 5, onLetMeIn: {}, onDone: {})
+                                minutesReclaimed: 72, streakDays: 5, goal: "hit the gym",
+                                onLetMeIn: {}, onDone: {})
                 } else if previewScreen == "settings" {
                     NavigationStack { SettingsScreen() }
                 } else if previewScreen == "privacy" {
@@ -87,6 +88,8 @@ struct RinklerApp: App {
                     NavigationStack { ProgressScreen() }
                 } else if previewScreen == "deleteAccount" {
                     NavigationStack { DeleteAccountScreen(email: "you@example.com", onDeleted: {}) }
+                } else if previewScreen == "priming" {
+                    ScreenTimePrimingView(onContinue: {})
                 } else if previewScreen == "friend" {
                     NavigationStack { FriendControlScreen() }
                 } else if previewScreen == "signin" {

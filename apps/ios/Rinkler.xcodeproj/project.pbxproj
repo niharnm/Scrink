@@ -65,6 +65,7 @@
 		74D38AA0835FB259016D1A68 /* RinklerSpacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D445DCA5E76C2FF20402DDF /* RinklerSpacing.swift */; };
 		77F9B0349A0333FEE6D85B8B /* SkyBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D94A7E9AD636F102CF3E43 /* SkyBackgroundView.swift */; };
 		7BED3440D9549E00072A0124 /* MagicSignInScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 640F7ECB230E7B6AB27CB250 /* MagicSignInScreen.swift */; };
+		7C89568D87C3122F285DCDA0 /* ScreenTimePrimingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E040F910D1BFEAE1B4B956E8 /* ScreenTimePrimingView.swift */; };
 		7D4C592502E7F12816FF2BA6 /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F550C5E5670298216B252FFB /* HomeScreen.swift */; };
 		7D8D76B0058A6D07AEEC75C9 /* TunnelLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21D8AA0B52EFBAE266BFC2DF /* TunnelLogger.swift */; };
 		7F3CB7CA82BFCB3102D024B4 /* TrackedIPStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8087CC6DD4C056AD7AEBBC9 /* TrackedIPStore.swift */; };
@@ -247,6 +248,7 @@
 		DC9716B1D504D1A59B0FCE32 /* GeistMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GeistMono-Medium.ttf"; sourceTree = "<group>"; };
 		DE78B021A4274EC8459E64BD /* AutoModeEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoModeEngine.swift; sourceTree = "<group>"; };
 		DFFFDD9A49FD80D281B6E880 /* LegalContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalContent.swift; sourceTree = "<group>"; };
+		E040F910D1BFEAE1B4B956E8 /* ScreenTimePrimingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimePrimingView.swift; sourceTree = "<group>"; };
 		E4EE26E399F1596B623F8BB7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E59493B9BDCCD2583688AED8 /* RinklerFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RinklerFonts.swift; sourceTree = "<group>"; };
 		E75908C6C04BD7DAF44B8D17 /* RuleRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleRegistry.swift; sourceTree = "<group>"; };
@@ -322,6 +324,7 @@
 				640F7ECB230E7B6AB27CB250 /* MagicSignInScreen.swift */,
 				2E9375C1A18837E3A875E608 /* MainTabs.swift */,
 				32CF084F88F3421AB068BF18 /* Onboarding.swift */,
+				E040F910D1BFEAE1B4B956E8 /* ScreenTimePrimingView.swift */,
 				9016AD0BE2A7D0262A32C72B /* SettingsScreen.swift */,
 				D3F96A181F276717C653F476 /* SplashView.swift */,
 				98C8E4DEC9B061D0555E441A /* StrictModeSetupScreen.swift */,
@@ -744,6 +747,7 @@
 				3CED9570EE158A7A2FE78FB3 /* SVGCache.swift in Sources */,
 				21E479263E0BA27E397CF408 /* SVGView.swift in Sources */,
 				E8F1A5F7DF8E8C3F82A43004 /* ScreenTimeManager.swift in Sources */,
+				7C89568D87C3122F285DCDA0 /* ScreenTimePrimingView.swift in Sources */,
 				3565A8C87FC312BBCA3CE9E6 /* SettingsScreen.swift in Sources */,
 				AEDB8C308DD7DE3769F35A17 /* ShieldController.swift in Sources */,
 				0CC402E2BB108B7B5AFC218B /* SignalBackground.swift in Sources */,
