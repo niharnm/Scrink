@@ -13,37 +13,51 @@ type TurnstileApi = {
 };
 const getTurnstile = () => (window as unknown as { turnstile?: TurnstileApi }).turnstile;
 
-// Two swordsmen ambush the captcha the moment it clears, chase it off-screen, then
-// shove the header back into place. Pure CSS choreography, ~2.2s, reduced-motion safe.
+// Easter egg: when the captcha clears, two swordsmen charge in, chase it off-screen,
+// then run up and around to shove the header back into place. If it gets rejected,
+// a lone swordsman whiffs, the captcha dodges, and you try again. Pure CSS,
+// reduced-motion safe. Kill ~3.4s, reject ~1.9s.
 const CAPTCHA_CSS = `
 @keyframes rinkPulse{0%,100%{opacity:1}50%{opacity:.3}}
 .cap-wrap{overflow:hidden}
-.cap-wrap.dying{animation:capCollapse 2.2s ease forwards}
-@keyframes capCollapse{0%,72%{max-height:60px;opacity:1;margin-bottom:14px}100%{max-height:0;opacity:0;margin-bottom:0}}
+.cap-wrap.dying{animation:capCollapse 3.4s ease forwards}
+@keyframes capCollapse{0%,52%{max-height:60px;opacity:1;margin-bottom:14px}60%,100%{max-height:0;opacity:0;margin-bottom:0}}
 .cap-chip{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;border:1px solid ${signal.border};background:${signal.card};margin-bottom:14px}
 .cap-chip.ok{border-color:rgba(91,209,122,.35)}
-.cap-chip.dying{animation:capDie 2.2s ease-in forwards}
-@keyframes capDie{0%,34%{transform:none;opacity:1}40%{transform:translateX(-7px) rotate(-4deg)}47%{transform:translateX(9px) rotate(4deg)}54%{transform:translateX(-5px) rotate(-3deg)}60%{transform:translateX(3px) rotate(2deg)}70%{transform:translate(150%,-12%) rotate(40deg);opacity:.85}100%{transform:translate(195%,28%) rotate(72deg);opacity:0}}
+.cap-chip.bad{border-color:rgba(255,107,107,.5)}
+.cap-chip.dying{animation:capDie 3.4s ease-in forwards}
+@keyframes capDie{0%,20%{transform:none;opacity:1}26%{transform:translateX(-7px) rotate(-4deg)}31%{transform:translateX(9px) rotate(4deg)}37%{transform:translateX(-6px) rotate(-3deg)}43%{transform:translateX(4px) rotate(2deg)}52%{transform:translate(150%,-12%) rotate(40deg);opacity:.85}60%,100%{transform:translate(210%,30%) rotate(80deg);opacity:0}}
+.cap-chip.dodging{animation:capDodge 1.9s ease}
+@keyframes capDodge{0%,24%{transform:none}30%{transform:translate(13px,-5px) rotate(2deg)}38%{transform:translateX(-4px)}46%{transform:translateX(4px)}54%{transform:translateX(-6px)}62%{transform:translateX(5px)}70%{transform:translateX(-3px)}100%{transform:none}}
 .cap-dot{width:8px;height:8px;border-radius:50%;background:${signal.textDim};flex-shrink:0;animation:rinkPulse 1.4s ease-in-out infinite}
 .cap-check{color:#5BD17A;font-size:14px;font-weight:700;flex-shrink:0}
+.cap-x{color:#FF6B6B;font-size:14px;font-weight:700;flex-shrink:0}
 .cap-text{font-size:13.5px;color:${signal.textDim};flex:1}
 .cap-text.ok{color:${signal.text}}
+.cap-text.bad{color:#FF8C8C}
 .cap-brand{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.32)}
-.rink-hdr.shoved{animation:hdrShove 2.2s ease forwards}
-@keyframes hdrShove{0%,80%{transform:translateY(0)}87%{transform:translateY(11px)}94%{transform:translateY(-3px)}100%{transform:translateY(0)}}
+.rink-hdr.shoved{animation:hdrShove 3.4s ease forwards}
+@keyframes hdrShove{0%,78%{transform:translateY(0)}85%{transform:translateY(16px)}92%{transform:translateY(-4px)}100%{transform:translateY(0)}}
 .slay-overlay{position:absolute;left:0;right:0;top:92px;height:50px;pointer-events:none;z-index:5}
 .runner{position:absolute;top:0;left:50%}
-.runner.l{animation:slayL 2.2s cubic-bezier(.4,0,.45,1) forwards}
-.runner.r{animation:slayR 2.2s cubic-bezier(.4,0,.45,1) forwards}
-@keyframes slayL{0%{transform:translate(-210px,0);opacity:0}10%{opacity:1}30%{transform:translate(-62px,0)}40%{transform:translate(-54px,-3px)}52%{transform:translate(-62px,0)}72%{transform:translate(-62px,0);opacity:1}87%{transform:translate(-36px,-150px);opacity:1}100%{transform:translate(-28px,-250px);opacity:0}}
-@keyframes slayR{0%{transform:translate(210px,0) scaleX(-1);opacity:0}10%{opacity:1}30%{transform:translate(30px,0) scaleX(-1)}40%{transform:translate(22px,-3px) scaleX(-1)}52%{transform:translate(30px,0) scaleX(-1)}72%{transform:translate(30px,0) scaleX(-1);opacity:1}87%{transform:translate(6px,-150px) scaleX(-1);opacity:1}100%{transform:translate(-2px,-250px) scaleX(-1);opacity:0}}
-.legA{transform-origin:17px 30px;animation:legSwA .26s linear infinite}
-.legB{transform-origin:17px 30px;animation:legSwB .26s linear infinite}
-@keyframes legSwA{0%,100%{transform:rotate(18deg)}50%{transform:rotate(-18deg)}}
-@keyframes legSwB{0%,100%{transform:rotate(-18deg)}50%{transform:rotate(18deg)}}
-.sword-arm{transform-origin:17px 19px;animation:slash 2.2s ease forwards}
-@keyframes slash{0%,32%{transform:rotate(0)}37%{transform:rotate(-70deg)}44%{transform:rotate(55deg)}52%{transform:rotate(0)}100%{transform:rotate(0)}}
-@media (prefers-reduced-motion:reduce){.cap-wrap.dying,.cap-chip.dying,.rink-hdr.shoved,.runner.l,.runner.r,.sword-arm,.legA,.legB,.cap-dot{animation:none}}
+.bob{display:inline-block;animation:bob .24s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.runner.l{animation:slayL 3.4s linear forwards}
+.runner.r{animation:slayR 3.4s linear forwards}
+.runner.whiff{animation:whiff 1.9s ease-in forwards}
+@keyframes slayL{0%{transform:translate(-210px,0);opacity:0}8%{opacity:1}22%{transform:translate(-62px,0)}28%{transform:translate(-52px,-3px)}34%{transform:translate(-62px,0)}48%{transform:translate(-142px,6px)}60%{transform:translate(-150px,-72px)}70%{transform:translate(-118px,-132px)}80%{transform:translate(-72px,-150px)}86%{transform:translate(-64px,-134px)}92%{transform:translate(-92px,-148px)}100%{transform:translate(-205px,-160px);opacity:0}}
+@keyframes slayR{0%{transform:translate(210px,0) scaleX(-1);opacity:0}8%{opacity:1}22%{transform:translate(30px,0) scaleX(-1)}28%{transform:translate(20px,-3px) scaleX(-1)}34%{transform:translate(30px,0) scaleX(-1)}48%{transform:translate(110px,6px) scaleX(-1)}60%{transform:translate(118px,-72px) scaleX(-1)}70%{transform:translate(86px,-132px) scaleX(-1)}80%{transform:translate(40px,-150px) scaleX(-1)}86%{transform:translate(32px,-134px) scaleX(-1)}92%{transform:translate(60px,-148px) scaleX(-1)}100%{transform:translate(173px,-160px) scaleX(-1);opacity:0}}
+@keyframes whiff{0%{transform:translate(-200px,0) rotate(0);opacity:0}12%{opacity:1}30%{transform:translate(-34px,0) rotate(0)}40%{transform:translate(-20px,-4px) rotate(0)}52%{transform:translate(46px,-6px) rotate(18deg)}66%{transform:translate(120px,16px) rotate(150deg)}100%{transform:translate(245px,52px) rotate(350deg);opacity:0}}
+.legA{transform-origin:17px 30px;animation:legSwA .24s linear infinite}
+.legB{transform-origin:17px 30px;animation:legSwB .24s linear infinite}
+@keyframes legSwA{0%,100%{transform:rotate(20deg)}50%{transform:rotate(-20deg)}}
+@keyframes legSwB{0%,100%{transform:rotate(-20deg)}50%{transform:rotate(20deg)}}
+.sword-arm{transform-origin:17px 19px}
+.runner.l .sword-arm,.runner.r .sword-arm{animation:slash 3.4s ease forwards}
+.runner.whiff .sword-arm{animation:slashW 1.9s ease forwards}
+@keyframes slash{0%,22%{transform:rotate(0)}26%{transform:rotate(-70deg)}32%{transform:rotate(55deg)}40%{transform:rotate(0)}100%{transform:rotate(0)}}
+@keyframes slashW{0%,30%{transform:rotate(0)}38%{transform:rotate(-78deg)}46%{transform:rotate(62deg)}56%{transform:rotate(0)}100%{transform:rotate(0)}}
+@media (prefers-reduced-motion:reduce){.cap-wrap.dying,.cap-chip.dying,.cap-chip.dodging,.rink-hdr.shoved,.runner,.bob,.sword-arm,.legA,.legB,.cap-dot{animation:none}}
 `;
 
 function Stickman() {
@@ -76,7 +90,10 @@ export default function LoginPage() {
   const widgetId = useRef<string | null>(null);
   // When a captcha is configured, hold actions until we have a token.
   const captchaReady = !siteKey || captchaToken.length > 0;
-  const [slay, setSlay] = useState<"idle" | "run" | "done">("idle");
+  const [phase, setPhase] = useState<"pending" | "slaying" | "won" | "rejected">("pending");
+  const [rejectSignal, setRejectSignal] = useState(0);
+  const phaseRef = useRef(phase);
+  phaseRef.current = phase;
 
   // Render the Turnstile widget once its script loads (explicit mode).
   const renderTurnstile = () => {
@@ -85,8 +102,8 @@ export default function LoginPage() {
     widgetId.current = t.render(widgetRef.current, {
       sitekey: siteKey,
       callback: (token: string) => setCaptchaToken(token),
-      "expired-callback": () => setCaptchaToken(""),
-      "error-callback": () => setCaptchaToken(""),
+      "expired-callback": () => { setCaptchaToken(""); setRejectSignal((n) => n + 1); },
+      "error-callback": () => { setCaptchaToken(""); setRejectSignal((n) => n + 1); },
       theme: "dark",
       size: "flexible",
       // Invisible for normal visitors — only suspicious traffic ever sees a box.
@@ -133,18 +150,37 @@ export default function LoginPage() {
       setCaptchaToken("");
     }
   }, [requestState]);
-  // The little ambush: the first time the captcha clears, send in the swordsmen.
+  // The ambush: the first time the captcha clears, send in the swordsmen.
   useEffect(() => {
-    if (!captchaToken || slay !== "idle") return;
+    if (!captchaToken || phase !== "pending") return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
-      setSlay("done");
+      setPhase("won");
       return;
     }
-    setSlay("run");
-    const id = setTimeout(() => setSlay("done"), 2400);
+    setPhase("slaying");
+    const id = setTimeout(() => setPhase("won"), 3500);
     return () => clearTimeout(id);
-  }, [captchaToken, slay]);
+  }, [captchaToken, phase]);
+  // Rejected/expired: a lone swordsman whiffs, the captcha dodges, you go again.
+  useEffect(() => {
+    if (rejectSignal === 0) return;
+    const t = getTurnstile();
+    // If it expires after a win, just silently re-arm the invisible widget.
+    if (phaseRef.current === "won") {
+      if (widgetId.current && t) t.reset(widgetId.current);
+      return;
+    }
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setPhase("rejected");
+    const id = setTimeout(() => {
+      const tt = getTurnstile();
+      if (widgetId.current && tt) tt.reset(widgetId.current);
+      setCaptchaToken("");
+      setPhase("pending");
+    }, reduce ? 800 : 2000);
+    return () => clearTimeout(id);
+  }, [rejectSignal]);
 
   const containerStyle: CSSProperties = {
     display: "flex",
@@ -257,7 +293,7 @@ export default function LoginPage() {
   return (
     <div style={containerStyle}>
       <div style={cardStyle}>
-        <div className={slay === "run" ? "rink-hdr shoved" : "rink-hdr"}>
+        <div className={phase === "slaying" ? "rink-hdr shoved" : "rink-hdr"}>
           <Link href="/" style={wordmarkStyle}>
             Rinkler
           </Link>
@@ -276,12 +312,34 @@ export default function LoginPage() {
                   strategy="afterInteractive"
                   onLoad={renderTurnstile}
                 />
-                {slay !== "done" && (
-                  <div className={slay === "run" ? "cap-wrap dying" : "cap-wrap"}>
-                    <div className={`cap-chip${captchaToken ? " ok" : ""}${slay === "run" ? " dying" : ""}`}>
-                      {captchaToken ? <span className="cap-check">✓</span> : <span className="cap-dot" />}
-                      <span className={`cap-text${captchaToken ? " ok" : ""}`}>
-                        {captchaToken ? "youre human, nice" : "making sure youre human…"}
+                {phase !== "won" && (
+                  <div className={`cap-wrap${phase === "slaying" ? " dying" : ""}`}>
+                    <div
+                      className={
+                        "cap-chip" +
+                        (phase === "slaying" ? " ok dying" : "") +
+                        (phase === "rejected" ? " bad dodging" : "")
+                      }
+                    >
+                      {phase === "slaying" ? (
+                        <span className="cap-check">✓</span>
+                      ) : phase === "rejected" ? (
+                        <span className="cap-x">✗</span>
+                      ) : (
+                        <span className="cap-dot" />
+                      )}
+                      <span
+                        className={
+                          "cap-text" +
+                          (phase === "slaying" ? " ok" : "") +
+                          (phase === "rejected" ? " bad" : "")
+                        }
+                      >
+                        {phase === "slaying"
+                          ? "youre human, nice"
+                          : phase === "rejected"
+                            ? "that one didnt count, hang on…"
+                            : "making sure youre human…"}
                       </span>
                       <span className="cap-brand">Cloudflare</span>
                     </div>
@@ -291,10 +349,15 @@ export default function LoginPage() {
                     Invisible for normal visitors (interaction-only); a real challenge,
                     if ever needed, shows up here dark + full-width. */}
                 <div ref={widgetRef} />
-                {slay === "run" && (
+                {phase === "slaying" && (
                   <div className="slay-overlay" aria-hidden>
-                    <div className="runner l"><Stickman /></div>
-                    <div className="runner r"><Stickman /></div>
+                    <div className="runner l"><span className="bob"><Stickman /></span></div>
+                    <div className="runner r"><span className="bob"><Stickman /></span></div>
+                  </div>
+                )}
+                {phase === "rejected" && (
+                  <div className="slay-overlay" aria-hidden>
+                    <div className="runner whiff"><span className="bob"><Stickman /></span></div>
                   </div>
                 )}
               </>
