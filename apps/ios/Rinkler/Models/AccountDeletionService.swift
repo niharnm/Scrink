@@ -92,6 +92,7 @@ final class AccountDeletionService: ObservableObject {
             return false
         }
         SupabaseAuthClient.shared.clearLocalSession()
+        SupabaseAuthClient.purgeLocalArtifacts()   // leave no on-device browsing history
         phase = .done
         return true
     }

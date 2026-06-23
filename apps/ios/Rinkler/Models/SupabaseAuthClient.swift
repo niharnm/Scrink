@@ -141,6 +141,7 @@ final class SupabaseAuthClient {
         }
 
         clearSession()
+        Self.purgeLocalArtifacts()
     }
 
     func loadSession() -> SupabaseAuthSession? {
@@ -227,6 +228,22 @@ final class SupabaseAuthClient {
     /// fresh (re)install to make a reinstall a true reset.
     func clearLocalSession() {
         clearSession()
+    }
+
+    /// Deletes on-device browsing artifacts (tunnel traffic stats + log) and the
+    /// upload bookkeeping from the App Group container, so signing out or
+    /// deleting the account leaves behind no domain-visit history. (The default
+    /// file-protection class is the strongest one compatible with a tunnel that
+    /// must keep writing while the device is locked.)
+    static func purgeLocalArtifacts() {
+        let fm = FileManager.default
+        if let container = fm.containerURL(forSecurityApplicationGroupIdentifier: RinklerConstants.appGroupID) {
+            for name in [RinklerConstants.statsFileName, RinklerConstants.logFileName] {
+                try? fm.removeItem(at: container.appendingPathComponent(name))
+            }
+        }
+        UserDefaults(suiteName: RinklerConstants.appGroupID)?
+            .removeObject(forKey: "uploadedTrafficEventClientIDs")
     }
 
     /// Permanently deletes the signed-in user's own account via the

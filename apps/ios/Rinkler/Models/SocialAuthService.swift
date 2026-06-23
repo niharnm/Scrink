@@ -109,7 +109,10 @@ final class SocialAuthService {
                 }
             }
             session.presentationContextProvider = presenter
-            session.prefersEphemeralWebBrowserSession = false
+            // Ephemeral: don't share or leave behind the system Safari cookie jar,
+            // so sign-in always shows an account chooser and no Google/Apple
+            // session persists on the device after onboarding.
+            session.prefersEphemeralWebBrowserSession = true
             webSession = session
             if !session.start() {
                 continuation.resume(throwing: SupabaseAuthError.requestFailed("Couldn't open the sign-in window."))
