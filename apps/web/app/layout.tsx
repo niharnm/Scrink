@@ -22,7 +22,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Rinkler — Scroll less, keep the useful parts",
+  title: "Rinkler — Keep the useful parts. Kill the infinite scroll.",
   description:
     "Rinkler quietly interrupts Reels and TikTok on your device so you keep the useful parts of your apps and lose the infinite scroll. Private by design.",
 };

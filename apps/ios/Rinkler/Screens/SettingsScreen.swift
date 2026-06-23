@@ -482,7 +482,7 @@ struct SettingsScreen: View {
                     .fill(VPNManager.statusColor(for: vpnManager.vpnStatus))
                     .frame(width: 10, height: 10)
                 Text(vpnManager.statusString)
-                    .font(RinklerFonts.coolvetica(size: 18))
+                    .font(RinklerFonts.sans(16, .semibold))
                     .foregroundStyle(RinklerColors.signalText)
             }
         }
@@ -493,16 +493,13 @@ struct SettingsScreen: View {
     private var vpnToggleButton: some View {
         Button(action: { vpnManager.toggleVPN() }) {
             Text(vpnButtonTitle)
-                .font(RinklerFonts.pupok(size: 24))
-                .foregroundColor(.white)
+                .font(RinklerFonts.sans(16, .semibold))
+                .foregroundStyle(vpnManager.vpnStatus == .connected ? .white : RinklerColors.signalOnInk)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, RinklerSpacing.md)
-                .background(vpnManager.vpnStatus == .connected ? Color.red : RinklerColors.skyBlue)
-                .clipShape(RoundedRectangle(cornerRadius: RinklerSpacing.buttonCornerRadius))
-                .overlay(
-                    RoundedRectangle(cornerRadius: RinklerSpacing.buttonCornerRadius)
-                        .strokeBorder(Color.white, lineWidth: 1)
-                )
+                .frame(height: 52)
+                .background(vpnManager.vpnStatus == .connected ? RinklerColors.signalDanger : RinklerColors.signalInk)
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .opacity(vpnManager.isPreparingProfile || strictMode.isActive ? 0.5 : 1)
         }
         .disabled(vpnManager.isPreparingProfile || strictMode.isActive)
     }
