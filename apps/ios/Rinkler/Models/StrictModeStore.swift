@@ -29,6 +29,10 @@ final class StrictModeStore: ObservableObject {
 
     private var ticker: AnyCancellable?
 
+    // Keys for the monotonic-clock anti-tamper guard (App Group, app-only logic).
+    private static let startUptimeKey = "strictMode.startUptime"
+    private static let durationKey = "strictMode.duration"
+
     /// Whether Strict Mode is active right now, read straight from shared storage.
     /// Used by stores (FocusSystemStore, DomainThresholdsStore) for defense in
     /// depth so non-UI code paths can't weaken limits while strict.
@@ -36,7 +40,20 @@ final class StrictModeStore: ObservableObject {
         let d = UserDefaults(suiteName: RinklerConstants.appGroupID)
         guard d?.bool(forKey: RinklerConstants.strictModeEnabledKey) == true else { return false }
         let end = d?.double(forKey: RinklerConstants.strictModeEndEpochKey) ?? 0
-        return end == 0 || Date().timeIntervalSince1970 < end
+        if end == 0 { return true }
+        // Wall-clock view: is the window over?
+        let wallOver = Date().timeIntervalSince1970 >= end
+        if !wallOver { return true }
+        // Wall clock says over — but defeat a forward clock-change bypass using the
+        // monotonic uptime clock when it's trustworthy (no reboot since arming).
+        let startUptime = d?.double(forKey: startUptimeKey) ?? 0
+        let duration = d?.double(forKey: durationKey) ?? 0
+        let nowUptime = ProcessInfo.processInfo.systemUptime
+        if startUptime > 0, duration > 0, nowUptime >= startUptime,
+           (nowUptime - startUptime) < duration {
+            return true   // clock was moved forward; the real elapsed time hasn't passed
+        }
+        return false
     }
 
     init() {
@@ -95,6 +112,10 @@ final class StrictModeStore: ObservableObject {
         defaults?.set(now.timeIntervalSince1970, forKey: RinklerConstants.strictModeStartEpochKey)
         defaults?.set(end.timeIntervalSince1970, forKey: RinklerConstants.strictModeEndEpochKey)
         defaults?.set(lockAppRemoval, forKey: RinklerConstants.strictModeLockAppRemovalKey)
+        // Monotonic anti-tamper: record uptime-at-arm + duration so a forward
+        // clock change can't make the window look expired early.
+        defaults?.set(ProcessInfo.processInfo.systemUptime, forKey: Self.startUptimeKey)
+        defaults?.set(duration, forKey: Self.durationKey)
         appendArmedReceipt(now)
 
         endDate = end
@@ -124,7 +145,17 @@ final class StrictModeStore: ObservableObject {
     /// Called on launch, on foreground, and by the in-app ticker.
     func tickIfExpired() {
         guard isActive, let endDate else { return }
-        if Date() >= endDate { end() }
+        guard Date() >= endDate else { return }   // wall clock not even at the end yet
+        // Wall clock says expired — but guard against a forward clock-change
+        // bypass with the monotonic uptime clock when it's trustworthy.
+        let startUptime = defaults?.double(forKey: Self.startUptimeKey) ?? 0
+        let duration = defaults?.double(forKey: Self.durationKey) ?? 0
+        let nowUptime = ProcessInfo.processInfo.systemUptime
+        if startUptime > 0, duration > 0, nowUptime >= startUptime,
+           (nowUptime - startUptime) < duration {
+            return   // the clock was moved forward; keep Strict Mode armed
+        }
+        end()
     }
 
     // MARK: - Enforcement (no-ops until entitlement + Screen Time auth)
@@ -152,6 +183,8 @@ final class StrictModeStore: ObservableObject {
         defaults?.set(false, forKey: RinklerConstants.strictModeEnabledKey)
         defaults?.removeObject(forKey: RinklerConstants.strictModeStartEpochKey)
         defaults?.removeObject(forKey: RinklerConstants.strictModeEndEpochKey)
+        defaults?.removeObject(forKey: Self.startUptimeKey)
+        defaults?.removeObject(forKey: Self.durationKey)
     }
 
     private func appendArmedReceipt(_ date: Date) {
