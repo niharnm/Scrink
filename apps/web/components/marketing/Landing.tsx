@@ -206,7 +206,7 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
             <p style={{ ...quote }}>
               &ldquo;Id just be scrolling endlessly without even knowing whats going
               on and that would be the first thing i did going to sleep and waking
-              up, i dint even like or want to scroll but it just became a habit.
+              up, i didnt even like or want to scroll but it just became a habit.
               Nobody was able to fix this issue, so i did.&rdquo;
             </p>
             <div style={{ ...colLabel, marginTop: 20 }}>the kid who made rinkler</div>
