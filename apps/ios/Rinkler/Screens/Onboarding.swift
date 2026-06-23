@@ -492,6 +492,7 @@ struct GoogleGlyph: View {
 struct OnboardingFlow: View {
     @EnvironmentObject private var focusSystem: FocusSystemStore
     @EnvironmentObject private var vpnManager: VPNManager
+    @EnvironmentObject private var screenTime: ScreenTimeManager
     @Environment(AuthStore.self) private var authStore
     var onFinish: () -> Void
 
@@ -772,8 +773,8 @@ struct OnboardingFlow: View {
     }
 
     private var permissionChapter: some View {
-        chapterScaffold(title: "Quick heads up about the “VPN”",
-                        subtitle: "To block stuff inside your apps, Rinkler runs a filter right here on your phone. iOS makes any on-device filter show up as a “VPN,” so the next tap asks to add one — but it's not a real VPN: nothing leaves your phone and we can't see your traffic. While it's on it also quietly kills ads and trackers. And it's not always-on — it only runs while you're protected and switches itself off when a session ends, so it's not sitting in the background.") {
+        chapterScaffold(title: "About that “VPN” prompt",
+                        subtitle: "To block feeds inside your apps, Rinkler runs a filter on your phone. iOS labels any on-device filter a “VPN,” so you'll get a prompt to add one. It isn't a real VPN. Nothing leaves your phone, we can't see your traffic, and it only runs during a session. It blocks ads and trackers while it's on.") {
             VStack(spacing: RinklerSpacing.md) {
                 SignalRing(progress: 0.66, lineWidth: 10) {
                     Image(systemName: "shield.lefthalf.filled")
@@ -783,7 +784,7 @@ struct OnboardingFlow: View {
                 .frame(width: 150, height: 150)
                 .padding(.vertical, RinklerSpacing.md)
 
-                Text("Tap below, then hit Allow when iOS asks. That's the part that lets Rinkler actually block stuff.")
+                Text("Tap below and hit Allow when iOS asks. We'll also ask for Screen Time, which is what lets Rinkler block whole apps and keep you from deleting them.")
                     .font(RinklerFonts.sans(14, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
                     .multilineTextAlignment(.center)
@@ -974,6 +975,10 @@ struct OnboardingFlow: View {
         switch focusSystem.chapter {
         case 6:
             vpnManager.requestPermission()
+            // Also prompt for Screen Time so Rinkler can shield whole apps and
+            // block deletion. Safe to call before the entitlement is live — it
+            // just no-ops (see ScreenTimeManager.requestAccess).
+            Task { await screenTime.requestAccess() }
             focusSystem.next()
         case 8:
             requestNotifications()

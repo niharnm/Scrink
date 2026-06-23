@@ -290,7 +290,7 @@ struct AppsScreen: View {
     private var wholeAppSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .firstTextBaseline) {
-                SectionHeader(title: "Block whole apps", subtitle: "The hard block — like Opal.")
+                SectionHeader(title: "Block whole apps", subtitle: "The hard lock. No feed, no app, nothing.")
                 Spacer()
                 if blockedApps.enabled && screenTime.isAuthorized && blockedApps.appCount > 0 {
                     StatusPill(text: "ON", icon: "checkmark", tone: RinklerColors.signalSuccess)
