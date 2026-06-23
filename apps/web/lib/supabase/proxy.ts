@@ -11,9 +11,11 @@ import { getSupabasePublicConfig } from "./config";
 function isPublicPath(pathname: string): boolean {
   if (pathname === "/") return true;
   // Dev-only visual preview routes (e.g. /dev/dashboard-preview); never public in prod.
-  if (pathname.startsWith("/dev") && process.env.NODE_ENV !== "production") return true;
-  return ["/login", "/auth", "/privacy", "/terms", "/api/health"].some((p) =>
-    pathname.startsWith(p)
+  if (pathname.startsWith("/dev/") && process.env.NODE_ENV !== "production") return true;
+  // Exact path or a sub-path under it — so `/auth/callback` is public but a future
+  // `/authsomething` or `/api/healthz` would NOT be unintentionally exposed.
+  return ["/login", "/auth", "/privacy", "/terms", "/api/health"].some(
+    (p) => pathname === p || pathname.startsWith(p + "/")
   );
 }
 
