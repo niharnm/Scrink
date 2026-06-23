@@ -23,6 +23,16 @@ struct RinklerApp: App {
     @State private var previewScreen: String? = nil
 
     init() {
+        // The iOS Keychain survives app deletion, so a reinstall would otherwise
+        // keep you signed in. Standard UserDefaults IS wiped on delete, so use it
+        // as a fresh-install sentinel: the first launch after a (re)install drops
+        // any stale Keychain session — making every reinstall a true reset.
+        let freshInstallKey = "rinkler.hasLaunchedSinceInstall"
+        if !UserDefaults.standard.bool(forKey: freshInstallKey) {
+            SupabaseAuthClient.shared.clearLocalSession()
+            UserDefaults.standard.set(true, forKey: freshInstallKey)
+        }
+
         UserDefaults(suiteName: RinklerConstants.appGroupID)?
             .register(defaults: [
                 RinklerConstants.blockInstagramShortVideoEnabledKey: true,

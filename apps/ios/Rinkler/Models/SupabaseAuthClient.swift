@@ -219,6 +219,13 @@ final class SupabaseAuthClient {
         SecItemDelete(keychainQuery() as CFDictionary)
     }
 
+    /// Local-only session wipe (no network round-trip). The iOS Keychain
+    /// survives app deletion, so this is called on the first launch after a
+    /// fresh (re)install to make a reinstall a true reset.
+    func clearLocalSession() {
+        clearSession()
+    }
+
     private func keychainQuery() -> [String: Any] {
         [
             kSecClass as String: kSecClassGenericPassword,
