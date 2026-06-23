@@ -430,7 +430,15 @@ export default function LoginPage() {
               style={inputStyle}
             />
           </div>
-          <button type="submit" disabled={requestPending || !captchaReady} style={buttonStyle}>
+          <button
+            type="submit"
+            disabled={requestPending || !captchaReady}
+            style={{
+              ...buttonStyle,
+              opacity: requestPending || !captchaReady ? 0.55 : 1,
+              cursor: requestPending || !captchaReady ? "not-allowed" : "pointer",
+            }}
+          >
             {requestPending ? "Sending…" : "Send code"}
           </button>
         </form>
