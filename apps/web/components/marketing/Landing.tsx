@@ -182,6 +182,32 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
 
         <Rule />
 
+        {/* Accountability — make it stick */}
+        <Reveal>
+          <section id="stick" style={section}>
+            <h2 style={h2}>block the feed. then make it actually stick.</h2>
+            <p style={{ ...lede, maxWidth: 640, marginTop: 20 }}>
+              willpower runs out. rinkler has a few ways to back you up when it
+              does, and you pick as many as you want.
+            </p>
+            <div style={featGrid} className="feat-grid">
+              {stickFeatures.map((f) => (
+                <div key={f.title} style={featCard}>
+                  <div style={colLabel}>{f.tag}</div>
+                  <div style={featTitle}>{f.title}</div>
+                  <div style={featBody}>{f.body}</div>
+                </div>
+              ))}
+            </div>
+            <p style={{ ...statement, color: signal.text, marginTop: 30 }}>
+              and yeah, you can delete your account and everything tied to it
+              right in the app, anytime.
+            </p>
+          </section>
+        </Reveal>
+
+        <Rule />
+
         {/* Privacy */}
         <Reveal>
           <section style={section}>
@@ -306,6 +332,12 @@ const howSteps = [
   { title: "start whenever you want", body: "one tap and youre in. go easy on yourself, or lock in deep when you really need to, totally your call. it runs on a schedule too, so its already working even when you forget about it." },
   { title: "watch it add up", body: "real time you got back, real feeds it caught for you. build a streak, feel it stack up. no fake numbers, and zero lecture when you slip, because honestly we all do." },
 ];
+const stickFeatures = [
+  { tag: "friend control", title: "let a friend hold the keys", body: "hand someone a code and they set your limits from their own phone, for a window you pick. no second app to install, they just run it from rinkler.app/friend. you cant talk your way out of it." },
+  { tag: "strict mode", title: "lock it and mean it", body: "commit for a set stretch with no backing out in the app. the only way out is deleting rinkler entirely, so you wont cave at 1am." },
+  { tag: "automatic", title: "it reads the room", body: "hook up apple health and rinkler tightens your limits on its own when youre stressed or barely moved. it all stays on your phone and never gets sent anywhere." },
+  { tag: "ads + trackers", title: "less junk, everywhere", body: "while protections on, rinkler quietly cuts ads and trackers across your apps too, not just the feeds." },
+];
 
 /* ---------- styles ---------- */
 const page: CSSProperties = { background: signal.bg, color: signal.text, fontFamily: signal.sans, minHeight: "100vh" };
@@ -380,6 +412,11 @@ const colLabel: CSSProperties = { fontFamily: signal.mono, fontSize: 12, letterS
 const compareRow: CSSProperties = { display: "flex", gap: 14, alignItems: "flex-start", padding: "11px 0", borderTop: `1px solid ${signal.border}` };
 const compareMark: CSSProperties = { fontFamily: signal.mono, fontSize: 14, lineHeight: 1.55, flexShrink: 0, width: 14 };
 
+const featGrid: CSSProperties = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1, marginTop: 44, background: signal.border, border: `1px solid ${signal.border}`, borderRadius: 14, overflow: "hidden" };
+const featCard: CSSProperties = { background: signal.bg, padding: "28px 26px" };
+const featTitle: CSSProperties = { fontSize: 20, fontWeight: 600, color: signal.text, letterSpacing: "-0.01em", marginTop: 6 };
+const featBody: CSSProperties = { fontSize: 15, lineHeight: 1.6, color: signal.textDim, marginTop: 10 };
+
 const stepRow: CSSProperties = { display: "flex", gap: 32, padding: "26px 0", borderTop: `1px solid ${signal.border}` };
 const stepNum: CSSProperties = { fontFamily: signal.mono, fontSize: 14, color: signal.textFaint, paddingTop: 4, width: 36, flexShrink: 0 };
 const stepTitle: CSSProperties = { fontSize: 19, fontWeight: 600, color: signal.text, letterSpacing: "-0.01em" };
@@ -415,6 +452,7 @@ const css = `
   .nav-links a:hover, .footer-links a:hover { color: ${signal.text}; }
   @media (max-width: 720px) {
     .compare { grid-template-columns: 1fr !important; }
+    .feat-grid { grid-template-columns: 1fr !important; }
     .compare-right { padding-left: 0 !important; border-left: 0 !important; border-top: 1px solid ${signal.border}; padding-top: 28px; margin-top: 8px; }
     .nav-links a:not(:last-child) { display: none; }
     .br-hide { display: none; }

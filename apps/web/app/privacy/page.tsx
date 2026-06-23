@@ -16,7 +16,8 @@ export default function PrivacyPage() {
     <div style={page}>
       <header style={nav}>
         <Link href="/" style={wordmark}>
-          <span style={dot} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/rinkler-mark.png" alt="" width={22} height={22} style={{ display: "block" }} />
           Rinkler
         </Link>
         <Link href="/" style={navLink}>← Home</Link>
@@ -151,7 +152,6 @@ const nav: CSSProperties = {
   borderBottom: `1px solid ${signal.border}`,
 };
 const wordmark: CSSProperties = { display: "inline-flex", alignItems: "center", gap: 10, fontSize: 21, fontWeight: 700, color: signal.text, textDecoration: "none", letterSpacing: "-0.01em" };
-const dot: CSSProperties = { width: 9, height: 9, borderRadius: "50%", background: signal.glow, boxShadow: `0 0 12px ${signal.blue}`, display: "inline-block" };
 const navLink: CSSProperties = { color: signal.textDim, textDecoration: "none", fontSize: 15 };
 const main: CSSProperties = { maxWidth: 760, margin: "0 auto", padding: "clamp(40px, 7vw, 72px) clamp(20px, 5vw, 40px)" };
 const h1: CSSProperties = { fontSize: "clamp(32px, 5vw, 48px)", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 };
