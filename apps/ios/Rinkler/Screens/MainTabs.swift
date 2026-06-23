@@ -594,6 +594,7 @@ struct RuleEditorView: View {
 struct ProgressScreen: View {
     @EnvironmentObject private var focusSystem: FocusSystemStore
     @EnvironmentObject private var sessions: FocusSessionStore
+    @EnvironmentObject private var screenTime: ScreenTimeManager
     @State private var noiseBlocked = 0
 
     var body: some View {
@@ -601,6 +602,8 @@ struct ProgressScreen: View {
             SignalBackground()
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
+                    screenTimeSection
+
                     SectionHeader(title: "Scroll report", subtitle: "What you've dodged lately")
 
                     RinklerStatRow(stats: [
@@ -637,6 +640,32 @@ struct ProgressScreen: View {
         }
         .preferredColorScheme(nil)
         .onAppear(perform: loadStats)
+    }
+
+    /// Real per-app screen time for today, straight from Apple's DeviceActivity
+    /// report (rendered out-of-process by the RinklerActivityReport extension).
+    @ViewBuilder private var screenTimeSection: some View {
+        if screenTime.isAuthorized {
+            UsageReportView()
+                .frame(maxWidth: .infinity, minHeight: 180, alignment: .leading)
+                .signalCard(cornerRadius: 20)
+        } else {
+            VStack(alignment: .leading, spacing: 10) {
+                SectionHeader(title: "Your real screen time", subtitle: "Straight from iOS, once you connect it.")
+                Button { Task { await screenTime.requestAccess() } } label: {
+                    Text("Connect Screen Time")
+                        .font(RinklerFonts.sans(15, .semibold))
+                        .foregroundStyle(RinklerColors.signalOnInk)
+                        .frame(maxWidth: .infinity).frame(height: 48)
+                        .background(RinklerColors.signalInk)
+                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(RinklerSpacing.md)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .signalCard(cornerRadius: 20)
+        }
     }
 
     private var focusHoursLabel: String {
