@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   areDashboardAdminToolsEnabled,
   createAdminClient,
+  isAdminUser,
 } from "@/lib/supabase/admin";
 
 export async function POST() {
@@ -15,6 +16,10 @@ export async function POST() {
 
   if (authError || !claimsData?.claims) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+
+  if (!isAdminUser(claimsData.claims.sub as string)) {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
   const admin = createAdminClient();

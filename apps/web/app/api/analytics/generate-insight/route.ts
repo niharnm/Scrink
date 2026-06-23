@@ -20,6 +20,22 @@ export async function POST() {
     );
   }
 
+  // Throttle: at most one generation per user per cooldown window. Without this a
+  // signed-in user could loop this endpoint to spam llm_insights/cron_runs rows
+  // and (when external AI is on) burn LLM spend. If a recent insight exists, hand
+  // it back instead of regenerating.
+  const COOLDOWN_MS = 60_000;
+  const { data: recent } = await admin
+    .from("llm_insights")
+    .select("id, content, metadata, job_type, created_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (recent && Date.now() - new Date(recent.created_at).getTime() < COOLDOWN_MS) {
+    return NextResponse.json({ insight: recent, throttled: true });
+  }
+
   // Query last 24h traffic summaries
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const { data: summaries } = await admin
