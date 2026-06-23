@@ -64,10 +64,13 @@ final class SupabaseAuthClient {
         self.urlSession = urlSession
     }
 
-    func sendMagicCode(email: String) async throws {
+    /// Emails a one-time login code. `createUser` defaults to true for the
+    /// normal sign-in/sign-up flow; the account-deletion re-auth passes false so
+    /// a mistyped/diverged email fails loudly instead of provisioning a phantom.
+    func sendMagicCode(email: String, createUser: Bool = true) async throws {
         var request = try authRequest(path: "otp")
         request.httpMethod = "POST"
-        request.httpBody = try JSONEncoder().encode(OTPRequest(email: email))
+        request.httpBody = try JSONEncoder().encode(OTPRequest(email: email, createUser: createUser))
 
         try await send(request)
     }
@@ -224,6 +227,22 @@ final class SupabaseAuthClient {
     /// fresh (re)install to make a reinstall a true reset.
     func clearLocalSession() {
         clearSession()
+    }
+
+    /// Permanently deletes the signed-in user's own account via the
+    /// `delete_current_user` RPC (SECURITY DEFINER; only ever deletes the
+    /// caller's `auth.uid()` row, cascading all their data). The caller MUST
+    /// re-verify identity with a fresh emailed OTP immediately before this.
+    func deleteCurrentUser() async throws {
+        var (request, _) = try await authenticatedRESTRequest(path: "rpc/delete_current_user", method: "POST")
+        request.httpBody = Data("{}".utf8)
+        let (_, response) = try await urlSession.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw SupabaseAuthError.invalidResponse
+        }
+        guard (200..<300).contains(http.statusCode) else {
+            throw SupabaseAuthError.requestFailed("Account deletion failed (\(http.statusCode)).")
+        }
     }
 
     private func keychainQuery() -> [String: Any] {
@@ -399,7 +418,7 @@ private struct IDTokenRequest: Encodable {
 
 private struct OTPRequest: Encodable {
     let email: String
-    let createUser = true
+    var createUser = true
 
     enum CodingKeys: String, CodingKey {
         case email

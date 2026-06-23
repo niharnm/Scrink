@@ -4,6 +4,7 @@ import StoreKit
 
 struct SettingsScreen: View {
     var onLogout: (() -> Void)? = nil
+    var onRequestDelete: (() -> Void)? = nil
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.requestReview) private var requestReview
@@ -19,6 +20,7 @@ struct SettingsScreen: View {
 
     @State private var showResetOnboarding = false
     @State private var showSignOut = false
+    @State private var showDeleteConfirm = false
     @State private var legalDoc: LegalContent.Doc?
 
     @AppStorage(RinklerConstants.blockInstagramShortVideoEnabledKey,
@@ -376,6 +378,38 @@ struct SettingsScreen: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             }
             .buttonStyle(.plain)
+
+            if authStore.isLoggedIn {
+                Button {
+                    showDeleteConfirm = true
+                } label: {
+                    HStack(spacing: RinklerSpacing.md) {
+                        Image(systemName: "trash")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundStyle(RinklerColors.signalDanger)
+                            .frame(width: 22)
+                        Text("Request account deletion")
+                            .font(RinklerFonts.sans(15, .medium))
+                            .foregroundStyle(RinklerColors.signalDanger)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(RinklerColors.signalTextFaint)
+                    }
+                    .padding(.horizontal, RinklerSpacing.md)
+                    .frame(height: 52)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(RinklerColors.signalCard)
+                    .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                }
+                .buttonStyle(.plain)
+
+                Text("We'll email you a code to confirm it's really you.")
+                    .font(RinklerFonts.sans(12, .regular))
+                    .foregroundStyle(RinklerColors.signalTextFaint)
+                    .padding(.horizontal, 2)
+            }
         }
         .alert("Sign out of Rinkler?", isPresented: $showSignOut) {
             Button("Cancel", role: .cancel) {}
@@ -384,6 +418,12 @@ struct SettingsScreen: View {
             }
         } message: {
             Text("Your rules and history stick around on this phone. Sign back in whenever.")
+        }
+        .alert("Delete your account?", isPresented: $showDeleteConfirm) {
+            Button("Cancel", role: .cancel) {}
+            Button("Continue", role: .destructive) { onRequestDelete?() }
+        } message: {
+            Text("This removes your account and everything tied to it from our servers — it can't be undone. (Anything saved on this phone clears when you delete the app.) We'll email you a code to confirm on the next screen.")
         }
     }
 

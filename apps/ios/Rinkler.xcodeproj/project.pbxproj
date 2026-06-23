@@ -42,6 +42,7 @@
 		425E30DAA54E0AE8BA4D0E40 /* RinklerLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E0DB34148F8AC4130435026 /* RinklerLogo.swift */; };
 		44D140969E88C8CC0E9AC672 /* RinklerActivityReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E674A666A9C7246C647D18 /* RinklerActivityReport.swift */; };
 		46C920CEEAB286488C807E85 /* RinklerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93149C3327BBE8D752B994EC /* RinklerButton.swift */; };
+		4720C30A40FD431FCEC5C46D /* DeleteAccountScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C7DC9D0E526E95A18D2CCF /* DeleteAccountScreen.swift */; };
 		4BC1F4C5B55F26647B7348F8 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8486E682C47F8FD7E2F3E1BD /* PrivacyInfo.xcprivacy */; };
 		4DDDB6A35FE7E2CD8714BC7E /* clouds.png in Resources */ = {isa = PBXBuildFile; fileRef = 5D252DFF0B940E70C0578122 /* clouds.png */; };
 		4EC5338F17870CE5F6D56E4D /* Geist-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6BDEB0304046B8B65BAC990F /* Geist-Medium.ttf */; };
@@ -95,6 +96,7 @@
 		C42E3E66DCBAE80C7310B04F /* GeistMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1385780532D15FA6AA764E94 /* GeistMono-Regular.ttf */; };
 		C457077F2257A6DEC4DF5377 /* VPNManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C06B779FE2C17D43B2AC75 /* VPNManager.swift */; };
 		C4D66E2185C9802FB12D37B4 /* StrictModeShieldController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA943DAED27EE114792B692D /* StrictModeShieldController.swift */; };
+		C5494B35A14EF358B01C9C2B /* AccountDeletionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B072197CC6A744BFF1A4FA /* AccountDeletionService.swift */; };
 		C5CA5DCBE2DC2CE77ED096CB /* AuthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 564D4E3414FAA86BF78846BF /* AuthStore.swift */; };
 		C8E2CEB4948A7534444C99A3 /* DeviceActivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 317D68CFE17055014C51D856 /* DeviceActivity.framework */; };
 		CC6B57B30D586623B081D280 /* StrictModeSetupScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98C8E4DEC9B061D0555E441A /* StrictModeSetupScreen.swift */; };
@@ -150,6 +152,7 @@
 /* Begin PBXFileReference section */
 		00E6F19BAF939D697620900C /* AppOptionArcs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOptionArcs.swift; sourceTree = "<group>"; };
 		01FC94A1106D0079E6296CD5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		04C7DC9D0E526E95A18D2CCF /* DeleteAccountScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAccountScreen.swift; sourceTree = "<group>"; };
 		06098896B243AE479926D667 /* SocialMediaIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialMediaIcon.swift; sourceTree = "<group>"; };
 		074249879ADE42173628FE64 /* RinklerTunnel.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RinklerTunnel.entitlements; sourceTree = "<group>"; };
 		0924F22EA64E49A5E7EA1152 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -222,6 +225,7 @@
 		AA8874386CAED6D717AE0E2B /* RinklerActivityReport.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = RinklerActivityReport.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE3B5C79B5C5E90EC91C5BC4 /* clouds_continous.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clouds_continous.png; sourceTree = "<group>"; };
 		AE9F300AF4318B76D735CB23 /* GridPositionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridPositionStore.swift; sourceTree = "<group>"; };
+		B3B072197CC6A744BFF1A4FA /* AccountDeletionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeletionService.swift; sourceTree = "<group>"; };
 		B3F1A5A4E2A0BAA6DDC97984 /* RinklerActivityReport.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RinklerActivityReport.entitlements; sourceTree = "<group>"; };
 		BC2CFD5FD1877F079E798AEA /* RinklerConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RinklerConstants.swift; sourceTree = "<group>"; };
 		BDB7A0D75C363B5282779B46 /* CommitmentMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitmentMode.swift; sourceTree = "<group>"; };
@@ -309,6 +313,7 @@
 				F34347B79285F4AD38772748 /* BlockScreen.swift */,
 				2329C72BED0AAC93D2EA3F1A /* CodeVerificationScreen.swift */,
 				BDB7A0D75C363B5282779B46 /* CommitmentMode.swift */,
+				04C7DC9D0E526E95A18D2CCF /* DeleteAccountScreen.swift */,
 				6513D5DFDC1A0AAF3679DAC3 /* FocusSessionFlow.swift */,
 				5214095B534B322770F4AF7E /* FriendControlScreen.swift */,
 				F550C5E5670298216B252FFB /* HomeScreen.swift */,
@@ -394,6 +399,7 @@
 		71E967AA604EB67E2AE6AD8A /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				B3B072197CC6A744BFF1A4FA /* AccountDeletionService.swift */,
 				D2EF4EF9DE8110A4776566A4 /* AppearanceStore.swift */,
 				2355A532BACBAFA3D437FA2C /* AppOptionsService.swift */,
 				14B4F8E36028BD39E5A68680 /* AppStore.swift */,
@@ -684,6 +690,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5494B35A14EF358B01C9C2B /* AccountDeletionService.swift in Sources */,
 				907E345C32C18D8912FA07E7 /* AppCluster.swift in Sources */,
 				F1214A0EE2E4867EFF135309 /* AppIconCircle.swift in Sources */,
 				13F2B42D1C90415E09B2D879 /* AppOptionArcs.swift in Sources */,
@@ -702,6 +709,7 @@
 				87AC727BB420F966CC647112 /* BlockingOptionsScreen.swift in Sources */,
 				DBBC9B6EB331AFAA8EB046A3 /* CodeVerificationScreen.swift in Sources */,
 				AB4D9057AE04D091CD421152 /* CommitmentMode.swift in Sources */,
+				4720C30A40FD431FCEC5C46D /* DeleteAccountScreen.swift in Sources */,
 				2C4867F8717A9BEC46DA076C /* DialSelector.swift in Sources */,
 				7224E89EFDD6EA927B024A56 /* DomainThresholdsStore.swift in Sources */,
 				691144800755A171FB98AB2C /* FocusSessionFlow.swift in Sources */,

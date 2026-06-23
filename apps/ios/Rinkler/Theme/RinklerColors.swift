@@ -113,6 +113,7 @@ enum RinklerColors {
     static let signalViolet = hex(0x8B5CF6)
     static let signalSuccess = dyn(light: 0x2E9E6B, dark: 0x5FB98E)
     static let signalWarning = dyn(light: 0xB07A1E, dark: 0xD8A24A)
+    static let signalDanger = dyn(light: 0xD42A2A, dark: 0xE5484D)     // destructive
     /// Primary button fill (inverse of the background so buttons stay high
     /// contrast in both modes). `signalOnInk` is the text on that fill.
     static let signalInk = dyn(light: 0x101013, dark: 0xECECEE)

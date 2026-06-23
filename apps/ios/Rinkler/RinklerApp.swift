@@ -85,6 +85,8 @@ struct RinklerApp: App {
                     NavigationStack { AppsScreen() }
                 } else if previewScreen == "progress" {
                     NavigationStack { ProgressScreen() }
+                } else if previewScreen == "deleteAccount" {
+                    NavigationStack { DeleteAccountScreen(email: "you@example.com", onDeleted: {}) }
                 } else if previewScreen == "friend" {
                     NavigationStack { FriendControlScreen() }
                 } else if previewScreen == "signin" {
@@ -156,11 +158,19 @@ struct RinklerApp: App {
                                 SettingsScreen(onLogout: {
                                     path = NavigationPath()
                                     path.append(Route.magicSignIn)
+                                }, onRequestDelete: {
+                                    path.append(Route.deleteAccount)
                                 })
                             case .strictModeSetup:
                                 StrictModeSetupScreen()
                             case .friendControl:
                                 FriendControlScreen()
+                            case .deleteAccount:
+                                DeleteAccountScreen(email: authStore.userEmail, onDeleted: {
+                                    authStore.refreshFromStoredSession()
+                                    path = NavigationPath()
+                                    path.append(Route.magicSignIn)
+                                })
                             case .trafficDashboard:
                                 TrafficDashboardView()
                             case .extensionLog:

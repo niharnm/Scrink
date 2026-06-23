@@ -13,4 +13,5 @@ enum Route: Hashable {
     case sessionRecap
     case strictModeSetup
     case friendControl
+    case deleteAccount
 }
