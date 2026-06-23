@@ -17,17 +17,17 @@ const getTurnstile = () => (window as unknown as { turnstile?: TurnstileApi }).t
 // block, climb around its ends (rotating as they scale the sides), run across the
 // top, slash it off, then shove the header back into place. If it gets rejected, a
 // lone swordsman whiffs, the captcha dodges, and you go again. Pure CSS,
-// reduced-motion safe. Kill ~3.8s, reject ~1.9s.
+// reduced-motion safe. Kill ~4.2s, reject ~1.9s.
 const CAPTCHA_CSS = `
 @keyframes rinkPulse{0%,100%{opacity:1}50%{opacity:.3}}
 .cap-wrap{overflow:hidden}
-.cap-wrap.dying{animation:capCollapse 3.8s ease forwards}
-@keyframes capCollapse{0%,64%{max-height:60px;opacity:1;margin-bottom:14px}72%,100%{max-height:0;opacity:0;margin-bottom:0}}
+.cap-wrap.dying{animation:capCollapse 4.2s ease forwards}
+@keyframes capCollapse{0%,58%{max-height:60px;opacity:1;margin-bottom:14px}66%,100%{max-height:0;opacity:0;margin-bottom:0}}
 .cap-chip{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;border:1px solid ${signal.border};background:${signal.card};margin-bottom:14px}
 .cap-chip.ok{border-color:rgba(91,209,122,.35)}
 .cap-chip.bad{border-color:rgba(255,107,107,.5)}
-.cap-chip.dying{animation:capDie 3.8s ease-in forwards;transform-origin:center}
-@keyframes capDie{0%,14%{transform:none;opacity:1}18%{transform:scaleX(.95)}24%{transform:scaleX(1)}50%{transform:translateX(-3px) rotate(-2deg)}56%{transform:translateX(3px) rotate(2deg)}60%{transform:translateX(-4px) rotate(-2deg)}64%{transform:translate(45%,55%) rotate(22deg);opacity:.9}80%,100%{transform:translate(175%,150%) rotate(66deg);opacity:0}}
+.cap-chip.dying{animation:capDie 4.2s ease-in forwards;transform-origin:center}
+@keyframes capDie{0%,14%{transform:none;opacity:1}18%{transform:scaleX(.95)}24%{transform:scaleX(1)}48%{transform:translateX(-3px) rotate(-2deg)}54%{transform:translateX(3px) rotate(2deg)}56%{transform:translate(45%,55%) rotate(22deg);opacity:.9}72%,100%{transform:translate(175%,150%) rotate(66deg);opacity:0}}
 .cap-chip.dodging{animation:capDodge 1.9s ease}
 @keyframes capDodge{0%,24%{transform:none}30%{transform:translate(13px,-5px) rotate(2deg)}38%{transform:translateX(-4px)}46%{transform:translateX(4px)}54%{transform:translateX(-6px)}62%{transform:translateX(5px)}70%{transform:translateX(-3px)}100%{transform:none}}
 .cap-dot{width:8px;height:8px;border-radius:50%;background:${signal.textDim};flex-shrink:0;animation:rinkPulse 1.4s ease-in-out infinite}
@@ -37,26 +37,26 @@ const CAPTCHA_CSS = `
 .cap-text.ok{color:${signal.text}}
 .cap-text.bad{color:#FF8C8C}
 .cap-brand{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.32)}
-.rink-hdr.shoved{animation:hdrShove 3.8s ease forwards}
-@keyframes hdrShove{0%,82%{transform:translateY(0)}88%{transform:translateY(16px)}94%{transform:translateY(-4px)}100%{transform:translateY(0)}}
+.rink-hdr.shoved{animation:hdrShove 4.2s ease forwards}
+@keyframes hdrShove{0%,76%{transform:translateY(0)}82%{transform:translateY(16px)}90%{transform:translateY(-4px)}100%{transform:translateY(0)}}
 .slay-overlay{position:absolute;left:0;right:0;top:92px;height:50px;pointer-events:none;z-index:5}
 .runner{position:absolute;top:0;left:50%}
 .bob{display:inline-block;animation:bob .24s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-.runner.l{animation:slayL 3.8s linear forwards}
-.runner.r{animation:slayR 3.8s linear forwards}
+.runner.l{animation:slayL 4.2s linear forwards}
+.runner.r{animation:slayR 4.2s linear forwards}
 .runner.whiff{animation:whiff 1.9s ease-in forwards}
-@keyframes slayL{0%{transform:translate(-230px,18px) rotate(0);opacity:0}6%{opacity:1}18%{transform:translate(-184px,18px) rotate(0)}21%{transform:translate(-196px,18px)}25%{transform:translate(-182px,18px)}33%{transform:translate(-176px,-6px) rotate(-55deg)}40%{transform:translate(-168px,-30px) rotate(-90deg)}45%{transform:translate(-150px,-34px) rotate(0)}57%{transform:translate(-44px,-34px) rotate(0)}61%{transform:translate(-34px,-30px)}66%{transform:translate(-44px,-34px)}76%{transform:translate(-64px,-86px)}84%{transform:translate(-72px,-150px)}89%{transform:translate(-64px,-134px)}100%{transform:translate(-205px,-150px);opacity:0}}
-@keyframes slayR{0%{transform:translate(230px,18px) scaleX(-1) rotate(0);opacity:0}6%{opacity:1}18%{transform:translate(184px,18px) scaleX(-1)}21%{transform:translate(196px,18px) scaleX(-1)}25%{transform:translate(182px,18px) scaleX(-1)}33%{transform:translate(176px,-6px) scaleX(-1) rotate(-55deg)}40%{transform:translate(168px,-30px) scaleX(-1) rotate(-90deg)}45%{transform:translate(150px,-34px) scaleX(-1)}57%{transform:translate(44px,-34px) scaleX(-1)}61%{transform:translate(34px,-30px) scaleX(-1)}66%{transform:translate(44px,-34px) scaleX(-1)}76%{transform:translate(64px,-86px) scaleX(-1)}84%{transform:translate(72px,-150px) scaleX(-1)}89%{transform:translate(64px,-134px) scaleX(-1)}100%{transform:translate(205px,-150px) scaleX(-1);opacity:0}}
+@keyframes slayL{0%{transform:translate(-240px,50px) rotate(0);opacity:0}5%{opacity:1}15%{transform:translate(-178px,50px) rotate(0)}18%{transform:translate(-190px,50px)}22%{transform:translate(-180px,50px)}28%{transform:translate(-192px,12px) rotate(48deg)}33%{transform:translate(-196px,-22px) rotate(90deg)}37%{transform:translate(-176px,-30px) rotate(0)}50%{transform:translate(-44px,-30px) rotate(0)}54%{transform:translate(-34px,-26px)}58%{transform:translate(-44px,-30px)}64%{transform:translate(-150px,-30px) rotate(0)}72%{transform:translate(-168px,-90px) rotate(90deg)}80%{transform:translate(-170px,-150px) rotate(90deg)}100%{transform:translate(-185px,-235px) rotate(90deg);opacity:0}}
+@keyframes slayR{0%{transform:translate(240px,50px) scaleX(-1) rotate(0);opacity:0}5%{opacity:1}15%{transform:translate(178px,50px) scaleX(-1)}18%{transform:translate(190px,50px) scaleX(-1)}22%{transform:translate(180px,50px) scaleX(-1)}28%{transform:translate(192px,12px) scaleX(-1) rotate(48deg)}33%{transform:translate(196px,-22px) scaleX(-1) rotate(90deg)}37%{transform:translate(176px,-30px) scaleX(-1)}50%{transform:translate(44px,-30px) scaleX(-1)}54%{transform:translate(34px,-26px) scaleX(-1)}58%{transform:translate(44px,-30px) scaleX(-1)}64%{transform:translate(150px,-30px) scaleX(-1)}72%{transform:translate(168px,-90px) scaleX(-1) rotate(90deg)}80%{transform:translate(170px,-150px) scaleX(-1) rotate(90deg)}100%{transform:translate(185px,-235px) scaleX(-1) rotate(90deg);opacity:0}}
 @keyframes whiff{0%{transform:translate(-200px,0) rotate(0);opacity:0}12%{opacity:1}30%{transform:translate(-34px,0) rotate(0)}40%{transform:translate(-20px,-4px) rotate(0)}52%{transform:translate(46px,-6px) rotate(18deg)}66%{transform:translate(120px,16px) rotate(150deg)}100%{transform:translate(245px,52px) rotate(350deg);opacity:0}}
 .legA{transform-origin:17px 30px;animation:legSwA .24s linear infinite}
 .legB{transform-origin:17px 30px;animation:legSwB .24s linear infinite}
 @keyframes legSwA{0%,100%{transform:rotate(20deg)}50%{transform:rotate(-20deg)}}
 @keyframes legSwB{0%,100%{transform:rotate(-20deg)}50%{transform:rotate(20deg)}}
 .sword-arm{transform-origin:17px 19px}
-.runner.l .sword-arm,.runner.r .sword-arm{animation:slash 3.8s ease forwards}
+.runner.l .sword-arm,.runner.r .sword-arm{animation:slash 4.2s ease forwards}
 .runner.whiff .sword-arm{animation:slashW 1.9s ease forwards}
-@keyframes slash{0%,57%{transform:rotate(0)}61%{transform:rotate(-72deg)}65%{transform:rotate(58deg)}70%{transform:rotate(0)}100%{transform:rotate(0)}}
+@keyframes slash{0%,50%{transform:rotate(0)}54%{transform:rotate(-72deg)}58%{transform:rotate(58deg)}62%{transform:rotate(0)}100%{transform:rotate(0)}}
 @keyframes slashW{0%,30%{transform:rotate(0)}38%{transform:rotate(-78deg)}46%{transform:rotate(62deg)}56%{transform:rotate(0)}100%{transform:rotate(0)}}
 @media (prefers-reduced-motion:reduce){.cap-wrap.dying,.cap-chip.dying,.cap-chip.dodging,.rink-hdr.shoved,.runner,.bob,.sword-arm,.legA,.legB,.cap-dot{animation:none}}
 `;
@@ -95,6 +95,11 @@ export default function LoginPage() {
   const [rejectSignal, setRejectSignal] = useState(0);
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
+  const cardRef = useRef<HTMLDivElement>(null);
+  const chipWrapRef = useRef<HTMLDivElement>(null);
+  // The swordsman choreography is authored for a 380px card; scale + anchor it to
+  // the chip so it stays correct on phones/tablets of any width.
+  const [overlayBox, setOverlayBox] = useState<{ top: number; scale: number }>({ top: 92, scale: 1 });
 
   // Render the Turnstile widget once its script loads (explicit mode).
   const renderTurnstile = () => {
@@ -116,6 +121,7 @@ export default function LoginPage() {
   // Same Supabase backend as the iOS app, so signing in here with Apple/Google
   // lands on the same account — and your phone's data shows up in the dashboard.
   async function signInWith(provider: "google" | "apple") {
+    if (!captchaReady) return; // must clear the captcha first
     setOauthError(null);
     setOauthBusy(provider);
     try {
@@ -160,7 +166,7 @@ export default function LoginPage() {
       return;
     }
     setPhase("slaying");
-    const id = setTimeout(() => setPhase("won"), 3900);
+    const id = setTimeout(() => setPhase("won"), 4300);
     return () => clearTimeout(id);
   }, [captchaToken, phase]);
   // Rejected/expired: a lone swordsman whiffs, the captcha dodges, you go again.
@@ -182,6 +188,14 @@ export default function LoginPage() {
     }, reduce ? 800 : 2000);
     return () => clearTimeout(id);
   }, [rejectSignal]);
+  // Anchor the overlay to the chip's real position and scale to the card width.
+  useEffect(() => {
+    if (phase !== "slaying" && phase !== "rejected") return;
+    const card = cardRef.current;
+    if (!card) return;
+    const top = chipWrapRef.current?.offsetTop ?? 92;
+    setOverlayBox({ top, scale: Math.min(1, card.clientWidth / 380) });
+  }, [phase]);
 
   const containerStyle: CSSProperties = {
     display: "flex",
@@ -293,7 +307,7 @@ export default function LoginPage() {
 
   return (
     <div style={containerStyle}>
-      <div style={cardStyle}>
+      <div style={cardStyle} ref={cardRef}>
         <div className={phase === "slaying" ? "rink-hdr shoved" : "rink-hdr"}>
           <Link href="/" style={wordmarkStyle}>
             Rinkler
@@ -314,7 +328,7 @@ export default function LoginPage() {
                   onLoad={renderTurnstile}
                 />
                 {phase !== "won" && (
-                  <div className={`cap-wrap${phase === "slaying" ? " dying" : ""}`}>
+                  <div ref={chipWrapRef} className={`cap-wrap${phase === "slaying" ? " dying" : ""}`}>
                     <div
                       className={
                         "cap-chip" +
@@ -351,13 +365,13 @@ export default function LoginPage() {
                     if ever needed, shows up here dark + full-width. */}
                 <div ref={widgetRef} />
                 {phase === "slaying" && (
-                  <div className="slay-overlay" aria-hidden>
+                  <div className="slay-overlay" aria-hidden style={{ top: overlayBox.top, transform: `scale(${overlayBox.scale})`, transformOrigin: "top center" }}>
                     <div className="runner l"><span className="bob"><Stickman /></span></div>
                     <div className="runner r"><span className="bob"><Stickman /></span></div>
                   </div>
                 )}
                 {phase === "rejected" && (
-                  <div className="slay-overlay" aria-hidden>
+                  <div className="slay-overlay" aria-hidden style={{ top: overlayBox.top, transform: `scale(${overlayBox.scale})`, transformOrigin: "top center" }}>
                     <div className="runner whiff"><span className="bob"><Stickman /></span></div>
                   </div>
                 )}
@@ -367,12 +381,12 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => signInWith("apple")}
-                disabled={oauthBusy !== null}
+                disabled={oauthBusy !== null || !captchaReady}
                 style={{
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
                   width: "100%", height: 46, borderRadius: 10, border: "none",
-                  cursor: oauthBusy ? "default" : "pointer", background: signal.text, color: "#08080A",
-                  fontFamily: signal.sans, fontSize: 15, fontWeight: 600, opacity: oauthBusy ? 0.7 : 1,
+                  cursor: oauthBusy || !captchaReady ? "default" : "pointer", background: signal.text, color: "#08080A",
+                  fontFamily: signal.sans, fontSize: 15, fontWeight: 600, opacity: oauthBusy || !captchaReady ? 0.55 : 1,
                 }}
               >
                 <AppleMark />
@@ -381,12 +395,12 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => signInWith("google")}
-                disabled={oauthBusy !== null}
+                disabled={oauthBusy !== null || !captchaReady}
                 style={{
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-                  width: "100%", height: 46, borderRadius: 10, cursor: oauthBusy ? "default" : "pointer",
+                  width: "100%", height: 46, borderRadius: 10, cursor: oauthBusy || !captchaReady ? "default" : "pointer",
                   background: "transparent", color: signal.text, border: `1px solid ${signal.borderStrong}`,
-                  fontFamily: signal.sans, fontSize: 15, fontWeight: 600, opacity: oauthBusy ? 0.7 : 1,
+                  fontFamily: signal.sans, fontSize: 15, fontWeight: 600, opacity: oauthBusy || !captchaReady ? 0.55 : 1,
                 }}
               >
                 <GoogleMark />
