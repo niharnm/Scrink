@@ -19,49 +19,82 @@ function isPublicPath(pathname: string): boolean {
   );
 }
 
-export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
-  const config = getSupabasePublicConfig();
+/**
+ * Per-request Content-Security-Policy. Scripts are locked to a fresh nonce +
+ * `strict-dynamic` (Next applies the nonce to its own scripts automatically when
+ * it sees this header on the request). Styles must allow `unsafe-inline`: the app
+ * is built entirely on React inline styles + static inline <style> blocks, which
+ * cannot be nonced. `frame-ancestors 'none'` blocks clickjacking; `connect-src`
+ * permits the Supabase API/realtime.
+ */
+function buildCsp(nonce: string): string {
+  return [
+    "default-src 'self'",
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob:",
+    "font-src 'self'",
+    "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "object-src 'none'",
+    "upgrade-insecure-requests",
+  ].join("; ");
+}
 
+export async function updateSession(request: NextRequest) {
+  const nonce = btoa(crypto.randomUUID());
+  const csp = buildCsp(nonce);
+
+  // Forward the nonce + CSP on the request so Next can nonce its inline scripts.
+  const baseHeaders = () => {
+    const h = new Headers(request.headers);
+    h.set("x-nonce", nonce);
+    h.set("content-security-policy", csp);
+    return h;
+  };
+
+  let supabaseResponse = NextResponse.next({ request: { headers: baseHeaders() } });
+
+  const finish = (res: NextResponse) => {
+    res.headers.set("content-security-policy", csp);
+    return res;
+  };
+  const redirectToLogin = () => {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    return finish(NextResponse.redirect(url));
+  };
+
+  const config = getSupabasePublicConfig();
   if (!config) {
-    if (!isPublicPath(request.nextUrl.pathname)) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/login";
-      return NextResponse.redirect(url);
-    }
-    return supabaseResponse;
+    if (!isPublicPath(request.nextUrl.pathname)) return redirectToLogin();
+    return finish(supabaseResponse);
   }
 
-  const supabase = createServerClient(
-    config.url,
-    config.publishableKey,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          );
-        },
+  const supabase = createServerClient(config.url, config.publishableKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
       },
-    }
-  );
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+        // Rebuild from the now-updated request (carries refreshed auth cookies)
+        // and re-attach the nonce/CSP headers.
+        supabaseResponse = NextResponse.next({ request: { headers: baseHeaders() } });
+        cookiesToSet.forEach(({ name, value, options }) =>
+          supabaseResponse.cookies.set(name, value, options)
+        );
+      },
+    },
+  });
 
   // IMPORTANT: Do not run code between createServerClient and getClaims().
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
-  if (!user && !isPublicPath(request.nextUrl.pathname)) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
-  }
+  if (!user && !isPublicPath(request.nextUrl.pathname)) return redirectToLogin();
 
-  return supabaseResponse;
+  return finish(supabaseResponse);
 }
