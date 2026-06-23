@@ -34,6 +34,7 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@rinkler/assets"],
+  poweredByHeader: false, // don't advertise the framework
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
