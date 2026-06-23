@@ -35,11 +35,13 @@ export async function requestEmailCode(prevState: unknown, formData: FormData) {
     };
   }
 
+  const captchaToken = String(formData.get("captchaToken") || "") || undefined;
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
       shouldCreateUser: true,
+      captchaToken,
     },
   });
 

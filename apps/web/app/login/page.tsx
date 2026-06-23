@@ -1,10 +1,17 @@
 "use client";
 
-import { useActionState, useEffect, useState, CSSProperties } from "react";
+import { useActionState, useEffect, useRef, useState, CSSProperties } from "react";
 import Link from "next/link";
+import Script from "next/script";
 import { requestEmailCode, verifyEmailCode } from "./actions";
 import { createClient } from "@/lib/supabase/client";
 import { signal } from "@/lib/signal";
+
+type TurnstileApi = {
+  render: (el: HTMLElement, opts: Record<string, unknown>) => string;
+  reset: (id: string) => void;
+};
+const getTurnstile = () => (window as unknown as { turnstile?: TurnstileApi }).turnstile;
 
 export default function LoginPage() {
   const [requestState, requestAction, requestPending] = useActionState(requestEmailCode, null);
@@ -13,6 +20,25 @@ export default function LoginPage() {
   const [callbackError, setCallbackError] = useState(false);
   const [oauthBusy, setOauthBusy] = useState<"google" | "apple" | null>(null);
   const [oauthError, setOauthError] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState("");
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+  const widgetRef = useRef<HTMLDivElement>(null);
+  const widgetId = useRef<string | null>(null);
+  // When a captcha is configured, hold actions until we have a token.
+  const captchaReady = !siteKey || captchaToken.length > 0;
+
+  // Render the Turnstile widget once its script loads (explicit mode).
+  const renderTurnstile = () => {
+    const t = getTurnstile();
+    if (!siteKey || !widgetRef.current || !t || widgetId.current) return;
+    widgetId.current = t.render(widgetRef.current, {
+      sitekey: siteKey,
+      callback: (token: string) => setCaptchaToken(token),
+      "expired-callback": () => setCaptchaToken(""),
+      "error-callback": () => setCaptchaToken(""),
+      theme: "dark",
+    });
+  };
 
   // Same Supabase backend as the iOS app, so signing in here with Apple/Google
   // lands on the same account — and your phone's data shows up in the dashboard.
@@ -44,6 +70,14 @@ export default function LoginPage() {
   useEffect(() => {
     setCallbackError(new URLSearchParams(window.location.search).has("error"));
   }, []);
+  // A Turnstile token is single-use; after each email-send attempt, get a fresh one.
+  useEffect(() => {
+    const t = getTurnstile();
+    if (widgetId.current && t) {
+      t.reset(widgetId.current);
+      setCaptchaToken("");
+    }
+  }, [requestState]);
 
   const containerStyle: CSSProperties = {
     display: "flex",
@@ -164,6 +198,16 @@ export default function LoginPage() {
 
         {!shouldEnterCode && (
           <>
+            {siteKey && (
+              <>
+                <Script
+                  src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+                  strategy="afterInteractive"
+                  onLoad={renderTurnstile}
+                />
+                <div ref={widgetRef} style={{ marginBottom: 14 }} />
+              </>
+            )}
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
               <button
                 type="button"
@@ -204,6 +248,7 @@ export default function LoginPage() {
         )}
 
         <form action={requestAction} style={{ display: shouldEnterCode ? "none" : "block" }}>
+          <input type="hidden" name="captchaToken" value={captchaToken} />
           <div style={{ marginBottom: 20 }}>
             <label style={labelStyle}>Email</label>
             <input
@@ -216,7 +261,7 @@ export default function LoginPage() {
               style={inputStyle}
             />
           </div>
-          <button type="submit" disabled={requestPending} style={buttonStyle}>
+          <button type="submit" disabled={requestPending || !captchaReady} style={buttonStyle}>
             {requestPending ? "Sending…" : "Send code"}
           </button>
         </form>
