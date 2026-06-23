@@ -92,11 +92,9 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
               <span style={{ color: signal.textFaint }}>the feed is.</span>
             </h1>
             <p style={{ ...lede, marginTop: 28 }}>
-              you sit down to chill for a sec and somehow its 1am and you cant
-              even remember what you watched. yeah, we know that one too well.
-              Rinkler quietly takes the Reels and TikToks doing that to you, and
-              leaves the stuff you actually came for. your DMs, your search, your
-              people. all still there.
+              you sit down for a sec and somehow its 1am. Rinkler takes the Reels
+              and TikToks doing that to you, and leaves your DMs, search and
+              people alone.
             </p>
             <div style={ctaRow}>
               <Link href={ctaHref} style={lightBtn} className="light-btn">{ctaLabel}</Link>
@@ -113,38 +111,11 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
 
         <Rule />
 
-        {/* The real fight */}
-        <Reveal>
-          <section style={section}>
-            <h2 style={h2}>hey, youre not weak. its rigged.</h2>
-            <p style={statement}>
-              you opened Instagram to send one text. forty minutes later youre
-              watching some random guy fix a rusted wrench like wait, how did i
-              even get here. thats not you being lazy or having no self control.
-              theres a whole building of people whose actual job is to keep you
-              swiping. nobody beats that with willpower. not you, not us, nobody.
-            </p>
-            <p style={{ ...statement, color: signal.text, marginTop: 20 }}>
-              so we built something to stand in for you, right at the one spot the
-              feed cant talk its way around.
-            </p>
-          </section>
-        </Reveal>
-
-        <Rule />
-
         {/* Scalpel */}
         <Reveal>
           <section id="difference" style={section}>
             <h2 style={h2}>it cuts the feed, not the whole app.</h2>
-            <p style={{ ...lede, maxWidth: 680, marginTop: 20 }}>
-              you already know how the other ones go. you block Instagram, then you
-              gotta text someone back, so you unblock it, and poof, theres your
-              hour. so you delete it by friday. we didnt want to make that. Rinkler
-              just takes the endless feed and leaves the rest of the app alone, so
-              theres nothing to ragequit and you actually keep it around.
-            </p>
-            <div style={compareGrid} className="compare">
+            <div style={{ ...compareGrid, marginTop: 36 }} className="compare">
               <div style={{ paddingRight: 32 }}>
                 <div style={colLabel}>blanket blockers</div>
                 {compareBad.map((t) => <CompareRow key={t} text={t} good={false} />)}
@@ -185,12 +156,9 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
         {/* Privacy */}
         <Reveal>
           <section style={section}>
-            <h2 style={{ ...h2, maxWidth: 760 }}>its just you and your phone. we never see your stuff.</h2>
-            <p style={{ ...lede, maxWidth: 640, marginTop: 20 }}>
-              the filter runs right there on your device. your traffic never comes
-              to us, and we only ever see where something is headed, never whats
-              inside it. nobody reads your messages, nothing gets saved, nothing
-              gets sold. promise.
+            <h2 style={{ ...h2, maxWidth: 760 }}>its just you and your phone.</h2>
+            <p style={{ ...lede, maxWidth: 600, marginTop: 18 }}>
+              it runs on your device. nothing gets saved, nothing gets sold. promise.
             </p>
             <Link href="/privacy" style={{ ...textBtn, display: "inline-block", marginTop: 24 }} className="text-btn">
               read the privacy policy →
@@ -302,9 +270,9 @@ const compareGood = [
   "you actually keep it around",
 ];
 const howSteps = [
-  { title: "tell it about you", body: "when you first open it, it asks a few quick things, like whats pulling you in and when youre most likely to cave. then it just builds your whole setup for you. Homework Mode, Night Lock, a calmer morning. you dont have to figure out a single thing." },
-  { title: "start whenever you want", body: "one tap and youre in. go easy on yourself, or lock in deep when you really need to, totally your call. it runs on a schedule too, so its already working even when you forget about it." },
-  { title: "watch it add up", body: "real time you got back, real feeds it caught for you. build a streak, feel it stack up. no fake numbers, and zero lecture when you slip, because honestly we all do." },
+  { title: "tell it about you", body: "a few quick questions and it builds your whole setup. you configure nothing." },
+  { title: "start whenever", body: "one tap, or let it run on a schedule so its already working when you forget." },
+  { title: "watch it add up", body: "real time back, a streak that grows, and zero lecture when you slip." },
 ];
 
 /* ---------- styles ---------- */
