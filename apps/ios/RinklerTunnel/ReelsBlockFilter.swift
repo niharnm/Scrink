@@ -12,13 +12,41 @@ final class ReelsBlockFilter: ConnectionFilter {
 
     var isEnabled: Bool {
         schedule.anyActive
+            || isAdBlockEnabled
+            || !blockedHosts.isEmpty
             || isFilterEnabled(forKey: RinklerConstants.blockInstagramShortVideoEnabledKey)
             || isFilterEnabled(forKey: RinklerConstants.blockTikTokShortVideoEnabledKey)
+    }
+
+    /// Hosts resolved from the user's per-app feed selections (BlockCatalog).
+    /// Hard-blocked at CONNECT — the data-driven, multi-app feed filter.
+    private var blockedHosts: [String] {
+        sharedDefaults?.stringArray(forKey: RinklerConstants.blockedHostsKey) ?? []
+    }
+
+    private func isUserBlockedHost(_ host: String) -> Bool {
+        let lower = host.lowercased()
+        return blockedHosts.contains { matches(sni: lower, trackedDomain: $0.lowercased()) }
+    }
+
+    /// Ads/trackers are on by default (absent key == enabled).
+    private var isAdBlockEnabled: Bool {
+        isFilterEnabled(forKey: RinklerConstants.blockAdsTrackersEnabledKey)
+    }
+
+    private func isAdTracker(_ host: String) -> Bool {
+        let lower = host.lowercased()
+        return RinklerConstants.adTrackerDomains.contains { matches(sni: lower, trackedDomain: $0) }
     }
 
     // MARK: - ConnectionFilter
 
     func shouldAllow(host: String, port: UInt16) -> FilterDecision {
+        // Block ad/tracker hosts outright while ad-blocking is on. Counts as
+        // "noise blocked" in the scroll report.
+        if isAdBlockEnabled, isAdTracker(host) { return .block }
+        // Block hosts the user selected to kill (per-app feed selections).
+        if isUserBlockedHost(host) { return .block }
         return .allow
     }
 

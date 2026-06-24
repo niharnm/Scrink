@@ -14,7 +14,6 @@ struct LandingPage: View {
                 .frame(width: 340, height: 340)
                 .opacity(0.9)
                 .offset(x: 120, y: -230)
-                .shadow(color: RinklerColors.signalViolet.opacity(0.4), radius: 40)
 
             VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
                 Spacer()
@@ -34,7 +33,7 @@ struct LandingPage: View {
                 }
                 .fixedSize(horizontal: false, vertical: true)
 
-                Text("Keep Instagram DMs. Kill Reels. Keep YouTube Search. Kill Shorts. Keep your phone — remove the trap.")
+                Text("Keep IG DMs. Kill Reels. Keep YouTube search. Kill Shorts. Keep your phone, ditch the trap.")
                     .font(RinklerFonts.sans(15, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
                     .fixedSize(horizontal: false, vertical: true)
@@ -44,23 +43,22 @@ struct LandingPage: View {
 
                 Button(action: onGo) {
                     HStack {
-                        Text("Build your focus system")
+                        Text("Set it up")
                             .font(RinklerFonts.sans(18, .semibold))
                         Spacer()
                         Image(systemName: "arrow.right")
                             .font(.system(size: 17, weight: .semibold))
                     }
-                    .foregroundStyle(.black)
+                    .foregroundStyle(RinklerColors.signalOnInk)
                     .padding(.horizontal, RinklerSpacing.lg)
                     .frame(height: 58)
                     .frame(maxWidth: .infinity)
-                    .background(RinklerColors.signalGlow)
+                    .background(RinklerColors.signalInk)
                     .overlay(
                         RoundedRectangle(cornerRadius: 18, style: .continuous)
                             .strokeBorder(Color.white.opacity(0.18), lineWidth: 1)
                     )
                     .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                    .shadow(color: RinklerColors.signalBlue.opacity(0.5), radius: 22, y: 8)
                 }
                 .buttonStyle(.plain)
             }
@@ -68,7 +66,7 @@ struct LandingPage: View {
             .padding(.bottom, RinklerSpacing.xl)
         }
         .navigationBarBackButtonHidden(true)
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(nil)
         .onAppear {
             SVGCache.shared.preload(svgNames: ["instagram"])
         }

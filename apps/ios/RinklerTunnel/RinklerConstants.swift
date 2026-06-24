@@ -17,7 +17,12 @@ enum RinklerConstants {
     static let mtu: NSNumber = 1500
 
     // MARK: - tun2socks Configuration
-    static let tun2socksTaskStackSize = 24576
+    // HevSocks5Tunnel runs each session on a fixed-size coroutine stack. 24 KB
+    // was too small for the UDP forwarding path (hev_socks5_session_udp_fwd_b):
+    // the stack overflowed and the process jumped to an unmapped page, crashing
+    // the tunnel with EXC_BAD_ACCESS / "Failed to fault in a page with execute
+    // permissions". 86016 is the library's own default and the proven-safe value.
+    static let tun2socksTaskStackSize = 86016
     static let tun2socksTCPBufferSize = 4096
     static let tun2socksConnectTimeout = 5000
     static let tun2socksReadWriteTimeout = 60000
@@ -29,6 +34,10 @@ enum RinklerConstants {
     static let udpRelayTimeout: TimeInterval = 5.0
     static let tcpRelayTimeout: TimeInterval = 120.0
     static let maxConnections = 500
+    // Each FWD_UDP datagram spins up a transient outbound NWConnection + timeout
+    // timer. Without a cap, a client that streams many UDP frames over one TCP
+    // connection can exhaust sockets/timers and starve the serial relay queue.
+    static let maxConcurrentUDPRelays = 256
     static let statsInterval: TimeInterval = 10.0
 
     // MARK: - QUIC / UDP Blocking
@@ -42,6 +51,33 @@ enum RinklerConstants {
     static let quicPort: UInt16 = 443
     static let trackedIPTTL: TimeInterval = 600   // 10 min — covers DNS TTL + reuse
     static let maxTrackedIPs = 4000
+
+    // MARK: - Ads & Trackers
+    // While protection is on, Rinkler also blocks well-known ad/tracker hosts at
+    // CONNECT (on by default). Curated to avoid hosts that double as core app
+    // APIs (e.g. graph.facebook.com, *.googleapis.com are intentionally absent).
+    static let blockAdsTrackersEnabledKey = "blockAdsTrackersEnabled"
+    static let adTrackerDomains: Set<String> = [
+        // Google ads / analytics
+        "doubleclick.net", "googlesyndication.com", "googleadservices.com",
+        "google-analytics.com", "googletagmanager.com", "googletagservices.com",
+        "adservice.google.com", "2mdn.net", "app-measurement.com",
+        // Ad exchanges / SSPs
+        "adnxs.com", "rubiconproject.com", "pubmatic.com", "openx.net",
+        "criteo.com", "criteo.net", "casalemedia.com", "rlcdn.com",
+        "adsrvr.org", "bidswitch.net", "mathtag.com", "3lift.com",
+        "amazon-adsystem.com", "moatads.com", "smartadserver.com",
+        // Native / recommendation ads
+        "taboola.com", "outbrain.com", "scorecardresearch.com",
+        "quantserve.com", "quantcount.com",
+        // Mobile ad SDKs
+        "applovin.com", "adcolony.com", "chartboost.com", "vungle.com",
+        "inmobi.com", "mopub.com", "unityads.unity3d.com", "supersonicads.com",
+        // Attribution / product-analytics trackers
+        "appsflyer.com", "adjust.com", "branch.io", "kochava.com",
+        "singular.net", "mixpanel.com", "amplitude.com", "segment.io",
+        "fullstory.com", "hotjar.com",
+    ]
 
     // MARK: - Logging
     static let logFileName = "tunnel_log.txt"
@@ -112,6 +148,9 @@ enum RinklerConstants {
     static let optionStatesKey = "optionStates"
     /// Compact schedule written by the app from the user's Focus System rules.
     static let ruleScheduleKey = "ruleSchedule"
+    /// Flat host set (suffix-matched) the tunnel hard-blocks at CONNECT, resolved
+    /// from the user's per-app feed selections in the app.
+    static let blockedHostsKey = "blockedHosts"
 
     static func filterEnabledKey(forTrackedDomain domain: String) -> String? {
         if instagramTrackedDomains.contains(domain) {

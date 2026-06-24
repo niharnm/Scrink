@@ -22,10 +22,15 @@ targets:
       - path: Rinkler
     dependencies:
       - target: RinklerTunnel
+      - target: RinklerActivityReport
       - sdk: NetworkExtension.framework
+      - sdk: DeviceActivity.framework
     info:
       path: Rinkler/Info.plist
       properties:
+        CFBundleDisplayName: Rinkler
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
         UIAppFonts:
           - SK Pupok Solid 400.ttf
           - Coolvetica Rg.otf
@@ -36,9 +41,10 @@ targets:
           - Geist-Bold.ttf
           - GeistMono-Regular.ttf
           - GeistMono-Medium.ttf
-        UIViewControllerBasedStatusBarAppearance: false
-        UIStatusBarStyle: UIStatusBarStyleLightContent
+        UIViewControllerBasedStatusBarAppearance: true
         UILaunchScreen: {}
+        ITSAppUsesNonExemptEncryption: false
+        NSHealthShareUsageDescription: "Rinkler reads heart-rate variability, resting heart rate, and activity (Move, steps, exercise) on your device to spot stress and low-movement moments and tighten your limits automatically. This data never leaves your phone."
         SUPABASE_URL: $(SUPABASE_URL)
         SUPABASE_KEY: $(SUPABASE_KEY)
         CFBundleURLTypes:
@@ -47,6 +53,15 @@ targets:
               - rinkler
     entitlements:
       path: Rinkler/Rinkler.entitlements
+      properties:
+        com.apple.developer.networking.networkextension:
+          - packet-tunnel-provider
+        com.apple.security.application-groups:
+          - group.com.rinkler.app
+        com.apple.developer.applesignin:
+          - Default
+        com.apple.developer.healthkit: true
+        com.apple.developer.family-controls: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.rinkler.app
@@ -68,13 +83,49 @@ targets:
     info:
       path: RinklerTunnel/Info.plist
       properties:
+        CFBundleDisplayName: Rinkler Tunnel
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.networkextension.packet-tunnel
           NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).PacketTunnelProvider
     entitlements:
       path: RinklerTunnel/RinklerTunnel.entitlements
+      properties:
+        com.apple.developer.networking.networkextension:
+          - packet-tunnel-provider
+        com.apple.security.application-groups:
+          - group.com.rinkler.app
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.rinkler.app.tunnel
         TARGETED_DEVICE_FAMILY: 1
         DEVELOPMENT_TEAM: QDKSUX27F9
+
+  RinklerActivityReport:
+    type: app-extension
+    platform: iOS
+    sources:
+      - RinklerActivityReport
+    dependencies:
+      - sdk: DeviceActivity.framework
+    info:
+      path: RinklerActivityReport/Info.plist
+      properties:
+        CFBundleDisplayName: Rinkler Usage
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.deviceactivityui.report-extension
+    entitlements:
+      path: RinklerActivityReport/RinklerActivityReport.entitlements
+      properties:
+        com.apple.developer.family-controls: true
+        com.apple.security.application-groups:
+          - group.com.rinkler.app
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.rinkler.app.activityreport
+        TARGETED_DEVICE_FAMILY: 1
+        DEVELOPMENT_TEAM: QDKSUX27F9
+        INFOPLIST_FILE: RinklerActivityReport/Info.plist

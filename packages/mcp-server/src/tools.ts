@@ -2,6 +2,30 @@ import { FastMCP } from "fastmcp";
 import { z } from "zod";
 import { supabase } from "./db.js";
 
+// The tools run with the Supabase SERVICE-ROLE key, which bypasses RLS. To stop
+// a caller (or a prompt-injected model) from reading/mutating an arbitrary
+// account's safety-critical blocker settings, scope the server to a single user
+// when RINKLER_USER_ID is set: any user_id arg must match it (or may be omitted
+// and defaults to it). Set RINKLER_USER_ID in every real deployment.
+const SCOPED_USER_ID = process.env.RINKLER_USER_ID;
+
+function resolveUserId(requested?: string): string {
+  if (SCOPED_USER_ID) {
+    if (requested && requested !== SCOPED_USER_ID) {
+      throw new Error(
+        "Unauthorized: this server is scoped to a single user; user_id does not match RINKLER_USER_ID."
+      );
+    }
+    return SCOPED_USER_ID;
+  }
+  if (!requested) {
+    throw new Error(
+      "user_id is required (or set RINKLER_USER_ID to scope this server to one account)."
+    );
+  }
+  return requested;
+}
+
 export function registerTools(server: FastMCP) {
   server.addTool({
     name: "ping",
@@ -14,17 +38,22 @@ export function registerTools(server: FastMCP) {
     description:
       "Get all blocker configs for a user. Returns is_active (computed from is_enabled + expires_at) and expires_at for countdown display.",
     parameters: z.object({
-      user_id: z.string().uuid().describe("The user's UUID"),
+      user_id: z
+        .string()
+        .uuid()
+        .optional()
+        .describe("The user's UUID (optional/ignored when the server is scoped via RINKLER_USER_ID)"),
       active_only: z
         .boolean()
         .optional()
         .describe("If true, only return currently active blockers (default: false)"),
     }),
     execute: async ({ user_id, active_only }) => {
+      const uid = resolveUserId(user_id);
       let query = supabase
         .from("active_blocker_state")
         .select("*")
-        .eq("user_id", user_id);
+        .eq("user_id", uid);
       if (active_only) {
         query = query.eq("is_active", true);
       }
@@ -39,7 +68,11 @@ export function registerTools(server: FastMCP) {
     description:
       "Enable or disable a blocking option for a user. Pass duration_minutes for a timed blocker (e.g. 180 for 3 hours). Omit duration_minutes for a permanent toggle.",
     parameters: z.object({
-      user_id: z.string().uuid().describe("The user's UUID"),
+      user_id: z
+        .string()
+        .uuid()
+        .optional()
+        .describe("The user's UUID (optional/ignored when the server is scoped via RINKLER_USER_ID)"),
       app_id: z
         .string()
         .min(1)
@@ -58,6 +91,7 @@ export function registerTools(server: FastMCP) {
         ),
     }),
     execute: async ({ user_id, app_id, option_id, is_enabled, duration_minutes }) => {
+      const uid = resolveUserId(user_id);
       const expires_at = duration_minutes
         ? new Date(Date.now() + duration_minutes * 60_000).toISOString()
         : null;
@@ -66,7 +100,7 @@ export function registerTools(server: FastMCP) {
         .from("blocker_state")
         .upsert(
           {
-            user_id,
+            user_id: uid,
             app_id,
             option_id,
             is_enabled,

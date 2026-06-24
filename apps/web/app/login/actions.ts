@@ -36,6 +36,19 @@ export async function requestEmailCode(prevState: unknown, formData: FormData) {
   }
 
   const captchaToken = String(formData.get("captchaToken") || "") || undefined;
+
+  // Defense in depth: when a Turnstile site key is configured the client renders
+  // a captcha, so a request with no token is either a misconfiguration or a bot
+  // bypassing the widget. Reject it here rather than relying solely on the
+  // Supabase project's captcha toggle being enabled.
+  if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !captchaToken) {
+    return {
+      step: "email",
+      email,
+      error: "Captcha verification is required. Please try again.",
+    };
+  }
+
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithOtp({
     email,

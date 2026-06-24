@@ -16,6 +16,17 @@ if (transport === "httpStream" && (!apiKey || apiKey.length < 16)) {
   );
 }
 
+// The HTTP transport is reachable by anyone holding the shared API key, and the
+// tools run with the service-role key. If RINKLER_USER_ID is unset, resolveUserId
+// accepts any caller-supplied user_id, so a single leaked key yields cross-tenant
+// read/write of safety-critical blocker settings. Require single-user scoping for
+// the network transport; stdio is local-only and may stay multi-user.
+if (transport === "httpStream" && !process.env.RINKLER_USER_ID) {
+  throw new Error(
+    "RINKLER_USER_ID must be set to scope the server to one account when running the HTTP transport."
+  );
+}
+
 const server = new FastMCP({
   name: "rinkler",
   version: "0.1.0",

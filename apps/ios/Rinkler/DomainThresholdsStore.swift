@@ -40,6 +40,7 @@ class DomainThresholdsStore: ObservableObject {
 struct DomainThresholdRow: View {
     let domain: String
     @Binding var threshold: Int
+    var isLocked: Bool = false
 
     private let maxSliderValue: Double = 5_242_880 + 10_240 // 5 MB + one step = "No limit"
 
@@ -69,7 +70,9 @@ struct DomainThresholdRow: View {
                 in: 0...maxSliderValue,
                 step: 10_240
             )
+            .disabled(isLocked)
         }
+        .opacity(isLocked ? 0.5 : 1)
     }
 
     private var thresholdLabel: String {

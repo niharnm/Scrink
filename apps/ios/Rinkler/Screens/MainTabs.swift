@@ -63,68 +63,156 @@ struct ControlScreen: View {
         ZStack {
             SignalBackground()
             ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
-                    Text("Start a Control Session")
-                        .font(RinklerFonts.sans(26, .bold))
-                        .foregroundStyle(RinklerColors.signalText)
-
-                    labeledGroup("HOW LONG") {
-                        HStack(spacing: 10) {
-                            ForEach(durations, id: \.self) { mins in
-                                Button { duration = mins } label: {
-                                    Text("\(mins)m")
-                                        .font(RinklerFonts.mono(15, .medium))
-                                        .foregroundStyle(duration == mins ? .black : RinklerColors.signalText)
-                                        .frame(maxWidth: .infinity).frame(height: 46)
-                                        .background(duration == mins ? AnyView(RinklerColors.signalGlow) : AnyView(RinklerColors.signalCard))
-                                        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: duration == mins ? 0 : 1))
-                                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-                    }
-
-                    labeledGroup("WHAT DISAPPEARS") {
-                        flow(disappears, color: RinklerColors.signalWarning)
-                    }
-
-                    labeledGroup("WHAT STAYS OPEN") {
-                        flow(keeps, color: RinklerColors.signalSuccess)
-                    }
-
-                    Button { onStart?() } label: {
-                        Text("Start")
-                            .font(RinklerFonts.sans(18, .semibold))
-                            .foregroundStyle(.black)
-                            .frame(maxWidth: .infinity).frame(height: 56)
-                            .background(RinklerColors.signalGlow)
-                            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.top, RinklerSpacing.sm)
-
-                    Text("Start hands off to your focus session, which applies these blocks through the local tunnel.")
+                VStack(alignment: .leading, spacing: RinklerSpacing.md) {
+                    header
+                    heroCard
+                    changesCard
+                    quickLinks
+                    startButton
+                    Text("Hit start and the blocks kick in right on your phone. Nothing leaves your device.")
                         .font(RinklerFonts.sans(12, .regular))
                         .foregroundStyle(RinklerColors.signalTextDim)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 2)
                 }
                 .padding(RinklerSpacing.lg)
+                .padding(.bottom, 40)
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(nil)
     }
 
-    private func labeledGroup<C: View>(_ title: String, @ViewBuilder content: () -> C) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(title)
-                .font(RinklerFonts.sans(12, .semibold))
+    // MARK: Header
+
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("CONTROL")
+                .font(RinklerFonts.sans(13, .semibold))
+                .tracking(2)
                 .foregroundStyle(RinklerColors.signalTextDim)
-            content()
+            Text("Build a focus session")
+                .font(RinklerFonts.sans(25, .bold))
+                .foregroundStyle(RinklerColors.signalText)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.bottom, 2)
+    }
+
+    // MARK: Hero — duration as the headline number
+
+    private var heroCard: some View {
+        VStack(spacing: RinklerSpacing.md) {
+            Text("FOCUS FOR")
+                .font(RinklerFonts.sans(12, .semibold))
+                .tracking(2)
+                .foregroundStyle(RinklerColors.signalTextFaint)
+
+            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                Text("\(duration)")
+                    .font(.system(size: 68, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(RinklerColors.signalText)
+                    .contentTransition(.numericText())
+                Text("min")
+                    .font(RinklerFonts.sans(20, .semibold))
+                    .foregroundStyle(RinklerColors.signalTextDim)
+            }
+
+            HStack(spacing: 8) {
+                ForEach(durations, id: \.self) { mins in
+                    Button { withAnimation(.snappy) { duration = mins } } label: {
+                        Text("\(mins)m")
+                            .font(RinklerFonts.mono(14, .medium))
+                            .foregroundStyle(duration == mins ? RinklerColors.signalOnInk : RinklerColors.signalText)
+                            .frame(maxWidth: .infinity).frame(height: 42)
+                            .background(duration == mins ? AnyView(RinklerColors.signalInk) : AnyView(RinklerColors.signalCardRaised))
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .padding(.vertical, RinklerSpacing.lg)
+        .padding(.horizontal, RinklerSpacing.md)
+        .frame(maxWidth: .infinity)
+        .signalCard(cornerRadius: 24)
+    }
+
+    // MARK: What changes — one organized card
+
+    private var changesCard: some View {
+        VStack(spacing: 0) {
+            changeRow("DISAPPEARS", disappears, color: RinklerColors.signalWarning, icon: "eye.slash.fill")
+            Divider().overlay(RinklerColors.signalBorder).padding(.horizontal, RinklerSpacing.md)
+            changeRow("STAYS OPEN", keeps, color: RinklerColors.signalSuccess, icon: "checkmark.circle.fill")
+        }
+        .signalCard(cornerRadius: 20)
+    }
+
+    private func changeRow(_ title: String, _ items: [String], color: Color, icon: String) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(color)
+                Text(title)
+                    .font(RinklerFonts.sans(12, .semibold))
+                    .tracking(1)
+                    .foregroundStyle(color.opacity(0.95))
+            }
+            FlowChips(items: items, color: color)
+        }
+        .padding(RinklerSpacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    // MARK: Quick links (Jomo-style action tiles)
+
+    private var quickLinks: some View {
+        HStack(spacing: 12) {
+            linkTile("Strict Mode", "Lock it and mean it", icon: "lock.shield.fill", route: .strictModeSetup)
+            linkTile("Adjust limits", "Apps & cutoffs", icon: "slider.horizontal.3", route: .settings)
         }
     }
 
-    private func flow(_ items: [String], color: Color) -> some View {
-        FlowChips(items: items, color: color)
+    private func linkTile(_ title: String, _ subtitle: String, icon: String, route: Route) -> some View {
+        NavigationLink(value: route) {
+            VStack(alignment: .leading, spacing: 8) {
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(RinklerColors.signalBlue)
+                Text(title)
+                    .font(RinklerFonts.sans(15, .semibold))
+                    .foregroundStyle(RinklerColors.signalText)
+                Text(subtitle)
+                    .font(RinklerFonts.sans(11, .regular))
+                    .foregroundStyle(RinklerColors.signalTextDim)
+                    .lineLimit(1)
+            }
+            .padding(RinklerSpacing.md)
+            .frame(maxWidth: .infinity, minHeight: 96, alignment: .leading)
+            .signalCard(cornerRadius: 18)
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: Start
+
+    private var startButton: some View {
+        Button { onStart?() } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "bolt.fill").font(.system(size: 15, weight: .bold))
+                Text("Start \(duration)-min session")
+                    .font(RinklerFonts.sans(18, .semibold))
+            }
+            .foregroundStyle(RinklerColors.signalOnInk)
+            .frame(maxWidth: .infinity).frame(height: 56)
+            .background(RinklerColors.signalInk)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .padding(.top, RinklerSpacing.xs)
     }
 }
 
@@ -155,102 +243,183 @@ private struct FlowChips: View {
 /// that map to a real tunnel filter key actually take effect; others are honest
 /// previews until per-feature path control ships.
 struct AppsScreen: View {
-    @AppStorage(RinklerConstants.blockInstagramShortVideoEnabledKey,
+    @AppStorage(RinklerConstants.blockAdsTrackersEnabledKey,
                 store: UserDefaults(suiteName: RinklerConstants.appGroupID))
-    private var blockInstagram = true
+    private var blockAdsTrackers = true
 
-    @AppStorage(RinklerConstants.blockTikTokShortVideoEnabledKey,
-                store: UserDefaults(suiteName: RinklerConstants.appGroupID))
-    private var blockTikTok = true
+    @StateObject private var selection = BlockSelectionStore()
+    @EnvironmentObject private var strictMode: StrictModeStore
+    @EnvironmentObject private var blockedApps: BlockedAppsStore
+    @EnvironmentObject private var screenTime: ScreenTimeManager
+    @State private var showAppPicker = false
+    @State private var showScreenTimePriming = false
 
     var body: some View {
         ZStack {
             SignalBackground()
             ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
-                    Text("Apps")
-                        .font(RinklerFonts.sans(26, .bold))
-                        .foregroundStyle(RinklerColors.signalText)
-                    Text("Keep the useful parts. Kill the infinite scroll.")
-                        .font(RinklerFonts.sans(14, .regular))
-                        .foregroundStyle(RinklerColors.signalTextDim)
+                VStack(alignment: .leading, spacing: RinklerSpacing.md) {
+                    SectionHeader(title: "Apps", subtitle: "Kill the doomscroll, keep the useful bits.")
 
-                    appCard("Instagram",
-                            allowed: ["DMs", "Camera", "Posting", "Search"],
-                            blockedFeature: "Reels & Explore video",
-                            extraBlocked: ["Explore", "Suggested posts"],
-                            isOn: $blockInstagram)
+                    adsCard
 
-                    appCard("TikTok",
-                            allowed: ["Messages", "Profile", "Following"],
-                            blockedFeature: "For You feed",
-                            extraBlocked: [],
-                            isOn: $blockTikTok)
+                    wholeAppSection
 
-                    // YouTube shares hosts between Shorts and normal playback at the
-                    // tunnel layer, so it is shown but not yet a live toggle.
-                    appCardStatic("YouTube",
-                                  allowed: ["Search", "Subscriptions", "Playlists"],
-                                  blocked: ["Shorts", "Home feed", "Recommended"])
+                    HStack(alignment: .firstTextBaseline) {
+                        SectionHeader(title: "Block feeds", subtitle: "Keeps DMs, search & profiles where it can.")
+                        Spacer()
+                        StatusPill(text: "BETA", tone: RinklerColors.signalBlue)
+                    }
+                    .padding(.top, RinklerSpacing.sm)
 
-                    Text("Blocks act on heavy short-video streams at the network layer. Some feeds share hosts with useful features, so a few controls are previews until per-feature path control ships.")
+                    ForEach(BlockCatalog.apps) { app in appCard(app) }
+
+                    Text("Feed blocking runs on your phone — nothing leaves your device. Some apps blend the feed in with the useful stuff, so a few may block a bit more than just the feed; when that happens, lock the whole app instead. Precise per-feed blocking lands with iOS 26.")
                         .font(RinklerFonts.sans(12, .regular))
                         .foregroundStyle(RinklerColors.signalTextDim)
-                        .padding(.top, RinklerSpacing.sm)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.top, RinklerSpacing.xs)
                 }
                 .padding(RinklerSpacing.lg)
+                .padding(.bottom, 40)
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(nil)
     }
 
-    private func appCard(_ name: String, allowed: [String], blockedFeature: String,
-                         extraBlocked: [String], isOn: Binding<Bool>) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text(name)
-                    .font(RinklerFonts.sans(19, .semibold))
-                    .foregroundStyle(RinklerColors.signalText)
+    private var wholeAppSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .firstTextBaseline) {
+                SectionHeader(title: "Block whole apps", subtitle: "The hard block — like Opal.")
                 Spacer()
-                Toggle("", isOn: isOn).labelsHidden().tint(RinklerColors.signalBlue)
+                if blockedApps.enabled && screenTime.isAuthorized && blockedApps.appCount > 0 {
+                    StatusPill(text: "ON", icon: "checkmark", tone: RinklerColors.signalSuccess)
+                }
             }
-            chipRow("Allowed", allowed, color: RinklerColors.signalSuccess)
-            chipRow("Blocked", [blockedFeature] + extraBlocked, color: RinklerColors.signalWarning)
+
+            if !screenTime.isAuthorized {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Turn on Screen Time so Rinkler can hard-block whole apps and read your real usage.")
+                        .font(RinklerFonts.sans(13, .regular))
+                        .foregroundStyle(RinklerColors.signalTextDim)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Button { showScreenTimePriming = true } label: {
+                        Text("Connect Screen Time")
+                            .font(RinklerFonts.sans(15, .semibold))
+                            .foregroundStyle(RinklerColors.signalOnInk)
+                            .frame(maxWidth: .infinity).frame(height: 48)
+                            .background(RinklerColors.signalInk)
+                            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+                    .sheet(isPresented: $showScreenTimePriming) {
+                        ScreenTimePrimingView(onContinue: {
+                            Task { await screenTime.requestAccess(); blockedApps.apply() }
+                        })
+                    }
+                }
+                .padding(RinklerSpacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .signalCard(cornerRadius: 16)
+            } else {
+                VStack(spacing: 10) {
+                    #if canImport(FamilyControls)
+                    Button { showAppPicker = true } label: {
+                        HStack(spacing: RinklerSpacing.md) {
+                            Image(systemName: "lock.shield.fill").foregroundStyle(RinklerColors.signalBlue)
+                            Text(blockedApps.appCount == 0 ? "Pick apps to block" : "\(blockedApps.appCount) blocked")
+                                .font(RinklerFonts.sans(15, .medium))
+                                .foregroundStyle(RinklerColors.signalText)
+                            Spacer()
+                            Image(systemName: "chevron.right").foregroundStyle(RinklerColors.signalTextFaint)
+                        }
+                        .padding(RinklerSpacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .signalCard(cornerRadius: 14)
+                    }
+                    .buttonStyle(.plain)
+                    .familyActivityPicker(isPresented: $showAppPicker,
+                                          selection: Binding(get: { blockedApps.selection },
+                                                             set: { blockedApps.setSelection($0) }))
+                    #endif
+                    Toggle(isOn: Binding(get: { blockedApps.enabled }, set: { blockedApps.setEnabled($0) })) {
+                        Text("Block them now")
+                            .font(RinklerFonts.sans(15, .medium))
+                            .foregroundStyle(RinklerColors.signalText)
+                    }
+                    .tint(RinklerColors.signalBlue)
+                    .disabled(strictMode.isActive)
+                }
+                .padding(RinklerSpacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .signalCard(cornerRadius: 16)
+            }
         }
-        .padding(RinklerSpacing.md)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .signalCard(cornerRadius: 18)
     }
 
-    private func appCardStatic(_ name: String, allowed: [String], blocked: [String]) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text(name)
-                    .font(RinklerFonts.sans(19, .semibold))
+    private var adsCard: some View {
+        HStack(spacing: RinklerSpacing.md) {
+            Image(systemName: "hand.raised.slash.fill")
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(RinklerColors.signalBlue)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Ads & trackers")
+                    .font(RinklerFonts.sans(17, .semibold))
                     .foregroundStyle(RinklerColors.signalText)
-                Spacer()
-                Text("Preview")
-                    .font(RinklerFonts.sans(11, .medium))
+                Text("Gone across every app while protection's on.")
+                    .font(RinklerFonts.sans(12, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
-                    .padding(.horizontal, 8).padding(.vertical, 3)
-                    .background(RinklerColors.signalCardRaised)
-                    .clipShape(Capsule())
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            chipRow("Allowed", allowed, color: RinklerColors.signalSuccess)
-            chipRow("Blocked", blocked, color: RinklerColors.signalWarning)
+            Spacer(minLength: RinklerSpacing.sm)
+            Toggle("", isOn: $blockAdsTrackers).labelsHidden().tint(RinklerColors.signalBlue)
+                .disabled(strictMode.isActive)
         }
         .padding(RinklerSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
         .signalCard(cornerRadius: 18)
     }
 
-    private func chipRow(_ label: String, _ items: [String], color: Color) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(label)
-                .font(RinklerFonts.sans(11, .semibold))
-                .foregroundStyle(color.opacity(0.9))
-            FlowChipsPublic(items: items, color: color)
+    private func appCard(_ app: BlockApp) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 10) {
+                Image(systemName: app.symbol)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(RinklerColors.signalText)
+                    .frame(width: 24)
+                Text(app.name)
+                    .font(RinklerFonts.sans(18, .semibold))
+                    .foregroundStyle(RinklerColors.signalText)
+                Spacer()
+                if app.mostlyFeed {
+                    StatusPill(text: "MOSTLY FEED", tone: RinklerColors.signalWarning)
+                }
+            }
+            ForEach(app.features) { feature in
+                Divider().overlay(RinklerColors.signalBorder)
+                HStack(spacing: RinklerSpacing.md) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(feature.name)
+                            .font(RinklerFonts.sans(15, .medium))
+                            .foregroundStyle(RinklerColors.signalText)
+                        Text(feature.blurb)
+                            .font(RinklerFonts.sans(12, .regular))
+                            .foregroundStyle(RinklerColors.signalTextDim)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    Spacer(minLength: RinklerSpacing.sm)
+                    Toggle("", isOn: Binding(
+                        get: { selection.isOn(app.id, feature.id) },
+                        set: { _ in selection.toggle(app.id, feature.id) }
+                    ))
+                    .labelsHidden().tint(RinklerColors.signalBlue)
+                    .disabled(strictMode.isActive)
+                }
+            }
         }
+        .padding(RinklerSpacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .signalCard(cornerRadius: 18)
     }
 }
 
@@ -281,6 +450,7 @@ struct FlowChipsPublic: View {
 /// surfaces it blocks / keeps. Saving re-emits the tunnel schedule.
 struct RuleEditorView: View {
     @EnvironmentObject private var focusSystem: FocusSystemStore
+    @EnvironmentObject private var strictMode: StrictModeStore
     @Environment(\.dismiss) private var dismiss
     @State private var draft: FocusRule
 
@@ -297,7 +467,7 @@ struct RuleEditorView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
                         group("NAME") {
-                            TextField("Rule name", text: $draft.name)
+                            TextField("Name this rule", text: $draft.name)
                                 .font(RinklerFonts.sans(17, .medium))
                                 .foregroundStyle(RinklerColors.signalText)
                                 .padding(12)
@@ -307,11 +477,12 @@ struct RuleEditorView: View {
                         }
 
                         Toggle(isOn: $draft.enabled) {
-                            Text("Rule enabled")
+                            Text("Rule's on")
                                 .font(RinklerFonts.sans(15, .medium))
                                 .foregroundStyle(RinklerColors.signalText)
                         }
                         .tint(RinklerColors.signalBlue)
+                        .disabled(strictMode.isActive)
 
                         group("WINDOW") {
                             HStack {
@@ -328,10 +499,17 @@ struct RuleEditorView: View {
                                 ForEach(Difficulty.allCases) { Text($0.title).tag($0) }
                             }
                             .pickerStyle(.segmented)
+                            .disabled(strictMode.isActive)
                         }
 
                         group("BLOCKS") { chips(blockedCatalog, list: \.blocked, color: RinklerColors.signalWarning) }
                         group("KEEPS OPEN") { chips(allowedCatalog, list: \.allowed, color: RinklerColors.signalSuccess) }
+
+                        if strictMode.isActive {
+                            Text("Strict Mode is on — rules are locked until the window ends.")
+                                .font(RinklerFonts.sans(12, .regular))
+                                .foregroundStyle(RinklerColors.signalTextDim)
+                        }
 
                         Button(role: .destructive) {
                             focusSystem.deleteRule(draft.id)
@@ -345,6 +523,7 @@ struct RuleEditorView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                         }
                         .buttonStyle(.plain)
+                        .disabled(strictMode.isActive)
                     }
                     .padding(RinklerSpacing.lg)
                 }
@@ -358,9 +537,10 @@ struct RuleEditorView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") { focusSystem.updateRule(draft); dismiss() }
                         .fontWeight(.semibold)
+                        .disabled(strictMode.isActive)
                 }
             }
-            .preferredColorScheme(.dark)
+            .preferredColorScheme(nil)
         }
     }
 
@@ -420,45 +600,99 @@ struct RuleEditorView: View {
 struct ProgressScreen: View {
     @EnvironmentObject private var focusSystem: FocusSystemStore
     @EnvironmentObject private var sessions: FocusSessionStore
+    @EnvironmentObject private var screenTime: ScreenTimeManager
     @State private var noiseBlocked = 0
+    @State private var showScreenTimePriming = false
 
     var body: some View {
         ZStack {
             SignalBackground()
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
-                    Text("Scroll Report")
-                        .font(RinklerFonts.sans(26, .bold))
-                        .foregroundStyle(RinklerColors.signalText)
+                    screenTimeSection
 
-                    HStack(spacing: 12) {
-                        statCard("\(noiseBlocked)", "Noise blocked")
-                        statCard("\(focusSystem.rules.count)", "Active rules")
-                        statCard("\(focusSystem.signalScore)", "Signal score")
-                    }
+                    SectionHeader(title: "Scroll report", subtitle: "What you've dodged lately")
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("THIS WEEK")
-                            .font(RinklerFonts.sans(12, .semibold))
-                            .foregroundStyle(RinklerColors.signalTextDim)
-                        Text(noiseBlocked > 0
-                             ? "You've cut \(noiseBlocked) short-video pulls so far. Keep your windows armed and the number climbs."
-                             : "Start a Control Session to begin your scroll report. Once the tunnel is filtering, blocked pulls and time saved show up here.")
+                    RinklerStatRow(stats: [
+                        ("Pulls dodged", "\(noiseBlocked)", RinklerColors.signalBlue),
+                        ("Streak", "\(sessions.streak)d", nil),
+                        ("Focus hours", focusHoursLabel, nil),
+                    ])
+                    .padding(.vertical, RinklerSpacing.md)
+                    .frame(maxWidth: .infinity)
+                    .signalCard(cornerRadius: 20)
+
+                    if !weekPoints.allSatisfy({ $0.value == 0 }) {
+                        VStack(alignment: .leading, spacing: RinklerSpacing.sm) {
+                            SectionHeader(title: "This week", subtitle: "Focused minutes, day by day")
+                            SignalChart(points: weekPoints)
+                        }
+                        .padding(RinklerSpacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .signalCard(cornerRadius: 20)
+                    } else {
+                        Text("Empty for now. Start a session and your dodged scrolls + time saved land here.")
                             .font(RinklerFonts.sans(14, .regular))
                             .foregroundStyle(RinklerColors.signalTextDim)
                             .fixedSize(horizontal: false, vertical: true)
+                            .padding(RinklerSpacing.md)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .signalCard(cornerRadius: 18)
                     }
-                    .padding(RinklerSpacing.md)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .signalCard(cornerRadius: 18)
 
                     ringsSection
                 }
                 .padding(RinklerSpacing.lg)
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(nil)
         .onAppear(perform: loadStats)
+    }
+
+    /// Real per-app screen time for today, straight from Apple's DeviceActivity
+    /// report (rendered out-of-process by the RinklerActivityReport extension).
+    @ViewBuilder private var screenTimeSection: some View {
+        if screenTime.isAuthorized {
+            UsageReportView()
+                .frame(maxWidth: .infinity, minHeight: 180, alignment: .leading)
+                .signalCard(cornerRadius: 20)
+        } else {
+            VStack(alignment: .leading, spacing: 10) {
+                SectionHeader(title: "Your real screen time", subtitle: "Straight from iOS, once you connect it.")
+                Button { showScreenTimePriming = true } label: {
+                    Text("Connect Screen Time")
+                        .font(RinklerFonts.sans(15, .semibold))
+                        .foregroundStyle(RinklerColors.signalOnInk)
+                        .frame(maxWidth: .infinity).frame(height: 48)
+                        .background(RinklerColors.signalInk)
+                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                }
+                .buttonStyle(.plain)
+                .sheet(isPresented: $showScreenTimePriming) {
+                    ScreenTimePrimingView(onContinue: { Task { await screenTime.requestAccess() } })
+                }
+            }
+            .padding(RinklerSpacing.md)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .signalCard(cornerRadius: 20)
+        }
+    }
+
+    private var focusHoursLabel: String {
+        let h = sessions.records.reduce(0.0) { $0 + $1.durationSeconds } / 3600
+        return h >= 10 ? "\(Int(h))h" : String(format: "%.1fh", h)
+    }
+
+    private var weekPoints: [(label: String, value: Double)] {
+        let cal = Calendar.current
+        let fmt = DateFormatter(); fmt.dateFormat = "EEEEE"
+        return (0..<7).reversed().map { offset in
+            let day = cal.date(byAdding: .day, value: -offset, to: Date()) ?? Date()
+            let mins = sessions.records
+                .filter { cal.isDate($0.startedAt, inSameDayAs: day) }
+                .reduce(0.0) { $0 + $1.durationSeconds } / 60
+            return (fmt.string(from: day), mins)
+        }
     }
 
     // MARK: Signal Rings (rewards)
@@ -470,7 +704,7 @@ struct ProgressScreen: View {
 
     private let levels: [RingLevel] = [
         RingLevel(title: "First Signal", requirement: "Bank your first clean minutes"),
-        RingLevel(title: "Double Ring", requirement: "Block 10 scroll pulls"),
+        RingLevel(title: "Double Ring", requirement: "Dodge 10 scroll pulls"),
         RingLevel(title: "Pulse", requirement: "Hold a 3-day streak"),
         RingLevel(title: "Orbit", requirement: "Save 5 hours in a week"),
         RingLevel(title: "Halo", requirement: "Finish a Locked session"),

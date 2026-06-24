@@ -2,7 +2,7 @@ import SwiftUI
 
 struct BackArrowView: View {
     var size: CGFloat = 34
-    var color: Color = Color(red: 0.047, green: 0.424, blue: 0.761) // #0C6CC2
+    var color: Color = RinklerColors.signalText  // stark, adaptive (was a saturated blue)
     
     var body: some View {
         GeometryReader { geometry in

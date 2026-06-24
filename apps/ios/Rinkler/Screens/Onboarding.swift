@@ -1,6 +1,7 @@
 import SwiftUI
 import Combine
 import AuthenticationServices
+import UserNotifications
 
 // MARK: - Onboarding option models
 //
@@ -102,9 +103,9 @@ enum Difficulty: String, Codable, CaseIterable, Identifiable {
     }
     var blurb: String {
         switch self {
-        case .soft: return "Remind me first — I can still get through."
-        case .normal: return "Block it, with short breaks if I really need them."
-        case .locked: return "No excuses during a session."
+        case .soft: return "Nudge me first. I can still get through if I mean it."
+        case .normal: return "Block it. Short breaks if I really need them."
+        case .locked: return "No way out mid-session. Don't even ask."
         }
     }
 }
@@ -167,7 +168,7 @@ final class FocusSystemStore: ObservableObject {
     @Published var difficulty: Difficulty = .normal
 
     @Published var chapter: Int = 0
-    static let chapterCount = 10
+    static let chapterCount = 11
 
     // Result
     @Published private(set) var rules: [FocusRule] = []
@@ -191,6 +192,14 @@ final class FocusSystemStore: ObservableObject {
         let d = UserDefaults(suiteName: RinklerConstants.appGroupID)
         hasCompletedOnboarding = d?.bool(forKey: Keys.completed) ?? false
         loadProfile()
+
+        #if DEBUG
+        // Screenshot/QA hook: -obChapter N jumps onboarding to a chapter.
+        let args = ProcessInfo.processInfo.arguments
+        if let i = args.firstIndex(of: "-obChapter"), i + 1 < args.count, let n = Int(args[i + 1]) {
+            chapter = max(0, min(n, Self.chapterCount - 1))
+        }
+        #endif
     }
 
     // MARK: Navigation
@@ -223,8 +232,18 @@ final class FocusSystemStore: ObservableObject {
         defaults?.set(true, forKey: Keys.completed)
     }
 
+    /// Clears the auto-generated presets so the user can start from a blank slate
+    /// and build their own rules. Used by the post-reveal "pick my own" option.
+    func clearRules() {
+        guard !StrictModeStore.isActivePersisted else { return }
+        rules = []
+        signalScore = 50
+        persist()
+    }
+
     /// Resets onboarding (Settings → for testing). Clears the saved profile.
     func resetOnboarding() {
+        guard !StrictModeStore.isActivePersisted else { return }
         hasCompletedOnboarding = false
         chapter = 0
         traps = []; keeps = []; goals = []; dangerTimes = []; difficulty = .normal
@@ -298,6 +317,7 @@ final class FocusSystemStore: ObservableObject {
     /// Replaces a rule (matched by id), or appends it if new. Re-persists and
     /// re-emits the tunnel schedule.
     func updateRule(_ rule: FocusRule) {
+        guard !StrictModeStore.isActivePersisted else { return }
         if let idx = rules.firstIndex(where: { $0.id == rule.id }) {
             rules[idx] = rule
         } else {
@@ -307,6 +327,7 @@ final class FocusSystemStore: ObservableObject {
     }
 
     func deleteRule(_ id: UUID) {
+        guard !StrictModeStore.isActivePersisted else { return }
         rules.removeAll { $0.id == id }
         persist()
     }
@@ -416,10 +437,9 @@ struct SignalRing<Center: View>: View {
                 .stroke(RinklerColors.signalBorder, lineWidth: lineWidth)
             Circle()
                 .trim(from: 0, to: max(0.001, min(1, progress)))
-                .stroke(RinklerColors.signalGlow,
+                .stroke(RinklerColors.signalBlue,
                         style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
                 .rotationEffect(.degrees(-90))
-                .shadow(color: RinklerColors.signalBlue.opacity(0.45), radius: 14)
                 .animation(.easeInOut(duration: 0.5), value: progress)
             center()
         }
@@ -458,7 +478,7 @@ private struct SelectChip: View {
 /// A lightweight "G" mark for the Google button. Drop the official multicolor
 /// asset in `Assets.xcassets` (named "google-logo") and swap this for an
 /// `Image("google-logo")` when brand assets are available.
-private struct GoogleGlyph: View {
+struct GoogleGlyph: View {
     var body: some View {
         Text("G")
             .font(.system(size: 18, weight: .bold, design: .rounded))
@@ -478,6 +498,8 @@ struct OnboardingFlow: View {
     @State private var showSkipWarning = false
     @State private var social = SocialAuthService()
     @State private var authButtonsShown = false
+    @State private var showPresetPopup = false
+    @State private var presetPopupSeen = false
 
     /// The account step sits second-to-last: after the reveal (so the user sees
     /// their generated system first), before the final "first win" screen.
@@ -507,13 +529,78 @@ struct OnboardingFlow: View {
             }
             .padding(.vertical, RinklerSpacing.lg)
         }
-        .preferredColorScheme(.dark)
-        .alert("Skip personalization?", isPresented: $showSkipWarning) {
-            Button("Keep going", role: .cancel) {}
+        .preferredColorScheme(nil)
+        .alert("Skip the questions?", isPresented: $showSkipWarning) {
+            Button("Nah, keep going", role: .cancel) {}
             Button("Skip") { focusSystem.skipToReveal() }
         } message: {
-            Text("We'll set up safe defaults, but the system won't be tuned to you. You can always edit rules later.")
+            Text("You'll get safe defaults, just not tuned to you. You can mess with the rules later anyway.")
         }
+        .onChange(of: focusSystem.chapter) { _, newValue in
+            // One-time, right after the presets reveal: offer to clear them.
+            if newValue == 7 && !presetPopupSeen {
+                presetPopupSeen = true
+                withAnimation(.easeOut(duration: 0.25)) { showPresetPopup = true }
+            }
+        }
+        .overlay {
+            if showPresetPopup { presetPopup }
+        }
+    }
+
+    // MARK: Remove-presets popup (transient, shown once after the reveal)
+
+    private var presetPopup: some View {
+        ZStack {
+            Color.black.opacity(0.6)
+                .ignoresSafeArea()
+                .onTapGesture { withAnimation { showPresetPopup = false } }
+
+            VStack(spacing: RinklerSpacing.md) {
+                Text("Made from your answers")
+                    .font(RinklerFonts.sans(19, .bold))
+                    .foregroundStyle(RinklerColors.signalText)
+                    .multilineTextAlignment(.center)
+                Text("Not feeling these? Wipe them and build your own. Your call.")
+                    .font(RinklerFonts.sans(14, .regular))
+                    .foregroundStyle(RinklerColors.signalTextDim)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                VStack(spacing: 10) {
+                    Button { withAnimation { showPresetPopup = false } } label: {
+                        Text("These are good")
+                            .font(RinklerFonts.sans(16, .semibold))
+                            .foregroundStyle(RinklerColors.signalOnInk)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                            .background(RinklerColors.signalInk)
+                            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+
+                    Button {
+                        focusSystem.clearRules()
+                        withAnimation { showPresetPopup = false }
+                    } label: {
+                        Text("Nah, I'll build my own")
+                            .font(RinklerFonts.sans(15, .medium))
+                            .foregroundStyle(RinklerColors.signalTextDim)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 44)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.top, RinklerSpacing.sm)
+            }
+            .padding(RinklerSpacing.lg)
+            .frame(maxWidth: 340)
+            .background(RinklerColors.signalCard)
+            .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
+            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .padding(RinklerSpacing.lg)
+        }
+        .transition(.opacity)
     }
 
     // MARK: Header (progress + signal ring)
@@ -534,7 +621,7 @@ struct OnboardingFlow: View {
             SignalRing(progress: focusSystem.progress, lineWidth: 4)
                 .frame(width: 34, height: 34)
 
-            Text("Chapter \(focusSystem.chapter + 1) of \(FocusSystemStore.chapterCount)")
+            Text("Step \(focusSystem.chapter + 1) of \(FocusSystemStore.chapterCount)")
                 .font(RinklerFonts.sans(13, .medium))
                 .foregroundStyle(RinklerColors.signalTextDim)
 
@@ -561,7 +648,8 @@ struct OnboardingFlow: View {
         case 5: difficultyChapter
         case 6: permissionChapter
         case 7: revealChapter
-        case 8: authChapter
+        case 8: notificationsChapter
+        case 9: authChapter
         default: firstWinChapter
         }
     }
@@ -571,11 +659,11 @@ struct OnboardingFlow: View {
     private var hookChapter: some View {
         VStack(alignment: .leading, spacing: RinklerSpacing.md) {
             Spacer(minLength: RinklerSpacing.lg)
-            Text("Your phone isn't the problem.\nThe infinite scroll is.")
+            Text("Your phone's fine.\nThe infinite scroll isn't.")
                 .font(RinklerFonts.sans(34, .bold))
                 .foregroundStyle(RinklerColors.signalText)
                 .fixedSize(horizontal: false, vertical: true)
-            Text("We'll help you keep the useful parts of your apps — DMs, search, messages — and block the parts designed to pull you in.")
+            Text("This takes a minute. We'll find what's eating your time, then kill the endless feeds while leaving the stuff you actually use — DMs, search, all that — alone.")
                 .font(RinklerFonts.sans(16, .regular))
                 .foregroundStyle(RinklerColors.signalTextDim)
                 .fixedSize(horizontal: false, vertical: true)
@@ -590,15 +678,14 @@ struct OnboardingFlow: View {
             }
             .frame(width: 190, height: 190)
             .frame(maxWidth: .infinity)
-            .shadow(color: RinklerColors.signalViolet.opacity(0.35), radius: 34)
 
             Spacer(minLength: RinklerSpacing.lg)
         }
     }
 
     private var trapsChapter: some View {
-        chapterScaffold(title: "Which parts pull you in the most?",
-                        subtitle: "Pick all that apply. These are the surfaces we'll cut.") {
+        chapterScaffold(title: "What sucks you in the most?",
+                        subtitle: "Pick whatever's true. These are the parts we kill.") {
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(Trap.allCases) { trap in
                     SelectChip(label: trap.title, selected: focusSystem.traps.contains(trap)) {
@@ -610,8 +697,8 @@ struct OnboardingFlow: View {
     }
 
     private var keepChapter: some View {
-        chapterScaffold(title: "What should always stay available?",
-                        subtitle: "We're not deleting your phone — we separate useful from addictive.") {
+        chapterScaffold(title: "What do you want to keep?",
+                        subtitle: "We're not nuking your apps, just the time-sink parts. The rest stays.") {
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(KeepItem.allCases) { item in
                     SelectChip(label: item.title, selected: focusSystem.keeps.contains(item)) {
@@ -623,7 +710,7 @@ struct OnboardingFlow: View {
     }
 
     private var goalChapter: some View {
-        chapterScaffold(title: "What are you trying to protect?",
+        chapterScaffold(title: "What are you trying to get back?",
                         subtitle: "Pick what matters most right now.") {
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(Goal.allCases) { goal in
@@ -636,8 +723,8 @@ struct OnboardingFlow: View {
     }
 
     private var dangerChapter: some View {
-        chapterScaffold(title: "When do you usually lose control?",
-                        subtitle: "We'll guard these windows automatically.") {
+        chapterScaffold(title: "When do you usually fall in?",
+                        subtitle: "We'll lock these times down on their own, no thinking required.") {
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(DangerTime.allCases) { time in
                     SelectChip(label: time.title, selected: focusSystem.dangerTimes.contains(time)) {
@@ -649,8 +736,8 @@ struct OnboardingFlow: View {
     }
 
     private var difficultyChapter: some View {
-        chapterScaffold(title: "How strict should we be?",
-                        subtitle: "You can change this per rule later.") {
+        chapterScaffold(title: "How hard should we go?",
+                        subtitle: "Change it whenever. No big deal.") {
             VStack(spacing: 12) {
                 ForEach(Difficulty.allCases) { level in
                     Button { focusSystem.difficulty = level } label: {
@@ -685,8 +772,8 @@ struct OnboardingFlow: View {
     }
 
     private var permissionChapter: some View {
-        chapterScaffold(title: "Arm your attention shield",
-                        subtitle: "Rinkler filters traffic locally on this device — nothing leaves your phone. iOS will ask to add a VPN configuration. That's what does the blocking.") {
+        chapterScaffold(title: "Quick heads up about the “VPN”",
+                        subtitle: "To block stuff inside your apps, Rinkler runs a filter right here on your phone. iOS makes any on-device filter show up as a “VPN,” so the next tap asks to add one — but it's not a real VPN: nothing leaves your phone and we can't see your traffic. While it's on it also quietly kills ads and trackers. And it's not always-on — it only runs while you're protected and switches itself off when a session ends, so it's not sitting in the background.") {
             VStack(spacing: RinklerSpacing.md) {
                 SignalRing(progress: 0.66, lineWidth: 10) {
                     Image(systemName: "shield.lefthalf.filled")
@@ -696,7 +783,7 @@ struct OnboardingFlow: View {
                 .frame(width: 150, height: 150)
                 .padding(.vertical, RinklerSpacing.md)
 
-                Text("Allow it on the next screen so your rules can actually hold.")
+                Text("Tap below, then hit Allow when iOS asks. That's the part that lets Rinkler actually block stuff.")
                     .font(RinklerFonts.sans(14, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
                     .multilineTextAlignment(.center)
@@ -705,7 +792,7 @@ struct OnboardingFlow: View {
     }
 
     private var revealChapter: some View {
-        chapterScaffold(title: "Your Focus System is ready.",
+        chapterScaffold(title: "Done. Here's your setup.",
                         subtitle: rulesSummaryLine) {
             VStack(spacing: RinklerSpacing.lg) {
                 SignalRing(progress: Double(focusSystem.signalScore) / 100.0, lineWidth: 12) {
@@ -727,6 +814,12 @@ struct OnboardingFlow: View {
                 }
             }
         }
+        .onAppear {
+            if !presetPopupSeen {
+                presetPopupSeen = true
+                withAnimation(.easeOut(duration: 0.25)) { showPresetPopup = true }
+            }
+        }
     }
 
     private var firstWinChapter: some View {
@@ -739,16 +832,47 @@ struct OnboardingFlow: View {
             }
             .frame(width: 150, height: 150)
 
-            Text("First Signal Ring unlocked")
+            Text("Nice. First ring earned.")
                 .font(RinklerFonts.sans(22, .semibold))
                 .foregroundStyle(RinklerColors.signalText)
-            Text("Setup Complete. Start with 10 minutes and win your first ring.")
+            Text("You're set up. Do 10 minutes and grab your first ring.")
                 .font(RinklerFonts.sans(15, .regular))
                 .foregroundStyle(RinklerColors.signalTextDim)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, RinklerSpacing.lg)
             Spacer(minLength: RinklerSpacing.xl)
         }
+    }
+
+    // MARK: Notifications chapter
+
+    private var notificationsChapter: some View {
+        chapterScaffold(title: "Want a couple of useful pings?",
+                        subtitle: "Two kinds, that's it: a heads-up right before a focus window starts, and a quick “you earned a ring” when you win one. No spam, no guilt-trips, no “you've been on your phone 3 hours” shaming.") {
+            VStack(spacing: RinklerSpacing.md) {
+                SignalRing(progress: 0.66, lineWidth: 10) {
+                    Image(systemName: "bell.badge")
+                        .font(.system(size: 38, weight: .semibold))
+                        .foregroundStyle(RinklerColors.signalBlue)
+                }
+                .frame(width: 150, height: 150)
+                .padding(.vertical, RinklerSpacing.md)
+
+                Button { focusSystem.next() } label: {
+                    Text("Maybe later")
+                        .font(RinklerFonts.sans(15, .medium))
+                        .foregroundStyle(RinklerColors.signalTextDim)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 44)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    private func requestNotifications() {
+        UNUserNotificationCenter.current()
+            .requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
     }
 
     // MARK: Account chapter (Apple / Google)
@@ -760,7 +884,7 @@ struct OnboardingFlow: View {
                     .font(RinklerFonts.sans(28, .bold))
                     .foregroundStyle(RinklerColors.signalText)
                     .fixedSize(horizontal: false, vertical: true)
-                Text("Create an account so your rules, streak, and Signal Score follow you across devices — and so a weak moment can't wipe them.")
+                Text("Make an account so your rules, streak, and Signal Score follow you across devices — and so a weak moment can't wipe them.")
                     .font(RinklerFonts.sans(15, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
                     .fixedSize(horizontal: false, vertical: true)
@@ -768,55 +892,13 @@ struct OnboardingFlow: View {
 
             savedSystemPreview
 
-            VStack(spacing: 12) {
-                SignInWithAppleButton(.continue) { request in
-                    social.configureAppleRequest(request)
-                } onCompletion: { result in
-                    Task { if await social.handleApple(result) { onAuthSuccess() } }
+            AuthOptionsView(onSuccess: onAuthSuccess)
+                .opacity(authButtonsShown ? 1 : 0)
+                .offset(y: authButtonsShown ? 0 : 18)
+                .onAppear {
+                    authButtonsShown = false
+                    withAnimation(.easeOut(duration: 0.45).delay(0.12)) { authButtonsShown = true }
                 }
-                .signInWithAppleButtonStyle(.white)
-                .frame(height: 54)
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .disabled(social.isLoading)
-
-                Button {
-                    Task { if await social.signInWithGoogle() { onAuthSuccess() } }
-                } label: {
-                    HStack(spacing: 10) {
-                        GoogleGlyph()
-                        Text("Continue with Google")
-                            .font(RinklerFonts.sans(17, .semibold))
-                            .foregroundStyle(.black)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 54)
-                    .background(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                }
-                .buttonStyle(.plain)
-                .disabled(social.isLoading)
-
-                if social.isLoading {
-                    ProgressView()
-                        .tint(RinklerColors.signalTextDim)
-                        .padding(.top, 2)
-                }
-
-                if let error = social.errorMessage {
-                    Text(error)
-                        .font(RinklerFonts.sans(13, .regular))
-                        .foregroundStyle(RinklerColors.signalWarning)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .transition(.opacity)
-                }
-            }
-            .opacity(authButtonsShown ? 1 : 0)
-            .offset(y: authButtonsShown ? 0 : 18)
-            .animation(.easeOut(duration: 0.2), value: social.errorMessage)
-            .onAppear {
-                authButtonsShown = false
-                withAnimation(.easeOut(duration: 0.45).delay(0.12)) { authButtonsShown = true }
-            }
 
             Text("Rinkler never posts on your behalf or reads your messages. Sign-in only secures your settings.")
                 .font(RinklerFonts.sans(12, .regular))
@@ -867,17 +949,9 @@ struct OnboardingFlow: View {
     @ViewBuilder private var footer: some View {
         VStack(spacing: 0) {
             if focusSystem.chapter == authChapterIndex {
-                // The account step's primary actions are the Apple/Google buttons;
-                // the footer only offers a low-emphasis skip.
-                Button { focusSystem.next() } label: {
-                    Text("Maybe later")
-                        .font(RinklerFonts.sans(15, .medium))
-                        .foregroundStyle(RinklerColors.signalTextDim)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                }
-                .buttonStyle(.plain)
-                .disabled(social.isLoading)
+                // Account is required — the only way forward is signing in with the
+                // Apple/Google buttons above. No skip.
+                EmptyView()
             } else {
                 primaryButton(ctaTitle) { handlePrimary() }
             }
@@ -887,10 +961,11 @@ struct OnboardingFlow: View {
 
     private var ctaTitle: String {
         switch focusSystem.chapter {
-        case 0: return "Build My Focus System"
-        case 6: return "Allow & Continue"
-        case 7: return "Save My System"
-        case FocusSystemStore.chapterCount - 1: return "Start First Session"
+        case 0: return "Let's go"
+        case 6: return "Turn on the filter"
+        case 7: return "Save my setup"
+        case 8: return "Turn on notifications"
+        case FocusSystemStore.chapterCount - 1: return "Start my first session"
         default: return "Continue"
         }
     }
@@ -899,6 +974,9 @@ struct OnboardingFlow: View {
         switch focusSystem.chapter {
         case 6:
             vpnManager.requestPermission()
+            focusSystem.next()
+        case 8:
+            requestNotifications()
             focusSystem.next()
         case FocusSystemStore.chapterCount - 1:
             focusSystem.complete()
@@ -965,24 +1043,27 @@ struct OnboardingFlow: View {
         Button(action: action) {
             Text(title)
                 .font(RinklerFonts.sans(18, .semibold))
-                .foregroundStyle(.black)
+                .foregroundStyle(RinklerColors.signalOnInk)
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
-                .background(RinklerColors.signalGlow)
+                .background(RinklerColors.signalInk)
                 .overlay(
                     RoundedRectangle(cornerRadius: 18, style: .continuous)
                         .strokeBorder(Color.white.opacity(0.18), lineWidth: 1)
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                .shadow(color: RinklerColors.signalBlue.opacity(0.5), radius: 20, y: 8)
         }
         .buttonStyle(.plain)
     }
 
     private var rulesSummaryLine: String {
+        let keeps = (focusSystem.keeps.isEmpty ? ["DMs", "Search"] : focusSystem.keeps.prefix(3).map(\.title))
+        let cuts = (focusSystem.traps.isEmpty ? ["Reels", "TikTok FYP"] : focusSystem.traps.prefix(3).map(\.title))
         let n = focusSystem.rules.count
-        let names = focusSystem.rules.map(\.name).joined(separator: ", ")
-        return "Based on your answers, we created \(n) rule\(n == 1 ? "" : "s"): \(names)."
+        if n == 0 {
+            return "All clear. Add your own rules whenever."
+        }
+        return "Keeping \(keeps.joined(separator: ", ")) — cutting \(cuts.joined(separator: ", ")). That became \(n) rule\(n == 1 ? "" : "s")."
     }
 
     // MARK: Selection helpers
@@ -1004,6 +1085,8 @@ struct OnboardingFlow: View {
 struct TodayDashboard: View {
     @EnvironmentObject private var focusSystem: FocusSystemStore
     @EnvironmentObject private var vpnManager: VPNManager
+    @EnvironmentObject private var strictMode: StrictModeStore
+    @EnvironmentObject private var sessions: FocusSessionStore
 
     var onSettings: (() -> Void)? = nil
     var onStartSession: (() -> Void)? = nil
@@ -1018,7 +1101,9 @@ struct TodayDashboard: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
                     header
-                    scoreCard
+                    heroSection
+                    statsCard
+                    if !weekPoints.allSatisfy({ $0.value == 0 }) { weekCard }
                     nextWindowCard
                     rulesSection
                     protectionRow
@@ -1029,7 +1114,7 @@ struct TodayDashboard: View {
             }
         }
         .navigationBarBackButtonHidden(true)
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(nil)
         .sheet(item: $editingRule) { rule in
             RuleEditorView(rule: rule)
         }
@@ -1041,43 +1126,72 @@ struct TodayDashboard: View {
                 Text("TODAY")
                     .font(RinklerFonts.sans(13, .semibold))
                     .foregroundStyle(RinklerColors.signalTextDim)
-                Text("Your Focus System")
+                Text("Your setup")
                     .font(RinklerFonts.sans(24, .bold))
                     .foregroundStyle(RinklerColors.signalText)
             }
             Spacer()
             iconButton("chart.bar.fill", action: onTrafficDashboard)
-            iconButton("gearshape.fill", action: onSettings)
+            iconButton("line.3.horizontal", action: onSettings)
         }
     }
 
-    private var scoreCard: some View {
-        HStack(spacing: RinklerSpacing.lg) {
-            SignalRing(progress: Double(focusSystem.signalScore) / 100.0, lineWidth: 10) {
-                VStack(spacing: 0) {
-                    Text("\(focusSystem.signalScore)")
-                        .font(RinklerFonts.mono(30, .medium))
-                        .foregroundStyle(RinklerColors.signalText)
-                    Text("Signal")
-                        .font(RinklerFonts.sans(10, .medium))
-                        .foregroundStyle(RinklerColors.signalTextDim)
-                }
-            }
-            .frame(width: 104, height: 104)
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Scroll Control")
-                    .font(RinklerFonts.sans(17, .semibold))
+    private var heroSection: some View {
+        VStack(spacing: RinklerSpacing.md) {
+            ClaritySignal(streak: sessions.streak, size: 156)
+                .padding(.top, RinklerSpacing.sm)
+            VStack(spacing: 3) {
+                Text(sessions.streak > 0 ? "\(sessions.streak)-day streak" : "You're all set")
+                    .font(RinklerFonts.sans(20, .bold))
                     .foregroundStyle(RinklerColors.signalText)
-                Text("Your system is armed. Start a session to win your first ring and push the score up.")
+                Text(sessions.streak > 0
+                     ? "Keep it alive. Start a session and the ring sharpens."
+                     : "Start a session and your signal starts to build.")
                     .font(RinklerFonts.sans(13, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
-                    .fixedSize(horizontal: false, vertical: true)
+                    .multilineTextAlignment(.center)
             }
-            Spacer(minLength: 0)
         }
-        .padding(RinklerSpacing.lg)
-        .signalCard(cornerRadius: 22)
+        .frame(maxWidth: .infinity)
+    }
+
+    private var statsCard: some View {
+        RinklerStatRow(stats: [
+            ("Focused today", focusedLabel, nil),
+            ("Pulls dodged", "\(sessions.todayDistractions)", RinklerColors.signalBlue),
+            ("Streak", "\(sessions.streak)d", nil),
+        ])
+        .padding(.vertical, RinklerSpacing.md)
+        .frame(maxWidth: .infinity)
+        .signalCard(cornerRadius: 20)
+    }
+
+    private var weekCard: some View {
+        VStack(alignment: .leading, spacing: RinklerSpacing.sm) {
+            SectionHeader(title: "This week", subtitle: "Focused minutes per day")
+            SignalChart(points: weekPoints)
+        }
+        .padding(RinklerSpacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .signalCard(cornerRadius: 20)
+    }
+
+    private var focusedLabel: String {
+        let m = Int(sessions.todayFocusSeconds / 60)
+        if m >= 60 { return "\(m / 60)h \(m % 60)m" }
+        return "\(m)m"
+    }
+
+    private var weekPoints: [(label: String, value: Double)] {
+        let cal = Calendar.current
+        let fmt = DateFormatter(); fmt.dateFormat = "EEEEE"
+        return (0..<7).reversed().map { offset in
+            let day = cal.date(byAdding: .day, value: -offset, to: Date()) ?? Date()
+            let mins = sessions.records
+                .filter { cal.isDate($0.startedAt, inSameDayAs: day) }
+                .reduce(0.0) { $0 + $1.durationSeconds } / 60
+            return (fmt.string(from: day), mins)
+        }
     }
 
     private var nextWindowCard: some View {
@@ -1087,7 +1201,7 @@ struct TodayDashboard: View {
                     Text(nextRule != nil ? "Next window" : "Suggested")
                         .font(RinklerFonts.sans(12, .medium))
                         .foregroundStyle(RinklerColors.signalTextDim)
-                    Text(nextRule?.name ?? "Start a 10-minute Control Session")
+                    Text(nextRule?.name ?? "Quick 10-minute session")
                         .font(RinklerFonts.sans(18, .semibold))
                         .foregroundStyle(RinklerColors.signalText)
                     if let rule = nextRule {
@@ -1103,9 +1217,7 @@ struct TodayDashboard: View {
             }
             .padding(RinklerSpacing.lg)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(RinklerColors.signalBlue.opacity(0.12))
-            .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).strokeBorder(RinklerColors.signalBlue.opacity(0.4), lineWidth: 1))
-            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .signalCard(cornerRadius: 22)
         }
         .buttonStyle(.plain)
     }
@@ -1128,7 +1240,7 @@ struct TodayDashboard: View {
                 .buttonStyle(.plain)
             }
             if focusSystem.rules.isEmpty {
-                Text("No rules yet — add one, or re-run setup from Settings.")
+                Text("No rules yet. Add one, or redo setup in Settings.")
                     .font(RinklerFonts.sans(13, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
             } else {
@@ -1189,13 +1301,13 @@ struct TodayDashboard: View {
             Button { vpnManager.toggleVPN() } label: {
                 Text(vpnManager.vpnStatus == .connected ? "Stop" : "Start")
                     .font(RinklerFonts.sans(14, .semibold))
-                    .foregroundStyle(vpnManager.vpnStatus == .connected ? RinklerColors.signalText : .black)
+                    .foregroundStyle(vpnManager.vpnStatus == .connected ? RinklerColors.signalText : RinklerColors.signalOnInk)
                     .padding(.horizontal, 18).frame(height: 36)
-                    .background(vpnManager.vpnStatus == .connected ? AnyView(RinklerColors.signalCardRaised) : AnyView(RinklerColors.signalGlow))
+                    .background(vpnManager.vpnStatus == .connected ? AnyView(RinklerColors.signalCardRaised) : AnyView(RinklerColors.signalInk))
                     .clipShape(Capsule())
             }
             .buttonStyle(.plain)
-            .disabled(vpnManager.isPreparingProfile)
+            .disabled(vpnManager.isPreparingProfile || strictMode.isActive)
         }
         .padding(RinklerSpacing.md)
         .background(RinklerColors.signalCard)

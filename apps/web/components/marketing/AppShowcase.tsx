@@ -16,10 +16,10 @@ const app = {
   border: "#2A2E36",
   text: "#F8FAFC",
   dim: "#9CA3AF",
-  blue: "#5B7CFF",
+  blue: "#6E8BFF",
   violet: "#8B5CF6",
   success: "#63D297",
-  glow: "linear-gradient(135deg, #5B7CFF, #8B5CF6)",
+  glow: "linear-gradient(135deg, #6E8BFF, #8B5CF6)",
 } as const;
 
 export default function AppShowcase() {
@@ -60,7 +60,7 @@ function TodayScreen() {
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
         <div style={kicker}>TODAY</div>
-        <div style={{ fontSize: 19, fontWeight: 700, color: app.text, letterSpacing: "-0.01em" }}>Your Focus System</div>
+        <div style={{ fontSize: 19, fontWeight: 700, color: app.text, letterSpacing: "-0.01em" }}>Your setup</div>
       </div>
 
       <div style={card}>
@@ -130,7 +130,7 @@ function OnboardingScreen() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <ScoreRing size={22} stroke={3} value={0.2} center={null} />
-          <span style={{ fontSize: 11, color: app.dim }}>Chapter 2 of 10</span>
+          <span style={{ fontSize: 11, color: app.dim }}>Step 2 of 11</span>
         </div>
         <span style={{ fontSize: 11, color: app.dim }}>Skip</span>
       </div>

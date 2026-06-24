@@ -98,19 +98,29 @@ enum RinklerColors {
     // from Opal's gem/orb gradients on purpose. The Living Sky tokens above stay
     // for the existing focus-session screens.
 
-    static let signalBackground = hex(0x08090B)
-    static let signalCard = hex(0x14161A)
-    static let signalCardRaised = hex(0x1B1E24)
-    static let signalBorder = hex(0x2A2E36)
-    static let signalText = hex(0xF8FAFC)
-    static let signalTextDim = hex(0x9CA3AF)
-    static let signalBlue = hex(0x5B7CFF)
+    // "Stark minimal" palette — matches the marketing site, now ADAPTIVE so the
+    // app supports Light / Dark / System (Settings → Appearance). Dark is the
+    // brand default; light is a clean inversion. One accent, used sparingly.
+    static let signalBackground = dyn(light: 0xF6F6F8, dark: 0x08080A)
+    static let signalCard = dyn(light: 0xFFFFFF, dark: 0x0D0D0F)
+    static let signalCardRaised = dyn(light: 0xEDEDF0, dark: 0x141416)
+    static let signalBorder = dynAlpha(light: 0.10, dark: 0.08)        // hairline
+    static let signalBorderStrong = dynAlpha(light: 0.18, dark: 0.16)
+    static let signalText = dyn(light: 0x101013, dark: 0xECECEE)
+    static let signalTextDim = dyn(light: 0x6A6A71, dark: 0x8A8A90)
+    static let signalTextFaint = dyn(light: 0x9C9CA3, dark: 0x56565C)
+    static let signalBlue = dyn(light: 0x4C63E6, dark: 0x6E8BFF)       // accent
     static let signalViolet = hex(0x8B5CF6)
-    static let signalSuccess = hex(0x63D297)
-    static let signalWarning = hex(0xFFB454)
+    static let signalSuccess = dyn(light: 0x2E9E6B, dark: 0x5FB98E)
+    static let signalWarning = dyn(light: 0xB07A1E, dark: 0xD8A24A)
+    static let signalDanger = dyn(light: 0xD42A2A, dark: 0xE5484D)     // destructive
+    /// Primary button fill (inverse of the background so buttons stay high
+    /// contrast in both modes). `signalOnInk` is the text on that fill.
+    static let signalInk = dyn(light: 0x101013, dark: 0xECECEE)
+    static let signalOnInk = dyn(light: 0xFFFFFF, dark: 0x08080A)
 
-    /// The signal glow gradient (blue → violet). Used for the ring stroke and
-    /// the single primary action per screen.
+    /// Legacy gradient — kept so older references compile, but the stark UI uses
+    /// solid white/black buttons and a flat accent, not this.
     static let signalGlow = LinearGradient(
         colors: [signalBlue, signalViolet],
         startPoint: .topLeading,
@@ -124,5 +134,28 @@ enum RinklerColors {
             green: Double((value >> 8) & 0xFF) / 255.0,
             blue: Double(value & 0xFF) / 255.0
         )
+    }
+
+    /// Dynamic color that flips between light and dark interface styles.
+    static func dyn(light: UInt32, dark: UInt32) -> Color {
+        Color(UIColor { traits in
+            traits.userInterfaceStyle == .dark ? uiColor(dark) : uiColor(light)
+        })
+    }
+
+    /// Dynamic hairline/overlay: black-on-light, white-on-dark, at given alphas.
+    static func dynAlpha(light: CGFloat, dark: CGFloat) -> Color {
+        Color(UIColor { traits in
+            traits.userInterfaceStyle == .dark
+                ? UIColor.white.withAlphaComponent(dark)
+                : UIColor.black.withAlphaComponent(light)
+        })
+    }
+
+    private static func uiColor(_ value: UInt32) -> UIColor {
+        let r = Double((value >> 16) & 0xFF) / 255.0
+        let g = Double((value >> 8) & 0xFF) / 255.0
+        let b = Double(value & 0xFF) / 255.0
+        return UIColor(red: r, green: g, blue: b, alpha: 1)
     }
 }

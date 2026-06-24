@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   // Required so OG/Twitter image + canonical URLs resolve to absolute paths.
   metadataBase: new URL("https://rinkler.app"),
   title: {
-    default: "Rinkler — kill the endless scroll, not your whole phone",
+    default: "Rinkler — Keep the useful parts. Kill the infinite scroll.",
     template: "%s · Rinkler",
   },
   description:
