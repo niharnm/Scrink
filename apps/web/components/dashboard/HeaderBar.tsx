@@ -2,6 +2,7 @@
 
 import { CSSProperties } from "react";
 import { theme } from "@/lib/theme";
+import DeleteAccountButton from "@/components/dashboard/DeleteAccountButton";
 
 interface HeaderBarProps {
   email?: string;
@@ -51,6 +52,7 @@ export default function HeaderBar({ email, onSignOut }: HeaderBarProps) {
       <div style={titleStyle}>Rinkler</div>
       <div style={rightStyle}>
         {email && <span style={emailStyle}>{email}</span>}
+        {email && <DeleteAccountButton />}
         {onSignOut && (
           <button style={signOutStyle} onClick={onSignOut}>
             Sign Out
