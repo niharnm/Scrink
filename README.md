@@ -55,6 +55,18 @@ The web dashboard uses the same email-code Supabase auth flow as iOS. Configure 
 
 `ENABLE_DASHBOARD_ADMIN_TOOLS` and `NEXT_PUBLIC_ENABLE_DASHBOARD_ADMIN_TOOLS` default to `false`. Only enable them for trusted maintenance sessions because those endpoints run service-role rollups and domain classification.
 
+## Protecting `main`
+
+`main` should only change through a merged pull request. After cloning, enable the tracked git hooks once:
+
+```bash
+./scripts/setup-hooks.sh   # sets core.hooksPath=.githooks
+```
+
+This installs a `pre-push` hook that blocks direct pushes, force-pushes, and deletions of `main` from your machine (bypass a real emergency with `git push --no-verify`).
+
+Server-side protection on GitHub is the stronger guarantee but, for a **private** repo, requires GitHub Pro/Team or making the repo public. Once you're on a supporting plan, add a branch ruleset for `main` (Settings → Rules → Rulesets): restrict deletions, block force pushes, and require a pull request before merging.
+
 ## Release State
 
 Rinkler builds unsigned for iPhoneOS with the app and packet tunnel extension. Release still requires Apple Developer signing/provisioning, Network Extension entitlement approval, App Store Connect app setup, and physical-device VPN testing with a signed build.

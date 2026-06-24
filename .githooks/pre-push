@@ -1,0 +1,25 @@
+#!/bin/sh
+# Block direct pushes to main. main should only ever change via a merged PR on
+# GitHub, so a local push to it is almost always an accident (a stray `git push`,
+# a force-push, or a deletion). This is the free, client-side stand-in for
+# server-side branch protection (which on GitHub needs a public repo or a paid
+# plan for private repos).
+#
+# Enable once per clone:  ./scripts/setup-hooks.sh   (or: git config core.hooksPath .githooks)
+# Emergency bypass:        git push --no-verify
+
+protected_ref="refs/heads/main"
+
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+  if [ "$remote_ref" = "$protected_ref" ]; then
+    echo "" >&2
+    echo "✗ Blocked: don't push directly to main." >&2
+    echo "  main changes only through a pull request merged on GitHub." >&2
+    echo "  Push your branch and open a PR instead." >&2
+    echo "  (Real emergency? git push --no-verify)" >&2
+    echo "" >&2
+    exit 1
+  fi
+done
+
+exit 0
