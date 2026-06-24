@@ -1,0 +1,55 @@
+<!--
+  Rinkler email-code template — "Living Sky" / stark-minimal.
+
+  Shared by the confirmation (new user), magic_link (returning user) and
+  reauthentication templates so every login email shows the same 6-digit code.
+  The ONLY load-bearing variable is {{ .Token }} — that is the code the app and
+  website ask the user to type. Keep it; do not swap in {{ .ConfirmationURL }}.
+
+  Styles are inlined because most email clients strip <style> from <head>.
+-->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Rinkler code</title>
+  </head>
+  <body style="margin:0; padding:0; background-color:#08080A; color:#ECECEE; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#08080A;">
+      <tr>
+        <td align="center" style="padding:48px 24px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:420px; background-color:#0D0D0F; border:1px solid rgba(255,255,255,0.08); border-radius:16px;">
+            <tr>
+              <td style="padding:36px 36px 8px 36px;">
+                <div style="font-size:20px; font-weight:600; letter-spacing:-0.01em; color:#ECECEE;">Rinkler</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px 36px 0 36px;">
+                <p style="margin:0 0 24px 0; font-size:15px; line-height:1.55; color:#8A8A90;">
+                  Enter this code to sign in. No password needed — it expires in an hour and can only be used once.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td align="center" style="padding:0 36px;">
+                <div style="background-color:#141416; border:1px solid rgba(255,255,255,0.16); border-radius:12px; padding:22px 0;">
+                  <span style="font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:38px; font-weight:600; letter-spacing:10px; color:#ECECEE;">{{ .Token }}</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:28px 36px 36px 36px;">
+                <p style="margin:0; font-size:13px; line-height:1.5; color:#56565C;">
+                  If you didn't ask to sign in to Rinkler, you can safely ignore this email.
+                </p>
+              </td>
+            </tr>
+          </table>
+          <p style="margin:24px 0 0 0; font-size:12px; color:#56565C;">Rinkler · take your feeds back</p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

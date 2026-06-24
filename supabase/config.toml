@@ -1,0 +1,65 @@
+# Supabase config — version-controlled Auth/email setup.
+#
+# This file makes the email-code login reproducible: it pins the OTP behaviour,
+# points custom SMTP at Resend, and wires the email templates that render the
+# 6-digit code. Apply it to the hosted project with:
+#
+#     supabase link --project-ref <your-project-ref>
+#     supabase config push
+#
+# (Or mirror these values by hand in the dashboard — see supabase/AUTH_EMAIL.md.)
+#
+# `project_id` is just a local label; the *linked* ref above is what config push
+# targets.
+project_id = "rinkler"
+
+[auth]
+# Where users land after a magic-link/confirmation click. Rinkler logs in with a
+# 6-digit code (no link tap, no password), so this only matters as a fallback.
+site_url = "https://rinkler.app"
+additional_redirect_urls = ["https://rinkler.app/auth/callback", "rinkler://auth/callback"]
+
+[auth.email]
+enable_signup = true
+# We send a code, not a confirmation link, so don't gate sign-in on a link click.
+enable_confirmations = false
+# 6-digit numeric code (the iOS + web UIs both expect exactly 6).
+otp_length = 6
+# Code lifetime in seconds. 1 hour is generous but within Supabase's advisory.
+otp_expiry = 3600
+# Minimum gap between code emails to one address. Keep low enough that the
+# "Resend code" button is usable, high enough to deter abuse.
+max_frequency = "60s"
+
+# Custom SMTP via Resend. The default Supabase mailer is throttled to a few
+# emails/hour and is not for production — this routes every auth email through
+# Resend instead. The password is the Resend API key, read from the environment
+# so it never lands in git (see supabase/.env.example).
+[auth.email.smtp]
+enabled = true
+host = "smtp.resend.com"
+port = 465
+user = "resend"
+pass = "env(RESEND_SMTP_PASSWORD)"
+# Must be an address on a domain you've verified in Resend.
+admin_email = "login@rinkler.app"
+sender_name = "Rinkler"
+
+# IMPORTANT: signInWithOtp picks the template by whether the user already exists.
+# Rinkler passes shouldCreateUser/create_user = true, so a brand-NEW user gets the
+# "confirmation" (Confirm signup) template, while a returning user gets
+# "magic_link". Both MUST render {{ .Token }} or a first-time user would receive a
+# link instead of the code the "enter your code" screen asks for.
+[auth.email.template.confirmation]
+subject = "Your Rinkler code"
+content_path = "./supabase/templates/otp_code.html"
+
+[auth.email.template.magic_link]
+subject = "Your Rinkler code"
+content_path = "./supabase/templates/otp_code.html"
+
+# Account-deletion re-auth (and any future re-auth) already defaults to a token
+# template, but pin it for consistency.
+[auth.email.template.reauthentication]
+subject = "Confirm it's you — Rinkler"
+content_path = "./supabase/templates/otp_code.html"
