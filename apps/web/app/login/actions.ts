@@ -104,5 +104,15 @@ export async function verifyEmailCode(prevState: unknown, formData: FormData) {
   }
 
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect(safeNextPath(formData.get("next")));
+}
+
+/**
+ * Where to land after sign-in. Only an internal absolute path is allowed
+ * (e.g. "/friend"); anything protocol-relative or cross-origin falls back to "/"
+ * so the `next` param can't be abused as an open redirect.
+ */
+function safeNextPath(raw: FormDataEntryValue | null): string {
+  const value = typeof raw === "string" ? raw : "";
+  return value.startsWith("/") && !value.startsWith("//") ? value : "/";
 }

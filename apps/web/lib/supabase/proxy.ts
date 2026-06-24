@@ -19,15 +19,30 @@ function isPublicPath(pathname: string): boolean {
   );
 }
 
+/**
+ * Redirect an unauthenticated request to /login, remembering where they were
+ * headed via ?next= so sign-in can return them there (e.g. a friend opening
+ * /friend lands back on /friend instead of the marketing home). Only an internal
+ * absolute path is preserved — never a protocol-relative or cross-origin value.
+ */
+function redirectToLogin(request: NextRequest) {
+  const url = request.nextUrl.clone();
+  const dest = url.pathname + url.search;
+  url.pathname = "/login";
+  url.search = "";
+  if (dest.startsWith("/") && !dest.startsWith("//")) {
+    url.searchParams.set("next", dest);
+  }
+  return NextResponse.redirect(url);
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
   const config = getSupabasePublicConfig();
 
   if (!config) {
     if (!isPublicPath(request.nextUrl.pathname)) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/login";
-      return NextResponse.redirect(url);
+      return redirectToLogin(request);
     }
     return supabaseResponse;
   }
@@ -52,9 +67,7 @@ export async function updateSession(request: NextRequest) {
   const user = data?.claims;
 
   if (!user && !isPublicPath(request.nextUrl.pathname)) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
+    return redirectToLogin(request);
   }
 
   return supabaseResponse;
