@@ -11,8 +11,20 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
+      // Waitlist gate (same flag as the email path): if locked, an email not on
+      // the allowlist isn't permitted in yet. OAuth creates the user before we can
+      // check, so we sign them straight back out — they stay blocked because the
+      // gate keys off the allowlist, not off account existence.
+      if (process.env.ENABLE_WAITLIST_LOCK === "true") {
+        const email = data.user?.email ?? "";
+        const { data: allowed } = await supabase.rpc("email_can_sign_in", { p_email: email });
+        if (!allowed) {
+          await supabase.auth.signOut();
+          return NextResponse.redirect(`${origin}/login?error=waitlist`);
+        }
+      }
       return NextResponse.redirect(`${origin}${next}`);
     }
   }

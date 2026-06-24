@@ -91,7 +91,7 @@ export default function LoginPage() {
   const [requestState, requestAction, requestPending] = useActionState(requestEmailCode, null);
   const [verifyState, verifyAction, verifyPending] = useActionState(verifyEmailCode, null);
   const [codeInput, setCodeInput] = useState("");
-  const [callbackError, setCallbackError] = useState(false);
+  const [errorParam, setErrorParam] = useState<string | null>(null);
   const [oauthBusy, setOauthBusy] = useState<"google" | "apple" | null>(null);
   const [oauthError, setOauthError] = useState<string | null>(null);
   const [captchaToken, setCaptchaToken] = useState("");
@@ -163,7 +163,7 @@ export default function LoginPage() {
   const isPending = requestPending || verifyPending;
   const statusMessage = state && "message" in state ? state.message : null;
   useEffect(() => {
-    setCallbackError(new URLSearchParams(window.location.search).has("error"));
+    setErrorParam(new URLSearchParams(window.location.search).get("error"));
   }, []);
   // A Turnstile token is single-use; after each email-send attempt, get a fresh one.
   useEffect(() => {
@@ -499,7 +499,10 @@ export default function LoginPage() {
         )}
 
         {state?.error && <p style={errorStyle}>{state.error}</p>}
-        {!state?.error && callbackError && (
+        {!state?.error && errorParam === "waitlist" && (
+          <p style={messageStyle}>You're on the waitlist — we'll email you the moment your spot opens.</p>
+        )}
+        {!state?.error && errorParam && errorParam !== "waitlist" && (
           <p style={errorStyle}>That sign-in link could not be verified. Request a new code.</p>
         )}
         {statusMessage && <p style={messageStyle}>{statusMessage}</p>}

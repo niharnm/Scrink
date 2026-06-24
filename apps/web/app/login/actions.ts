@@ -37,6 +37,20 @@ export async function requestEmailCode(prevState: unknown, formData: FormData) {
 
   const captchaToken = String(formData.get("captchaToken") || "") || undefined;
   const supabase = await createClient();
+
+  // Waitlist gate (dark-launched behind a flag): only allow-listed emails can
+  // request a code. Existing users were grandfathered into the list by migration,
+  // so flipping this on never locks out a current account.
+  if (process.env.ENABLE_WAITLIST_LOCK === "true") {
+    const { data: allowed } = await supabase.rpc("email_can_sign_in", { p_email: email });
+    if (!allowed) {
+      return {
+        step: "email",
+        email,
+        error: "You're on the waitlist — we'll email you the moment your spot opens.",
+      };
+    }
+  }
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
