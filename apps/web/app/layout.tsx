@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 
 // The exact Geist font files the iOS app bundles, so the site matches the app.
@@ -22,9 +22,45 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Rinkler — Scroll less, keep the useful parts",
+  // Required so OG/Twitter image + canonical URLs resolve to absolute paths.
+  metadataBase: new URL("https://rinkler.app"),
+  title: {
+    default: "Rinkler — kill the endless scroll, not your whole phone",
+    template: "%s · Rinkler",
+  },
   description:
-    "Rinkler quietly interrupts Reels and TikTok on your device so you keep the useful parts of your apps and lose the infinite scroll. Private by design.",
+    "Rinkler quietly cuts the endless feed inside Instagram, TikTok and YouTube on your device — you keep your DMs, search and posts, and lose the infinite scroll. Private by design. Drops July 10.",
+  applicationName: "Rinkler",
+  keywords: [
+    "screen time app",
+    "block reels",
+    "block tiktok",
+    "stop doomscrolling",
+    "feed blocker",
+    "focus app",
+    "digital wellbeing",
+    "Rinkler",
+  ],
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    url: "https://rinkler.app",
+    siteName: "Rinkler",
+    title: "Rinkler — kill the endless scroll, not your whole phone",
+    description:
+      "cuts the endless feed inside your social apps, keeps the parts you actually use. private by design. drops july 10.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Rinkler — kill the endless scroll, not your whole phone",
+    description: "cuts the endless feed inside your social apps, keeps the parts you actually use.",
+  },
+  robots: { index: true, follow: true },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#08080A",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({
