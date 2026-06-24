@@ -1,0 +1,39 @@
+name: iOS Signing Seed
+
+# Run this ONCE, manually, after the secrets are in place. It creates the Apple
+# Distribution certificate and the three App Store provisioning profiles, then
+# stores them (encrypted with MATCH_PASSWORD) in the match repo. After it succeeds,
+# the iOS TestFlight workflow can sign builds reproducibly. Safe to re-run: match
+# reuses existing assets and only creates what's missing.
+on:
+  workflow_dispatch:
+
+jobs:
+  seed:
+    name: create & store signing assets
+    runs-on: macos-15
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: apps/ios
+    env:
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+      MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -switch /Applications/Xcode.app
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+          working-directory: apps/ios
+
+      - name: Seed signing
+        run: bundle exec fastlane seed_signing

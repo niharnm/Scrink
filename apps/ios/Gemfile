@@ -1,0 +1,4 @@
+source "https://rubygems.org"
+
+# Pinned so CI builds are reproducible. Bump deliberately.
+gem "fastlane", "~> 2.222"

@@ -1,0 +1,11 @@
+# Primary app identifier. The two app extensions (.tunnel, .activityreport) are
+# handled explicitly in the Fastfile's match calls — fastlane only needs the main
+# app id here.
+app_identifier("com.rinkler.app")
+
+# Apple Developer Team. Pulled from the Xcode project (DEVELOPMENT_TEAM).
+team_id("QDKSUX27F9")
+
+# No apple_id / itc_team_id needed: all App Store Connect auth goes through the
+# App Store Connect API key (.p8), configured in the Fastfile. This keeps CI
+# non-interactive and 2FA-free.

@@ -1,0 +1,7 @@
+# Encrypted signing storage. The git repo URL and decryption passphrase come from
+# CI secrets (MATCH_GIT_URL, MATCH_PASSWORD); repo auth comes from
+# MATCH_GIT_BASIC_AUTHORIZATION. Keeping them out of source means this file is safe
+# to commit.
+storage_mode("git")
+git_url(ENV["MATCH_GIT_URL"]) if ENV["MATCH_GIT_URL"]
+type("appstore")

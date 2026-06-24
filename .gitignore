@@ -21,6 +21,15 @@ xcuserdata/
 *.dSYM.zip
 *.dSYM
 
+# fastlane / CI signing
+apps/ios/vendor/bundle/
+apps/ios/fastlane/report.xml
+apps/ios/fastlane/README.md
+**/*.p8
+**/*.p12
+**/*.mobileprovision
+**/*.cer
+
 # General
 .DS_Store
 *.log

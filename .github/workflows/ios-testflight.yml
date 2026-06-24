@@ -1,0 +1,62 @@
+name: iOS TestFlight
+
+# Every push to main that changes the iOS app builds a signed archive and ships it
+# to TestFlight. With "Automatic Updates" enabled for Rinkler in the TestFlight app,
+# the new build lands on the phone with no manual step. Manual runs are allowed too.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/ios/**"
+      - ".github/workflows/ios-testflight.yml"
+  workflow_dispatch:
+
+# Cancel an in-flight build if a newer commit lands — no point shipping a stale one.
+concurrency:
+  group: ios-testflight
+  cancel-in-progress: true
+
+jobs:
+  testflight:
+    name: build & upload
+    runs-on: macos-15
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: apps/ios
+    env:
+      # App Store Connect API key (TestFlight upload + signing auth).
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+      # match: decryption passphrase, certs-repo URL, and repo auth (base64 PAT).
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+      MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Use the newest Xcode the runner image provides.
+      - name: Select Xcode
+        run: sudo xcode-select -switch /Applications/Xcode.app
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+          working-directory: apps/ios
+
+      - name: Build & upload to TestFlight
+        run: bundle exec fastlane beta
+
+      # Keep the IPA/logs for debugging a failed or surprising build.
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build-output
+          path: |
+            apps/ios/build/ipa/*.ipa
+            ~/Library/Logs/gym/*.log
+          if-no-files-found: ignore
+          retention-days: 7

@@ -1,0 +1,127 @@
+# Rinkler iOS — TestFlight delivery.
+#
+# Two lanes:
+#   seed_signing  -> run ONCE (via the "iOS Signing Seed" GitHub Action) to create
+#                    the Apple Distribution certificate + App Store provisioning
+#                    profiles for all three bundle ids and store them, encrypted,
+#                    in the match repo.
+#   beta          -> runs on every push to main that touches apps/ios/**: bumps the
+#                    build number, builds a signed archive, uploads to TestFlight.
+#
+# All App Store Connect auth uses the API key (.p8) — no Apple ID / 2FA in CI.
+
+default_platform(:ios)
+
+# The main app and its two embedded extensions. App Store profiles are required
+# for every one of them; the Packet Tunnel (.tunnel) in particular won't archive
+# without a profile carrying the Network Extensions entitlement.
+APP_IDS = [
+  "com.rinkler.app",
+  "com.rinkler.app.tunnel",
+  "com.rinkler.app.activityreport",
+].freeze
+
+# Xcode target name -> bundle id, used to apply the right profile per target.
+TARGET_TO_ID = {
+  "Rinkler"               => "com.rinkler.app",
+  "RinklerTunnel"         => "com.rinkler.app.tunnel",
+  "RinklerActivityReport" => "com.rinkler.app.activityreport",
+}.freeze
+
+XCODEPROJ = "Rinkler.xcodeproj"
+SCHEME    = "Rinkler"
+
+# CFBundleVersion lives directly in each target's Info.plist (the project has no
+# CURRENT_PROJECT_VERSION build setting), so we write it there.
+INFO_PLISTS = {
+  "Rinkler"               => "Rinkler/Info.plist",
+  "RinklerTunnel"         => "RinklerTunnel/Info.plist",
+  "RinklerActivityReport" => "RinklerActivityReport/Info.plist",
+}.freeze
+
+def asc_api_key
+  app_store_connect_api_key(
+    key_id:      ENV.fetch("ASC_KEY_ID"),
+    issuer_id:   ENV.fetch("ASC_ISSUER_ID"),
+    key_content: ENV.fetch("ASC_KEY_P8"), # raw .p8 text, stored as a secret
+    is_key_content_base64: false,
+    in_house: false,
+  )
+end
+
+# match stores the chosen profile name under this env var after it runs.
+def profile_name_for(app_id)
+  ENV.fetch("sigh_#{app_id}_appstore_profile-name")
+end
+
+platform :ios do
+  # ---- one-time: create & store signing assets -----------------------------
+  desc "Create the Apple Distribution cert + App Store profiles and store them in the match repo"
+  lane :seed_signing do
+    setup_ci
+    match(
+      type: "appstore",
+      app_identifier: APP_IDS,
+      api_key: asc_api_key,
+      readonly: false,           # create what's missing
+      force_for_new_devices: false,
+    )
+    UI.success("Signing assets created and pushed to the match repo. You can re-run 'beta' now.")
+  end
+
+  # ---- every push: build & ship to TestFlight ------------------------------
+  desc "Build a signed archive and upload it to TestFlight"
+  lane :beta do
+    setup_ci                     # ephemeral keychain on the CI runner
+    api_key = asc_api_key
+
+    # Pull existing signing assets (never mutate them here).
+    match(
+      type: "appstore",
+      app_identifier: APP_IDS,
+      api_key: api_key,
+      readonly: true,
+    )
+
+    # Unique, monotonically increasing build number. GITHUB_RUN_NUMBER is ideal;
+    # fall back to a wall-clock stamp for local runs. Apple requires the app and
+    # its embedded extensions to share the same CFBundleVersion.
+    build_number = ENV["GITHUB_RUN_NUMBER"] || Time.now.strftime("%Y%m%d%H%M")
+    INFO_PLISTS.each_value do |plist|
+      set_info_plist_value(path: plist, key: "CFBundleVersion", value: build_number)
+    end
+    UI.message("Build number set to #{build_number} across #{INFO_PLISTS.size} targets")
+
+    # Force manual signing with the match profiles for the Release config.
+    TARGET_TO_ID.each do |target, app_id|
+      update_code_signing_settings(
+        path: XCODEPROJ,
+        targets: [target],
+        use_automatic_signing: false,
+        code_sign_identity: "Apple Distribution",
+        profile_name: profile_name_for(app_id),
+        build_configurations: ["Release"],
+      )
+    end
+
+    build_app(
+      project: XCODEPROJ,
+      scheme: SCHEME,
+      configuration: "Release",
+      export_method: "app-store",
+      export_options: {
+        signingStyle: "manual",
+        provisioningProfiles: TARGET_TO_ID.transform_values { |id| profile_name_for(id) },
+      },
+      output_directory: "build/ipa",
+      clean: true,
+    )
+
+    upload_to_testflight(
+      api_key: api_key,
+      skip_waiting_for_build_processing: true, # don't burn CI minutes waiting on Apple
+      skip_submission: true,                   # TestFlight only; no App Store review
+    )
+    UI.success("Uploaded build #{build_number} to TestFlight.")
+  end
+end
