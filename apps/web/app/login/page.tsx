@@ -91,8 +91,12 @@ export default function LoginPage() {
   const widgetId = useRef<string | null>(null);
   // When a captcha is configured, hold actions until we have a token.
   const captchaReady = !siteKey || captchaToken.length > 0;
-  const [phase, setPhase] = useState<"pending" | "slaying" | "won" | "rejected">("pending");
+  const [phase, setPhase] = useState<"pending" | "slaying" | "won" | "rejected" | "stuck">("pending");
   const [rejectSignal, setRejectSignal] = useState(0);
+  const rejectsRef = useRef(0);
+  // If the captcha keeps erroring (misconfigured domain, adblock, etc.) we stop and
+  // still let OAuth through — Apple/Google don't need the token to be abuse-safe.
+  const canOAuth = captchaReady || phase === "stuck";
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
   const cardRef = useRef<HTMLDivElement>(null);
@@ -121,7 +125,7 @@ export default function LoginPage() {
   // Same Supabase backend as the iOS app, so signing in here with Apple/Google
   // lands on the same account — and your phone's data shows up in the dashboard.
   async function signInWith(provider: "google" | "apple") {
-    if (!captchaReady) return; // must clear the captcha first
+    if (!canOAuth) return; // must clear the captcha first (or it failed and we fall back)
     setOauthError(null);
     setOauthBusy(provider);
     try {
@@ -160,6 +164,7 @@ export default function LoginPage() {
   // The ambush: the first time the captcha clears, send in the swordsmen.
   useEffect(() => {
     if (!captchaToken || phase !== "pending") return;
+    rejectsRef.current = 0; // a real success clears the failure count
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
       setPhase("won");
@@ -169,13 +174,20 @@ export default function LoginPage() {
     const id = setTimeout(() => setPhase("won"), 4300);
     return () => clearTimeout(id);
   }, [captchaToken, phase]);
-  // Rejected/expired: a lone swordsman whiffs, the captcha dodges, you go again.
+  // Rejected / expired / error. A genuine failed challenge gets one whiff animation
+  // and a retry — but if it keeps erroring (misconfigured domain, adblock, etc.) we
+  // STOP after a couple tries so the user is never trapped in a loop.
   useEffect(() => {
     if (rejectSignal === 0) return;
     const t = getTurnstile();
-    // If it expires after a win, just silently re-arm the invisible widget.
+    // Expired long after a win: silently re-arm the invisible widget, no animation.
     if (phaseRef.current === "won") {
       if (widgetId.current && t) t.reset(widgetId.current);
+      return;
+    }
+    rejectsRef.current += 1;
+    if (rejectsRef.current >= 2) {
+      setPhase("stuck"); // persistent failure — give up gracefully, stop retrying
       return;
     }
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -185,7 +197,7 @@ export default function LoginPage() {
       if (widgetId.current && tt) tt.reset(widgetId.current);
       setCaptchaToken("");
       setPhase("pending");
-    }, reduce ? 800 : 2000);
+    }, reduce ? 800 : 1600);
     return () => clearTimeout(id);
   }, [rejectSignal]);
   // Anchor the overlay to the chip's real position and scale to the card width.
@@ -333,12 +345,13 @@ export default function LoginPage() {
                       className={
                         "cap-chip" +
                         (phase === "slaying" ? " ok dying" : "") +
-                        (phase === "rejected" ? " bad dodging" : "")
+                        (phase === "rejected" ? " bad dodging" : "") +
+                        (phase === "stuck" ? " bad" : "")
                       }
                     >
                       {phase === "slaying" ? (
                         <span className="cap-check">✓</span>
-                      ) : phase === "rejected" ? (
+                      ) : phase === "rejected" || phase === "stuck" ? (
                         <span className="cap-x">✗</span>
                       ) : (
                         <span className="cap-dot" />
@@ -347,14 +360,16 @@ export default function LoginPage() {
                         className={
                           "cap-text" +
                           (phase === "slaying" ? " ok" : "") +
-                          (phase === "rejected" ? " bad" : "")
+                          (phase === "rejected" || phase === "stuck" ? " bad" : "")
                         }
                       >
                         {phase === "slaying"
                           ? "youre human, nice"
                           : phase === "rejected"
                             ? "that one didnt count, hang on…"
-                            : "making sure youre human…"}
+                            : phase === "stuck"
+                              ? "couldnt verify you. refresh, or use Apple/Google."
+                              : "making sure youre human…"}
                       </span>
                       <span className="cap-brand">Cloudflare</span>
                     </div>
@@ -381,12 +396,12 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => signInWith("apple")}
-                disabled={oauthBusy !== null || !captchaReady}
+                disabled={oauthBusy !== null || !canOAuth}
                 style={{
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
                   width: "100%", height: 46, borderRadius: 10, border: "none",
-                  cursor: oauthBusy || !captchaReady ? "default" : "pointer", background: signal.text, color: "#08080A",
-                  fontFamily: signal.sans, fontSize: 15, fontWeight: 600, opacity: oauthBusy || !captchaReady ? 0.55 : 1,
+                  cursor: oauthBusy || !canOAuth ? "default" : "pointer", background: signal.text, color: "#08080A",
+                  fontFamily: signal.sans, fontSize: 15, fontWeight: 600, opacity: oauthBusy || !canOAuth ? 0.55 : 1,
                 }}
               >
                 <AppleMark />
@@ -395,12 +410,12 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => signInWith("google")}
-                disabled={oauthBusy !== null || !captchaReady}
+                disabled={oauthBusy !== null || !canOAuth}
                 style={{
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-                  width: "100%", height: 46, borderRadius: 10, cursor: oauthBusy || !captchaReady ? "default" : "pointer",
+                  width: "100%", height: 46, borderRadius: 10, cursor: oauthBusy || !canOAuth ? "default" : "pointer",
                   background: "transparent", color: signal.text, border: `1px solid ${signal.borderStrong}`,
-                  fontFamily: signal.sans, fontSize: 15, fontWeight: 600, opacity: oauthBusy || !captchaReady ? 0.55 : 1,
+                  fontFamily: signal.sans, fontSize: 15, fontWeight: 600, opacity: oauthBusy || !canOAuth ? 0.55 : 1,
                 }}
               >
                 <GoogleMark />
