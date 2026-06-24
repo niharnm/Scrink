@@ -10,6 +10,11 @@ on:
   push:
     branches: [main]
 
+# Least privilege: this job only needs to read the code. Explicit so it's robust
+# against repo/org default-permission changes.
+permissions:
+  contents: read
+
 jobs:
   check:
     name: typecheck & lint

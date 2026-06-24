@@ -1,5 +1,16 @@
+import { createHash, timingSafeEqual } from "node:crypto";
 import { FastMCP } from "fastmcp";
 import { registerTools } from "./tools.js";
+
+// Constant-time compare of the bearer token against the API key. Hashing both
+// sides to a fixed 32-byte digest keeps lengths equal (timingSafeEqual throws on
+// length mismatch) and avoids leaking the secret's length via early-exit timing.
+function tokenMatches(authHeader: string | undefined, key: string): boolean {
+  if (typeof authHeader !== "string") return false;
+  const a = createHash("sha256").update(authHeader).digest();
+  const b = createHash("sha256").update(`Bearer ${key}`).digest();
+  return timingSafeEqual(a, b);
+}
 
 const transport =
   process.env.MCP_TRANSPORT === "stdio" ? "stdio" : "httpStream";
@@ -36,7 +47,7 @@ const server = new FastMCP({
       return { authenticated: true };
     }
     const token = request.headers["authorization"];
-    if (!apiKey || token !== `Bearer ${apiKey}`) {
+    if (!apiKey || !tokenMatches(token, apiKey)) {
       throw new Error("Unauthorized");
     }
     return { authenticated: true };
