@@ -90,6 +90,6 @@ if (dupEmails.length === 0 && sharedSubs.length === 0) {
 }
 console.log("");
 console.log("How to fully verify the pipeline once the iOS app builds:");
-console.log("  1. Sign in with Apple on the phone, then on rinkler.vercel.app.");
+console.log("  1. Sign in with Apple on the phone, then on rinkler.app.");
 console.log("  2. Re-run this script — total accounts should NOT increase, and dupEmails must stay 0.");
 console.log("  3. Generate some traffic on the phone, refresh the web dashboard -> the same numbers appear.");
