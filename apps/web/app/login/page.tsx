@@ -515,7 +515,7 @@ export default function LoginPage() {
 
         {state?.error && <p style={errorStyle}>{state.error}</p>}
         {!state?.error && errorParam === "waitlist" && (
-          <p style={messageStyle}>You're on the waitlist — we'll email you the moment your spot opens.</p>
+          <p style={messageStyle}>{"You're on the waitlist — we'll email you the moment your spot opens."}</p>
         )}
         {!state?.error && errorParam && errorParam !== "waitlist" && (
           <p style={errorStyle}>That sign-in link could not be verified. Request a new code.</p>
