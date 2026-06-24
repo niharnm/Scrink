@@ -111,24 +111,6 @@ struct RinklerApp: App {
                                     onStartSession: { path.append(Route.focusSetup) },
                                     onTrafficDashboard: { path.append(Route.trafficDashboard) }
                                 )
-                            case .home:
-                                HomeScreen(
-                                    onSignIn: {
-                                        path.append(Route.magicSignIn)
-                                    },
-                                    onSettings: {
-                                        path.append(Route.settings)
-                                    },
-                                    onTrafficDashboard: {
-                                        path.append(Route.trafficDashboard)
-                                    },
-                                    onStartSession: {
-                                        path.append(Route.focusSetup)
-                                    },
-                                    onResumeSession: {
-                                        path.append(Route.activeSession)
-                                    }
-                                )
                             case .focusSetup:
                                 FocusSetupScreen(onBegin: {
                                     // Replace setup with the active session so Back from

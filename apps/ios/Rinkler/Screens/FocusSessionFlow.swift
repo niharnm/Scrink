@@ -517,6 +517,8 @@ struct SessionRecapScreen: View {
             }
         }
         .navigationBarBackButtonHidden(true)
+        // Session complete — a single success buzz when the recap lands.
+        .sensoryFeedback(.success, trigger: sessions.lastCompleted?.id)
     }
 
     private func recapStat(value: String, label: String) -> some View {

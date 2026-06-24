@@ -74,10 +74,24 @@ enum RinklerFonts {
 
     /// Quiet caption used under numbers and on chips.
     static let caption = sans(13, .medium)
-    /// Section / card titles.
-    static let cardTitle = sans(19, .semibold)
     /// Hero subtitle line ("of focus protected today") — a label, so Sans.
     static let heroUnit = sans(22, .regular)
+
+    // MARK: - Semantic presets (use these in screens instead of raw `sans(N)`)
+    //
+    // Screens had ~5 different "screen title" sizes (40/34/28/25/24). These
+    // presets give one of each so every tab/screen reads as the same product.
+
+    /// The main title at the top of a screen / tab (Today, Apps, Control…).
+    static let screenTitle = sans(28, .bold)
+    /// A section heading inside a screen.
+    static let sectionTitle = sans(20, .bold)
+    /// Title on a card / list row.
+    static let cardTitle = sans(17, .semibold)
+    /// Default body copy.
+    static let body = sans(15, .regular)
+    /// Small uppercase eyebrow / kicker over a screen title.
+    static let eyebrow = sans(13, .semibold)
 
     // MARK: - Number presets (Geist Mono)
 

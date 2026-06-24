@@ -104,11 +104,11 @@ private struct SyncStatusBanner: View {
     private var color: Color {
         switch status {
         case .failed, .notAuthenticated:
-            return .orange
+            return RinklerColors.signalWarning
         case .synced:
-            return .green
+            return RinklerColors.signalSuccess
         default:
-            return RinklerColors.skyBlue
+            return RinklerColors.signalBlue
         }
     }
 
@@ -152,23 +152,23 @@ private struct StatsCountersView: View {
             .buttonStyle(.plain)
 
             NavigationLink {
-                EventListView(title: "Allowed", events: events.filter { $0.type == .allowed || $0.type == .completed }, color: .green)
+                EventListView(title: "Allowed", events: events.filter { $0.type == .allowed || $0.type == .completed }, color: RinklerColors.signalSuccess)
             } label: {
-                StatBox(label: "Allowed", value: stats?.tcpAllowed ?? 0, color: .green)
+                StatBox(label: "Allowed", value: stats?.tcpAllowed ?? 0, color: RinklerColors.signalSuccess)
             }
             .buttonStyle(.plain)
 
             NavigationLink {
-                EventListView(title: "Blocked", events: events.filter { $0.type == .blocked || $0.type == .streamBlocked }, color: .red)
+                EventListView(title: "Blocked", events: events.filter { $0.type == .blocked || $0.type == .streamBlocked }, color: RinklerColors.signalDanger)
             } label: {
-                StatBox(label: "Blocked", value: stats?.tcpBlocked ?? 0, color: .red)
+                StatBox(label: "Blocked", value: stats?.tcpBlocked ?? 0, color: RinklerColors.signalDanger)
             }
             .buttonStyle(.plain)
 
             NavigationLink {
-                EventListView(title: "Errors", events: events.filter { $0.type == .error }, color: .orange)
+                EventListView(title: "Errors", events: events.filter { $0.type == .error }, color: RinklerColors.signalWarning)
             } label: {
-                StatBox(label: "Errors", value: stats?.errors ?? 0, color: .orange)
+                StatBox(label: "Errors", value: stats?.errors ?? 0, color: RinklerColors.signalWarning)
             }
             .buttonStyle(.plain)
         }
@@ -240,7 +240,7 @@ struct EventListView: View {
                             if let bytes = event.bytesDown, bytes > 0 {
                                 Text(formatBytes(bytes) + " down")
                                     .font(RinklerFonts.coolvetica(size: 12))
-                                    .foregroundColor(RinklerColors.skyBlue)
+                                    .foregroundColor(RinklerColors.signalBlue)
                             }
                         }
                         .padding(RinklerSpacing.sm)
@@ -282,11 +282,11 @@ private struct EventTypeBadge: View {
 
     private var badgeColor: Color {
         switch type {
-        case .allowed: return .green
-        case .blocked: return .red
-        case .streamBlocked: return .red
-        case .error: return .orange
-        case .completed: return .blue
+        case .allowed: return RinklerColors.signalSuccess
+        case .blocked: return RinklerColors.signalDanger
+        case .streamBlocked: return RinklerColors.signalDanger
+        case .error: return RinklerColors.signalWarning
+        case .completed: return RinklerColors.signalBlue
         }
     }
 
@@ -324,7 +324,7 @@ private struct TopDomainsChartView: View {
                         x: .value("Bytes", domain.totalBytes),
                         y: .value("Domain", shortDomain(domain.domain))
                     )
-                    .foregroundStyle(RinklerColors.skyBlue)
+                    .foregroundStyle(RinklerColors.signalBlue)
                     .annotation(position: .trailing, alignment: .leading) {
                         Text("\(domain.count)x")
                             .font(RinklerFonts.coolvetica(size: 10))
@@ -398,13 +398,13 @@ private struct BytesTimelineView: View {
                             x: .value("Time", point.0),
                             y: .value("Bytes", point.1)
                         )
-                        .foregroundStyle(RinklerColors.skyBlue)
+                        .foregroundStyle(RinklerColors.signalBlue)
 
                         AreaMark(
                             x: .value("Time", point.0),
                             y: .value("Bytes", point.1)
                         )
-                        .foregroundStyle(RinklerColors.skyBlue.opacity(0.15))
+                        .foregroundStyle(RinklerColors.signalBlue.opacity(0.15))
                     }
                 }
                 .chartYAxis {
@@ -585,7 +585,7 @@ private struct ConnectionRow: View {
                 HStack(spacing: 1) {
                     let total = max(connection.totalBytes, 1)
                     Rectangle()
-                        .fill(RinklerColors.skyBlue)
+                        .fill(RinklerColors.signalBlue)
                         .frame(width: geo.size.width * CGFloat(connection.bytesUp) / CGFloat(total))
                     Rectangle()
                         .fill(Color.white.opacity(0.4))
@@ -598,7 +598,7 @@ private struct ConnectionRow: View {
             HStack {
                 Label(formatBytes(connection.bytesUp), systemImage: "arrow.up")
                     .font(.system(size: 9))
-                    .foregroundColor(RinklerColors.skyBlue)
+                    .foregroundColor(RinklerColors.signalBlue)
                 Spacer()
                 Label(formatBytes(connection.bytesDown), systemImage: "arrow.down")
                     .font(.system(size: 9))

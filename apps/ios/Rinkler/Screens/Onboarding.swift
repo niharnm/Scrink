@@ -1106,12 +1106,12 @@ struct TodayDashboard: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: RinklerSpacing.lg) {
                     header
+                    protectionCard
                     heroSection
                     statsCard
                     if !weekPoints.allSatisfy({ $0.value == 0 }) { weekCard }
                     nextWindowCard
                     rulesSection
-                    protectionRow
                 }
                 .padding(.horizontal, RinklerSpacing.lg)
                 .padding(.top, RinklerSpacing.lg)
@@ -1129,10 +1129,10 @@ struct TodayDashboard: View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text("TODAY")
-                    .font(RinklerFonts.sans(13, .semibold))
+                    .font(RinklerFonts.eyebrow)
                     .foregroundStyle(RinklerColors.signalTextDim)
                 Text("Your setup")
-                    .font(RinklerFonts.sans(24, .bold))
+                    .font(RinklerFonts.screenTitle)
                     .foregroundStyle(RinklerColors.signalText)
             }
             Spacer()
@@ -1294,30 +1294,15 @@ struct TodayDashboard: View {
         }
     }
 
-    private var protectionRow: some View {
-        HStack(spacing: RinklerSpacing.md) {
-            Image(systemName: vpnManager.vpnStatus == .connected ? "shield.lefthalf.filled" : "shield.slash")
-                .font(.system(size: 20, weight: .semibold))
-                .foregroundStyle(vpnManager.vpnStatus == .connected ? RinklerColors.signalSuccess : RinklerColors.signalTextDim)
-            Text(vpnManager.vpnStatus == .connected ? "Protection on" : "Protection off")
-                .font(RinklerFonts.sans(15, .medium))
-                .foregroundStyle(RinklerColors.signalText)
-            Spacer()
-            Button { vpnManager.toggleVPN() } label: {
-                Text(vpnManager.vpnStatus == .connected ? "Stop" : "Start")
-                    .font(RinklerFonts.sans(14, .semibold))
-                    .foregroundStyle(vpnManager.vpnStatus == .connected ? RinklerColors.signalText : RinklerColors.signalOnInk)
-                    .padding(.horizontal, 18).frame(height: 36)
-                    .background(vpnManager.vpnStatus == .connected ? AnyView(RinklerColors.signalCardRaised) : AnyView(RinklerColors.signalInk))
-                    .clipShape(Capsule())
-            }
-            .buttonStyle(.plain)
-            .disabled(vpnManager.isPreparingProfile || strictMode.isActive)
-        }
-        .padding(RinklerSpacing.md)
-        .background(RinklerColors.signalCard)
-        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
-        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+    /// Protection status, promoted to the top of the dashboard via the shared
+    /// `ProtectionStatusCard` so it reads instantly and matches Settings.
+    private var protectionCard: some View {
+        ProtectionStatusCard(
+            status: vpnManager.vpnStatus,
+            isPreparing: vpnManager.isPreparingProfile,
+            isLocked: strictMode.isActive,
+            onToggle: { vpnManager.toggleVPN() }
+        )
     }
 
     /// The first rule whose window hasn't ended yet today (simple heuristic until
@@ -1335,7 +1320,7 @@ struct TodayDashboard: View {
             Image(systemName: systemName)
                 .font(.system(size: 15, weight: .semibold))
                 .foregroundStyle(RinklerColors.signalText)
-                .frame(width: 40, height: 40)
+                .frame(width: RinklerSpacing.minHitTarget, height: RinklerSpacing.minHitTarget)
                 .background(RinklerColors.signalCard)
                 .clipShape(Circle())
         }

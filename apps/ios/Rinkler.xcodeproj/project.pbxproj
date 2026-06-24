@@ -13,6 +13,7 @@
 		0B4EB00C97E672425812AA25 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 974BA738E843798E43995962 /* Assets.xcassets */; };
 		0C24B6D217760C4333294C04 /* Onboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32CF084F88F3421AB068BF18 /* Onboarding.swift */; };
 		0CC402E2BB108B7B5AFC218B /* SignalBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 448FA3A85DA3FB571AB9EA8E /* SignalBackground.swift */; };
+		1A2B3C4D5E6F7A8B9C0D1E2F /* ProtectionStatusCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F1E0D9C8B7A6F5E4D3C2B1A /* ProtectionStatusCard.swift */; };
 		0FCE82CC6641E422AC7C9D45 /* app_options.json in Resources */ = {isa = PBXBuildFile; fileRef = 983EDDD90EA565B147AA7E04 /* app_options.json */; };
 		10C777220973770B75600D9A /* HealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DB3A630A68F3878BE35E7AF /* HealthManager.swift */; };
 		13607011B98EE50CCDCEC4C1 /* BlockScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F34347B79285F4AD38772748 /* BlockScreen.swift */; };
@@ -66,13 +67,11 @@
 		77F9B0349A0333FEE6D85B8B /* SkyBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D94A7E9AD636F102CF3E43 /* SkyBackgroundView.swift */; };
 		7BED3440D9549E00072A0124 /* MagicSignInScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 640F7ECB230E7B6AB27CB250 /* MagicSignInScreen.swift */; };
 		7C89568D87C3122F285DCDA0 /* ScreenTimePrimingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E040F910D1BFEAE1B4B956E8 /* ScreenTimePrimingView.swift */; };
-		7D4C592502E7F12816FF2BA6 /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F550C5E5670298216B252FFB /* HomeScreen.swift */; };
 		7D8D76B0058A6D07AEEC75C9 /* TunnelLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21D8AA0B52EFBAE266BFC2DF /* TunnelLogger.swift */; };
 		7F3CB7CA82BFCB3102D024B4 /* TrackedIPStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8087CC6DD4C056AD7AEBBC9 /* TrackedIPStore.swift */; };
 		825D626EFA0E977E595D9ED7 /* GridPositionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9F300AF4318B76D735CB23 /* GridPositionStore.swift */; };
 		8446CD4F7D62573EB05564C0 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 479887D6FB86BE11EE200C2C /* Route.swift */; };
 		876A915268CF0E1700BAEF44 /* RinklerConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DE549248D49EE820D38D45E /* RinklerConstants.swift */; };
-		87AC727BB420F966CC647112 /* BlockingOptionsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E77EC4C2E47266BE66A024 /* BlockingOptionsScreen.swift */; };
 		9022F3151BBBF2126427A6C7 /* RinklerFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59493B9BDCCD2583688AED8 /* RinklerFonts.swift */; };
 		907E345C32C18D8912FA07E7 /* AppCluster.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6995FD2AAA89FF46E9B94BE /* AppCluster.swift */; };
 		90956901EB8C8507D12DC29C /* HeaderBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10D4D9B7C0F8BF5614B3928 /* HeaderBar.swift */; };
@@ -184,6 +183,7 @@
 		3FFAB559009DA505208E9071 /* Geist-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Geist-Bold.ttf"; sourceTree = "<group>"; };
 		43A9748F6CCC6B689B7FFCA3 /* TrafficMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficMonitor.swift; sourceTree = "<group>"; };
 		448FA3A85DA3FB571AB9EA8E /* SignalBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalBackground.swift; sourceTree = "<group>"; };
+		2F1E0D9C8B7A6F5E4D3C2B1A /* ProtectionStatusCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtectionStatusCard.swift; sourceTree = "<group>"; };
 		479887D6FB86BE11EE200C2C /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
 		4B29C653AE4249A47FFCA585 /* TrafficSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficSyncService.swift; sourceTree = "<group>"; };
 		4CC42B1FA5705221AC0C733E /* ReelsBlockFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReelsBlockFilter.swift; sourceTree = "<group>"; };
@@ -196,7 +196,6 @@
 		55A1A7B1A065EAF3065B65C9 /* ShieldController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShieldController.swift; sourceTree = "<group>"; };
 		564D4E3414FAA86BF78846BF /* AuthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStore.swift; sourceTree = "<group>"; };
 		57CECCDC624F3B509FE29006 /* DomainThresholdsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainThresholdsStore.swift; sourceTree = "<group>"; };
-		57E77EC4C2E47266BE66A024 /* BlockingOptionsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockingOptionsScreen.swift; sourceTree = "<group>"; };
 		57F802153DFB883EAE08C05F /* LandingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingPage.swift; sourceTree = "<group>"; };
 		5D252DFF0B940E70C0578122 /* clouds.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clouds.png; sourceTree = "<group>"; };
 		5EBBDF9FB53BAD9FED284E69 /* AppIconCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconCircle.swift; sourceTree = "<group>"; };
@@ -259,7 +258,6 @@
 		F20D7BBFC1769D9BADB7AE38 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		F2F94C505BF1B423E28F1B8F /* RinklerTunnel.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = RinklerTunnel.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F34347B79285F4AD38772748 /* BlockScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockScreen.swift; sourceTree = "<group>"; };
-		F550C5E5670298216B252FFB /* HomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreen.swift; sourceTree = "<group>"; };
 		F5A1766558785D47324AEE13 /* PageIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageIndicator.swift; sourceTree = "<group>"; };
 		F63206D88AC9BEA6E1EC4CD1 /* instagram.svg */ = {isa = PBXFileReference; path = instagram.svg; sourceTree = "<group>"; };
 		F6995FD2AAA89FF46E9B94BE /* AppCluster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCluster.swift; sourceTree = "<group>"; };
@@ -311,14 +309,12 @@
 			isa = PBXGroup;
 			children = (
 				A4DD2326E14A7839C67020B1 /* AuthOptionsView.swift */,
-				57E77EC4C2E47266BE66A024 /* BlockingOptionsScreen.swift */,
 				F34347B79285F4AD38772748 /* BlockScreen.swift */,
 				2329C72BED0AAC93D2EA3F1A /* CodeVerificationScreen.swift */,
 				BDB7A0D75C363B5282779B46 /* CommitmentMode.swift */,
 				04C7DC9D0E526E95A18D2CCF /* DeleteAccountScreen.swift */,
 				6513D5DFDC1A0AAF3679DAC3 /* FocusSessionFlow.swift */,
 				5214095B534B322770F4AF7E /* FriendControlScreen.swift */,
-				F550C5E5670298216B252FFB /* HomeScreen.swift */,
 				57F802153DFB883EAE08C05F /* LandingPage.swift */,
 				9D00C09C029BBAA46AF7FE1C /* LegalScreen.swift */,
 				640F7ECB230E7B6AB27CB250 /* MagicSignInScreen.swift */,
@@ -472,6 +468,7 @@
 				F10D4D9B7C0F8BF5614B3928 /* HeaderBar.swift */,
 				96394AE1B61284743B379677 /* HexGridOverlay.swift */,
 				F5A1766558785D47324AEE13 /* PageIndicator.swift */,
+				2F1E0D9C8B7A6F5E4D3C2B1A /* ProtectionStatusCard.swift */,
 				93149C3327BBE8D752B994EC /* RinklerButton.swift */,
 				448FA3A85DA3FB571AB9EA8E /* SignalBackground.swift */,
 				C4D94A7E9AD636F102CF3E43 /* SkyBackgroundView.swift */,
@@ -709,7 +706,6 @@
 				C39CBD63C897130DD33F86B3 /* BlockSelectionStore.swift in Sources */,
 				03B54F9E43E78E58A4A0AD87 /* BlockedApp.swift in Sources */,
 				1C7CE0C2928E22139C624D14 /* BlockedAppsStore.swift in Sources */,
-				87AC727BB420F966CC647112 /* BlockingOptionsScreen.swift in Sources */,
 				DBBC9B6EB331AFAA8EB046A3 /* CodeVerificationScreen.swift in Sources */,
 				AB4D9057AE04D091CD421152 /* CommitmentMode.swift in Sources */,
 				4720C30A40FD431FCEC5C46D /* DeleteAccountScreen.swift in Sources */,
@@ -725,7 +721,6 @@
 				C25B6A5BA15EB6A01CAF4CC6 /* HexCoordinate.swift in Sources */,
 				6175B7D6B82606618B8DA0E5 /* HexGridLayoutManager.swift in Sources */,
 				6C775B2904BBF22C341B45FB /* HexGridOverlay.swift in Sources */,
-				7D4C592502E7F12816FF2BA6 /* HomeScreen.swift in Sources */,
 				B72E59877096CAAB16A0329E /* LandingPage.swift in Sources */,
 				BCA22A01EE19290C66AEFA03 /* LegalContent.swift in Sources */,
 				415D9013F15D67A9A19CE283 /* LegalScreen.swift in Sources */,
@@ -751,6 +746,7 @@
 				3565A8C87FC312BBCA3CE9E6 /* SettingsScreen.swift in Sources */,
 				AEDB8C308DD7DE3769F35A17 /* ShieldController.swift in Sources */,
 				0CC402E2BB108B7B5AFC218B /* SignalBackground.swift in Sources */,
+				1A2B3C4D5E6F7A8B9C0D1E2F /* ProtectionStatusCard.swift in Sources */,
 				77F9B0349A0333FEE6D85B8B /* SkyBackgroundView.swift in Sources */,
 				FFF2E06EC4951AE544CC8F9A /* SocialAuthService.swift in Sources */,
 				56456EE81A13FDDFB0BE31DE /* SocialMediaIcon.swift in Sources */,

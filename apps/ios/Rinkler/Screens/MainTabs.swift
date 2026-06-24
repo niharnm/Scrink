@@ -88,11 +88,11 @@ struct ControlScreen: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text("CONTROL")
-                .font(RinklerFonts.sans(13, .semibold))
+                .font(RinklerFonts.eyebrow)
                 .tracking(2)
                 .foregroundStyle(RinklerColors.signalTextDim)
             Text("Build a focus session")
-                .font(RinklerFonts.sans(25, .bold))
+                .font(RinklerFonts.screenTitle)
                 .foregroundStyle(RinklerColors.signalText)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -137,6 +137,7 @@ struct ControlScreen: View {
         .padding(.horizontal, RinklerSpacing.md)
         .frame(maxWidth: .infinity)
         .signalCard(cornerRadius: 24)
+        .sensoryFeedback(.selection, trigger: duration)
     }
 
     // MARK: What changes — one organized card
@@ -207,9 +208,9 @@ struct ControlScreen: View {
                     .font(RinklerFonts.sans(18, .semibold))
             }
             .foregroundStyle(RinklerColors.signalOnInk)
-            .frame(maxWidth: .infinity).frame(height: 56)
+            .frame(maxWidth: .infinity).frame(height: RinklerSpacing.primaryControl)
             .background(RinklerColors.signalInk)
-            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: RinklerSpacing.controlRadius, style: .continuous))
         }
         .buttonStyle(.plain)
         .padding(.top, RinklerSpacing.xs)
@@ -307,9 +308,9 @@ struct AppsScreen: View {
                         Text("Connect Screen Time")
                             .font(RinklerFonts.sans(15, .semibold))
                             .foregroundStyle(RinklerColors.signalOnInk)
-                            .frame(maxWidth: .infinity).frame(height: 48)
+                            .frame(maxWidth: .infinity).frame(height: RinklerSpacing.secondaryControl)
                             .background(RinklerColors.signalInk)
-                            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                            .clipShape(RoundedRectangle(cornerRadius: RinklerSpacing.controlRadius, style: .continuous))
                     }
                     .buttonStyle(.plain)
                     .sheet(isPresented: $showScreenTimePriming) {
@@ -349,6 +350,7 @@ struct AppsScreen: View {
                     }
                     .tint(RinklerColors.signalBlue)
                     .disabled(strictMode.isActive)
+                    .sensoryFeedback(.selection, trigger: blockedApps.enabled)
                 }
                 .padding(RinklerSpacing.md)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -374,6 +376,7 @@ struct AppsScreen: View {
             Spacer(minLength: RinklerSpacing.sm)
             Toggle("", isOn: $blockAdsTrackers).labelsHidden().tint(RinklerColors.signalBlue)
                 .disabled(strictMode.isActive)
+                .sensoryFeedback(.selection, trigger: blockAdsTrackers)
         }
         .padding(RinklerSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -414,6 +417,7 @@ struct AppsScreen: View {
                     ))
                     .labelsHidden().tint(RinklerColors.signalBlue)
                     .disabled(strictMode.isActive)
+                    .sensoryFeedback(.selection, trigger: selection.isOn(app.id, feature.id))
                 }
             }
         }
@@ -483,6 +487,7 @@ struct RuleEditorView: View {
                         }
                         .tint(RinklerColors.signalBlue)
                         .disabled(strictMode.isActive)
+                        .sensoryFeedback(.selection, trigger: draft.enabled)
 
                         group("WINDOW") {
                             HStack {
@@ -500,6 +505,7 @@ struct RuleEditorView: View {
                             }
                             .pickerStyle(.segmented)
                             .disabled(strictMode.isActive)
+                            .sensoryFeedback(.selection, trigger: draft.difficultyRaw)
                         }
 
                         group("BLOCKS") { chips(blockedCatalog, list: \.blocked, color: RinklerColors.signalWarning) }
@@ -518,9 +524,9 @@ struct RuleEditorView: View {
                             Text("Delete rule")
                                 .font(RinklerFonts.sans(15, .medium))
                                 .foregroundStyle(RinklerColors.signalWarning)
-                                .frame(maxWidth: .infinity).frame(height: 48)
+                                .frame(maxWidth: .infinity).frame(height: RinklerSpacing.secondaryControl)
                                 .background(RinklerColors.signalCard)
-                                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                                .clipShape(RoundedRectangle(cornerRadius: RinklerSpacing.controlRadius, style: .continuous))
                         }
                         .buttonStyle(.plain)
                         .disabled(strictMode.isActive)
@@ -572,6 +578,7 @@ struct RuleEditorView: View {
                 .buttonStyle(.plain)
             }
         }
+        .sensoryFeedback(.selection, trigger: draft[keyPath: list])
     }
 
     private var startBinding: Binding<Date> {
@@ -663,9 +670,9 @@ struct ProgressScreen: View {
                     Text("Connect Screen Time")
                         .font(RinklerFonts.sans(15, .semibold))
                         .foregroundStyle(RinklerColors.signalOnInk)
-                        .frame(maxWidth: .infinity).frame(height: 48)
+                        .frame(maxWidth: .infinity).frame(height: RinklerSpacing.secondaryControl)
                         .background(RinklerColors.signalInk)
-                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: RinklerSpacing.controlRadius, style: .continuous))
                 }
                 .buttonStyle(.plain)
                 .sheet(isPresented: $showScreenTimePriming) {

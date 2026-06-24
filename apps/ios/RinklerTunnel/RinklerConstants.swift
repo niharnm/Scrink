@@ -18,11 +18,26 @@ enum RinklerConstants {
 
     // MARK: - tun2socks Configuration
     // HevSocks5Tunnel runs each session on a fixed-size coroutine stack. 24 KB
-    // was too small for the UDP forwarding path (hev_socks5_session_udp_fwd_b):
-    // the stack overflowed and the process jumped to an unmapped page, crashing
-    // the tunnel with EXC_BAD_ACCESS / "Failed to fault in a page with execute
-    // permissions". 86016 is the library's own default and the proven-safe value.
-    static let tun2socksTaskStackSize = 86016
+    // overflowed on the UDP forwarding path (hev_socks5_session_udp_fwd_b): the
+    // stack blew past its guard page and the process jumped to an unmapped page,
+    // crashing with EXC_BAD_ACCESS / KERN_PROTECTION_FAILURE ("Invalid Page").
+    //
+    // Root cause (see docs/VPN_STABILIZATION.md): the captured crashes are all
+    // `RinklerTunnel.debug.dylib` — Debug builds. hev_socks5_session_udp_fwd_b is
+    // a tail-recursive splice loop; with optimizations OFF (Debug) the tail call
+    // is NOT eliminated, so each forwarded datagram adds a frame and the stack
+    // grows without bound under sustained QUIC/UDP load. Release builds (-O) do
+    // eliminate the tail call, so the loop runs in constant stack and does not
+    // overflow. The real fix is therefore to test/ship the extension in a Release
+    // (optimized) configuration; this larger stack is defense-in-depth that also
+    // buys Debug-build headroom for on-device testing.
+    //
+    // Memory note: these coroutine stacks are allocated per ACTIVE flow (created
+    // on task start, freed on completion), not pre-allocated `maxConnections`
+    // times — so steady-state cost is (active flows × stack), typically tens of
+    // flows = a few MB, well inside the packet-tunnel memory budget. 131072 (128K)
+    // keeps that headroom while staying conservative.
+    static let tun2socksTaskStackSize = 131072
     static let tun2socksTCPBufferSize = 4096
     static let tun2socksConnectTimeout = 5000
     static let tun2socksReadWriteTimeout = 60000

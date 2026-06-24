@@ -41,11 +41,14 @@ struct SettingsScreen: View {
 
             ScrollView {
                 VStack(spacing: RinklerSpacing.lg) {
-                    // VPN Status Header
-                    vpnStatusSection
-
-                    // VPN Toggle Button
-                    vpnToggleButton
+                    // Protection status + Start/Stop — the same component the
+                    // Today dashboard uses, so protection reads identically here.
+                    ProtectionStatusCard(
+                        status: vpnManager.vpnStatus,
+                        isPreparing: vpnManager.isPreparingProfile,
+                        isLocked: strictMode.isActive,
+                        onToggle: { vpnManager.toggleVPN() }
+                    )
 
                     // Strict Mode (total lockdown)
                     strictModeSection
@@ -250,6 +253,7 @@ struct SettingsScreen: View {
                     Toggle("", isOn: $autoMode.enabled)
                         .labelsHidden().tint(RinklerColors.signalBlue)
                         .disabled(!health.isAuthorized || strictMode.isActive)
+                        .sensoryFeedback(.selection, trigger: autoMode.enabled)
                 }
 
                 if health.isAvailable && !health.isAuthorized {
@@ -273,6 +277,7 @@ struct SettingsScreen: View {
                         ForEach(AutoSensitivity.allCases) { Text($0.title).tag($0) }
                     }
                     .pickerStyle(.segmented)
+                    .sensoryFeedback(.selection, trigger: autoMode.sensitivity)
                     if let reason = autoMode.lastState.reasons.first {
                         Text("Now: \(autoMode.lastState.tier.rawValue) — \(reason)")
                             .font(RinklerFonts.mono(11, .regular))
@@ -467,50 +472,6 @@ struct SettingsScreen: View {
         UIApplication.shared.open(url)
     }
 
-    // MARK: - VPN Status
-
-    private var vpnStatusSection: some View {
-        VStack(spacing: RinklerSpacing.sm) {
-            Image(systemName: vpnManager.vpnStatus == .connected ? "shield.fill" : "shield.slash.fill")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 60, height: 60)
-                .foregroundColor(vpnManager.vpnStatus == .connected ? .green : .gray)
-
-            HStack(spacing: RinklerSpacing.sm) {
-                Circle()
-                    .fill(VPNManager.statusColor(for: vpnManager.vpnStatus))
-                    .frame(width: 10, height: 10)
-                Text(vpnManager.statusString)
-                    .font(RinklerFonts.sans(16, .semibold))
-                    .foregroundStyle(RinklerColors.signalText)
-            }
-        }
-    }
-
-    // MARK: - VPN Toggle
-
-    private var vpnToggleButton: some View {
-        Button(action: { vpnManager.toggleVPN() }) {
-            Text(vpnButtonTitle)
-                .font(RinklerFonts.sans(16, .semibold))
-                .foregroundStyle(vpnManager.vpnStatus == .connected ? .white : RinklerColors.signalOnInk)
-                .frame(maxWidth: .infinity)
-                .frame(height: 52)
-                .background(vpnManager.vpnStatus == .connected ? RinklerColors.signalDanger : RinklerColors.signalInk)
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .opacity(vpnManager.isPreparingProfile || strictMode.isActive ? 0.5 : 1)
-        }
-        .disabled(vpnManager.isPreparingProfile || strictMode.isActive)
-    }
-
-    private var vpnButtonTitle: String {
-        if vpnManager.isPreparingProfile {
-            return "PREPARING..."
-        }
-        return vpnManager.vpnStatus == .connected ? "STOP PROTECTION" : "START PROTECTION"
-    }
-
     // MARK: - Permissions
 
     private var permissionsSection: some View {
@@ -545,10 +506,13 @@ struct SettingsScreen: View {
                     } label: {
                         Text("Grant")
                             .font(RinklerFonts.sans(13, .semibold))
-                            .foregroundStyle(.black)
-                            .padding(.horizontal, 16).frame(height: 34)
+                            .foregroundStyle(RinklerColors.signalOnInk)
+                            .padding(.horizontal, 16).frame(height: RinklerSpacing.compactControl)
                             .background(RinklerColors.signalInk)
                             .clipShape(Capsule())
+                            // Visual pill is 36pt; floor the tap target at 44.
+                            .frame(minHeight: RinklerSpacing.minHitTarget)
+                            .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                 }
@@ -567,19 +531,19 @@ struct SettingsScreen: View {
     private var focusSystemSection: some View {
         VStack(alignment: .leading, spacing: RinklerSpacing.sm) {
             Text("Your Focus System")
-                .font(RinklerFonts.coolvetica(size: 18))
+                .font(RinklerFonts.sans(18, .semibold))
                 .foregroundStyle(RinklerColors.signalText)
 
             if focusSystem.rules.isEmpty {
                 Text("Nothing here yet. Run setup again and we'll build rules from your answers.")
-                    .font(RinklerFonts.coolvetica(size: 13))
+                    .font(RinklerFonts.sans(13, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
             } else {
                 ForEach(focusSystem.rules) { rule in
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(rule.name)
-                                .font(RinklerFonts.coolvetica(size: 15))
+                                .font(RinklerFonts.sans(15, .medium))
                                 .foregroundStyle(RinklerColors.signalText)
                             Text(rule.timeRangeLabel)
                                 .font(RinklerFonts.mono(12, .regular))
@@ -587,7 +551,7 @@ struct SettingsScreen: View {
                         }
                         Spacer()
                         Text(rule.difficulty.title)
-                            .font(RinklerFonts.coolvetica(size: 11))
+                            .font(RinklerFonts.sans(11, .medium))
                             .foregroundColor(RinklerColors.signalBlue)
                     }
                 }
@@ -597,7 +561,7 @@ struct SettingsScreen: View {
                 showResetOnboarding = true
             } label: {
                 Text("Reset onboarding (testing)")
-                    .font(RinklerFonts.coolvetica(size: 14))
+                    .font(RinklerFonts.sans(14, .regular))
                     .foregroundColor(RinklerColors.signalWarning)
             }
             .padding(.top, RinklerSpacing.xs)
@@ -625,23 +589,24 @@ struct SettingsScreen: View {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Commitment mode")
-                        .font(RinklerFonts.coolvetica(size: 18))
+                        .font(RinklerFonts.sans(18, .semibold))
                         .foregroundStyle(RinklerColors.signalText)
                     Text("Turning protection off is the hard part now.")
-                        .font(RinklerFonts.coolvetica(size: 13))
+                        .font(RinklerFonts.sans(13, .regular))
                         .foregroundStyle(RinklerColors.signalTextDim)
                 }
                 Spacer()
                 Toggle("", isOn: $commitment.isEnabled)
                     .labelsHidden()
                     .disabled(strictMode.isActive)
+                    .sensoryFeedback(.selection, trigger: commitment.isEnabled)
             }
 
             if commitment.isEnabled {
                 Divider().overlay(RinklerColors.signalBorder)
 
                 Text("How long you wait before you can bail")
-                    .font(RinklerFonts.coolvetica(size: 14))
+                    .font(RinklerFonts.sans(14, .regular))
                     .foregroundStyle(RinklerColors.signalTextDim)
 
                 Picker("Cooldown", selection: $commitment.cooldownSeconds) {
@@ -651,15 +616,16 @@ struct SettingsScreen: View {
                 }
                 .pickerStyle(.segmented)
                 .disabled(strictMode.isActive)
+                .sensoryFeedback(.selection, trigger: commitment.cooldownSeconds)
 
                 Text("When protection is on, stopping it asks you to wait out this pause and type \(CommitmentStore.unlockWord). iOS Settings can still switch the VPN off — this only adds friction inside Rinkler.")
-                    .font(RinklerFonts.coolvetica(size: 12))
+                    .font(RinklerFonts.sans(12, .regular))
                     .foregroundStyle(RinklerColors.signalTextFaint)
                     .fixedSize(horizontal: false, vertical: true)
 
                 if commitment.disablesToday > 0 {
                     Text("Bailed \(commitment.disablesToday)× today")
-                        .font(RinklerFonts.coolvetica(size: 12))
+                        .font(RinklerFonts.sans(12, .regular))
                         .foregroundStyle(RinklerColors.signalWarning)
                 }
             }
@@ -675,7 +641,7 @@ struct SettingsScreen: View {
     private var shortVideoFiltersSection: some View {
         VStack(alignment: .leading, spacing: RinklerSpacing.sm) {
             Text("Short-video filters")
-                .font(RinklerFonts.coolvetica(size: 18))
+                .font(RinklerFonts.sans(18, .semibold))
                 .foregroundStyle(RinklerColors.signalText)
 
             filterToggleRow(title: "Instagram Reels", isOn: $blockInstagramShortVideo)
@@ -690,12 +656,13 @@ struct SettingsScreen: View {
     private func filterToggleRow(title: String, isOn: Binding<Bool>) -> some View {
         HStack {
             Text(title)
-                .font(RinklerFonts.coolvetica(size: 16))
+                .font(RinklerFonts.sans(16, .regular))
                 .foregroundStyle(RinklerColors.signalTextDim)
             Spacer()
             Toggle("", isOn: isOn)
                 .labelsHidden()
                 .disabled(strictMode.isActive)
+                .sensoryFeedback(.selection, trigger: isOn.wrappedValue)
         }
     }
 
@@ -708,7 +675,7 @@ struct SettingsScreen: View {
     private var domainThresholdsSection: some View {
         VStack(spacing: RinklerSpacing.sm) {
             Text("Per-Domain Thresholds")
-                .font(RinklerFonts.coolvetica(size: 16))
+                .font(RinklerFonts.sans(16, .regular))
                 .foregroundStyle(RinklerColors.signalTextDim)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -716,7 +683,7 @@ struct SettingsScreen: View {
                 let group = RinklerConstants.domainThresholdGroups[index]
                 VStack(alignment: .leading, spacing: RinklerSpacing.xs) {
                     Text(group.title)
-                        .font(RinklerFonts.coolvetica(size: 14))
+                        .font(RinklerFonts.sans(14, .regular))
                         .foregroundStyle(RinklerColors.signalText)
                         .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -741,7 +708,7 @@ struct SettingsScreen: View {
     private var appLogSection: some View {
         VStack(alignment: .leading, spacing: RinklerSpacing.xs) {
             Text("App Log")
-                .font(RinklerFonts.coolvetica(size: 16))
+                .font(RinklerFonts.sans(16, .regular))
                 .foregroundStyle(RinklerColors.signalTextDim)
 
             ScrollView {
@@ -768,7 +735,7 @@ struct SettingsScreen: View {
             showExtensionLog = true
         } label: {
             Text("Show Debug Extension Log")
-                .font(RinklerFonts.coolvetica(size: 16))
+                .font(RinklerFonts.sans(16, .regular))
                 .foregroundStyle(RinklerColors.signalText)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, RinklerSpacing.sm)

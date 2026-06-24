@@ -109,6 +109,7 @@ struct RinklerSegmented<T: Hashable>: View {
         .background(RinklerColors.signalCard)
         .clipShape(Capsule())
         .overlay(Capsule().strokeBorder(RinklerColors.signalBorder, lineWidth: 1))
+        .sensoryFeedback(.selection, trigger: selection)
     }
 }
 

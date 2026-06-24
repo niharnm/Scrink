@@ -83,6 +83,14 @@ struct BlockScreen: View {
                 .signalCard(cornerRadius: 18)
                 .padding(.horizontal, RinklerSpacing.lg)
 
+                Text("Best-effort blocking — a few clips may still slip through. For a hard lock, block the whole app via Shield.")
+                    .font(RinklerFonts.sans(11, .regular))
+                    .foregroundStyle(RinklerColors.signalTextFaint)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, RinklerSpacing.xl)
+                    .padding(.top, RinklerSpacing.xs)
+
                 Spacer()
 
                 if let onDone {
