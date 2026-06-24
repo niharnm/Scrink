@@ -141,5 +141,16 @@ export async function verifyEmailCode(prevState: unknown, formData: FormData) {
  */
 function safeNextPath(raw: FormDataEntryValue | null): string {
   const value = typeof raw === "string" ? raw : "";
-  return value.startsWith("/") && !value.startsWith("//") ? value : "/";
+  // A prefix check ("/" and not "//") is NOT enough: browsers normalize
+  // backslashes, so "/\evil.com" becomes protocol-relative and escapes the
+  // origin. Resolve against a sentinel origin and require the result to stay on
+  // it, then return only the path — same approach as /auth/callback's safeNext.
+  const base = "https://internal.invalid";
+  try {
+    const u = new URL(value, base);
+    if (u.origin !== base) return "/";
+    return `${u.pathname}${u.search}${u.hash}`;
+  } catch {
+    return "/";
+  }
 }

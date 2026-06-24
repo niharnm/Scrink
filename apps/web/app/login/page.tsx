@@ -19,7 +19,14 @@ const getTurnstile = () => (window as unknown as { turnstile?: TurnstileApi }).t
 function readNextParam(): string {
   if (typeof window === "undefined") return "";
   const n = new URLSearchParams(window.location.search).get("next") || "";
-  return n.startsWith("/") && !n.startsWith("//") ? n : "";
+  // Resolve against our own origin and require it to stay there. A startsWith("/")
+  // check is insufficient — "/\evil.com" normalizes to a protocol-relative URL.
+  try {
+    const u = new URL(n, window.location.origin);
+    return u.origin === window.location.origin ? `${u.pathname}${u.search}${u.hash}` : "";
+  } catch {
+    return "";
+  }
 }
 
 // Easter egg: when the captcha clears, two swordsmen charge in, collide with the
