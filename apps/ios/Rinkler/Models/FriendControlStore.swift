@@ -52,6 +52,11 @@ final class FriendControlStore: ObservableObject {
         guard let uid = client.loadSession()?.userID else { error = "Sign in first."; return }
         busy = true; defer { busy = false }
         do {
+            // Retire any code that's still pending for this owner, so we never
+            // leave an outstanding code the UI can't see and we satisfy the
+            // one-live-code-per-owner constraint before inserting the new row.
+            try await retirePendingCodes(ownerID: uid)
+
             let code = String(format: "%06d", Int.random(in: 0...999_999))
             var (req, _) = try await client.authenticatedRESTRequest(path: "friend_pairings", method: "POST")
             req.setValue("return=representation", forHTTPHeaderField: "Prefer")
@@ -104,12 +109,34 @@ final class FriendControlStore: ObservableObject {
             var (req, _) = try await client.authenticatedRESTRequest(
                 path: "friend_pairings", method: "PATCH",
                 queryItems: [.init(name: "id", value: "eq.\(p.id)")])
-            req.httpBody = try JSONSerialization.data(withJSONObject: ["revoked": true])
+            // Stamp revoked_at so the friend has a real record that the window was
+            // ended early, not just a silent boolean flip.
+            req.httpBody = try JSONSerialization.data(withJSONObject: [
+                "revoked": true,
+                "revoked_at": Self.iso(Date()),
+            ])
             _ = try await URLSession.shared.data(for: req)
             restoreIfNeeded()
             pairing = nil
             ticker?.cancel(); ticker = nil
         } catch { self.error = friendly(error) }
+    }
+
+    /// Revoke every still-pending (unredeemed, not-revoked) code for this owner.
+    /// Best-effort: a failure here shouldn't block generating a fresh code.
+    private func retirePendingCodes(ownerID: String) async throws {
+        var (req, _) = try await client.authenticatedRESTRequest(
+            path: "friend_pairings", method: "PATCH",
+            queryItems: [
+                .init(name: "owner_user_id", value: "eq.\(ownerID)"),
+                .init(name: "redeemed_at", value: "is.null"),
+                .init(name: "revoked", value: "eq.false"),
+            ])
+        req.httpBody = try JSONSerialization.data(withJSONObject: [
+            "revoked": true,
+            "revoked_at": Self.iso(Date()),
+        ])
+        _ = try? await URLSession.shared.data(for: req)
     }
 
     /// Called on launch + foreground.
@@ -171,7 +198,11 @@ final class FriendControlStore: ObservableObject {
 
     private func startTicker() {
         ticker?.cancel()
-        ticker = Timer.publish(every: 20, on: .main, in: .common).autoconnect()
+        // Poll fast while a window is live so a friend's toggle lands within a few
+        // seconds (the timer only fires while the app is foregrounded, so this
+        // isn't a background battery cost). True instant/background delivery needs
+        // a push wake-up — tracked as a follow-up.
+        ticker = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
             .sink { [weak self] _ in
                 guard let self else { return }
                 self.objectWillChange.send()

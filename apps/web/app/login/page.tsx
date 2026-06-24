@@ -13,6 +13,15 @@ type TurnstileApi = {
 };
 const getTurnstile = () => (window as unknown as { turnstile?: TurnstileApi }).turnstile;
 
+// Where to return after sign-in, taken from ?next= (set by the auth middleware
+// when it bounces a protected route like /friend to /login). Only an internal
+// absolute path is honored, so it can't be used as an open redirect.
+function readNextParam(): string {
+  if (typeof window === "undefined") return "";
+  const n = new URLSearchParams(window.location.search).get("next") || "";
+  return n.startsWith("/") && !n.startsWith("//") ? n : "";
+}
+
 // Easter egg: when the captcha clears, two swordsmen charge in, collide with the
 // block, climb around its ends (rotating as they scale the sides), run across the
 // top, slash it off, then shove the header back into place. If it gets rejected, a
@@ -82,10 +91,14 @@ export default function LoginPage() {
   const [requestState, requestAction, requestPending] = useActionState(requestEmailCode, null);
   const [verifyState, verifyAction, verifyPending] = useActionState(verifyEmailCode, null);
   const [codeInput, setCodeInput] = useState("");
-  const [callbackError, setCallbackError] = useState(false);
+  const [errorParam, setErrorParam] = useState<string | null>(null);
   const [oauthBusy, setOauthBusy] = useState<"google" | "apple" | null>(null);
   const [oauthError, setOauthError] = useState<string | null>(null);
   const [captchaToken, setCaptchaToken] = useState("");
+  // Read after mount (not in a useState initializer) to avoid a hydration
+  // mismatch — the server has no window and would render an empty value.
+  const [next, setNext] = useState("");
+  useEffect(() => setNext(readNextParam()), []);
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   const widgetRef = useRef<HTMLDivElement>(null);
   const widgetId = useRef<string | null>(null);
@@ -130,9 +143,12 @@ export default function LoginPage() {
     setOauthBusy(provider);
     try {
       const supabase = createClient();
+      const callback = `${window.location.origin}/auth/callback${
+        next ? `?next=${encodeURIComponent(next)}` : ""
+      }`;
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
-        options: { redirectTo: `${window.location.origin}/auth/callback` },
+        options: { redirectTo: callback },
       });
       if (error) {
         setOauthError(error.message);
@@ -151,7 +167,7 @@ export default function LoginPage() {
   const isPending = requestPending || verifyPending;
   const statusMessage = state && "message" in state ? state.message : null;
   useEffect(() => {
-    setCallbackError(new URLSearchParams(window.location.search).has("error"));
+    setErrorParam(new URLSearchParams(window.location.search).get("error"));
   }, []);
   // A Turnstile token is single-use; after each email-send attempt, get a fresh one.
   useEffect(() => {
@@ -433,6 +449,7 @@ export default function LoginPage() {
 
         <form action={requestAction} style={{ display: shouldEnterCode ? "none" : "block" }}>
           <input type="hidden" name="captchaToken" value={captchaToken} />
+          <input type="hidden" name="next" value={next} />
           <div style={{ marginBottom: 20 }}>
             <label style={labelStyle}>Email</label>
             <input
@@ -461,6 +478,7 @@ export default function LoginPage() {
         {shouldEnterCode && (
           <form action={verifyAction}>
             <input type="hidden" name="email" value={email} />
+            <input type="hidden" name="next" value={next} />
             <div style={{ marginBottom: 20 }}>
               <label style={labelStyle}>Verification code</label>
               <input
@@ -496,7 +514,10 @@ export default function LoginPage() {
         )}
 
         {state?.error && <p style={errorStyle}>{state.error}</p>}
-        {!state?.error && callbackError && (
+        {!state?.error && errorParam === "waitlist" && (
+          <p style={messageStyle}>{"You're on the waitlist — we'll email you the moment your spot opens."}</p>
+        )}
+        {!state?.error && errorParam && errorParam !== "waitlist" && (
           <p style={errorStyle}>That sign-in link could not be verified. Request a new code.</p>
         )}
         {statusMessage && <p style={messageStyle}>{statusMessage}</p>}
@@ -510,7 +531,7 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => {
                   setCodeInput("");
-                  window.location.href = "/login";
+                  window.location.href = next ? `/login?next=${encodeURIComponent(next)}` : "/login";
                 }}
                 style={linkButtonStyle}
               >

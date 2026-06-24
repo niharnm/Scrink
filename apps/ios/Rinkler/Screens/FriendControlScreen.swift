@@ -53,7 +53,7 @@ struct FriendControlScreen: View {
             Text("Hand a friend the keys")
                 .font(RinklerFonts.sans(28, .bold))
                 .foregroundStyle(RinklerColors.signalText)
-            Text("Give someone you trust a code. For the window you pick, they can tighten your limits from their phone — and you can't loosen them. Real accountability.")
+            Text("Give someone you trust a code. For the window you pick, they tighten your limits from their phone, and you can't loosen them yourself.")
                 .font(RinklerFonts.sans(15, .regular))
                 .foregroundStyle(RinklerColors.signalTextDim)
                 .fixedSize(horizontal: false, vertical: true)
@@ -135,7 +135,7 @@ struct FriendControlScreen: View {
                 ("Window", friend.windowRemainingLabel.replacingOccurrences(of: " left", with: ""), nil),
                 ("Limits added", "\(friend.appliedCount)", RinklerColors.signalBlue),
             ])
-            Text("They can keep tightening until the window ends. You can pull the plug, but that's on the honor system — it logs.")
+            Text("They keep tightening until the window's up. You can still end it early, but they'll see you did.")
                 .font(RinklerFonts.sans(12, .regular))
                 .foregroundStyle(RinklerColors.signalTextDim)
                 .fixedSize(horizontal: false, vertical: true)

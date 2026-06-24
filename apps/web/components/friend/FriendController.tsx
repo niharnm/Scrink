@@ -18,6 +18,7 @@ export default function FriendController({ userId }: { userId: string; email: st
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const [revoked, setRevoked] = useState(false);
 
   // Window countdown.
   useEffect(() => {
@@ -27,6 +28,7 @@ export default function FriendController({ userId }: { userId: string; email: st
 
   const remaining = pairing ? new Date(pairing.window_end).getTime() - now : 0;
   const expired = pairing != null && remaining <= 0;
+  const locked = expired || revoked;
 
   const loadAfterRedeem = useCallback(
     async (p: Pairing) => {
@@ -85,6 +87,26 @@ export default function FriendController({ userId }: { userId: string; email: st
     })();
   }, [supabase, userId, loadAfterRedeem]);
 
+  // Live notice when the owner ends the window early. RLS lets the friend read
+  // this pairing, so realtime delivers the revoke the moment it happens instead
+  // of failing silently on the next toggle.
+  useEffect(() => {
+    if (!pairing) return;
+    const channel = supabase
+      .channel(`pairing-${pairing.pairing_id}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "friend_pairings", filter: `id=eq.${pairing.pairing_id}` },
+        (payload) => {
+          if ((payload.new as { revoked?: boolean })?.revoked) setRevoked(true);
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [supabase, pairing]);
+
   async function redeem() {
     setBusy(true);
     setError(null);
@@ -108,7 +130,7 @@ export default function FriendController({ userId }: { userId: string; email: st
   }
 
   async function toggle(app: App, feature: Feature) {
-    if (!pairing || expired) return;
+    if (!pairing || locked) return;
     const key = `${app.id}/${feature.id}`;
     const next = !enabled.has(key);
     // optimistic
@@ -204,7 +226,7 @@ export default function FriendController({ userId }: { userId: string; email: st
               <div>
                 <div style={label}>WINDOW</div>
                 <div style={{ fontFamily: signal.mono, fontSize: 22, fontWeight: 600 }}>
-                  {expired ? "ended" : `${fmt(remaining)} left`}
+                  {revoked ? "ended early" : expired ? "ended" : `${fmt(remaining)} left`}
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>
@@ -215,11 +237,15 @@ export default function FriendController({ userId }: { userId: string; email: st
               </div>
             </div>
 
-            {expired && (
+            {revoked ? (
+              <p style={{ color: signal.warning, fontSize: 13, marginBottom: 12 }}>
+                They ended the window early. Your changes no longer apply.
+              </p>
+            ) : expired ? (
               <p style={{ color: signal.warning, fontSize: 13, marginBottom: 12 }}>
                 The window ended — your changes no longer apply.
               </p>
-            )}
+            ) : null}
 
             {apps.map((app) => (
               <div key={app.id} style={{ ...card, marginBottom: 12 }}>
@@ -238,11 +264,11 @@ export default function FriendController({ userId }: { userId: string; email: st
                       </div>
                       <button
                         onClick={() => toggle(app, f)}
-                        disabled={expired}
+                        disabled={locked}
                         aria-pressed={on}
                         style={{
                           width: 52, height: 31, borderRadius: 16, border: "none", flexShrink: 0,
-                          cursor: expired ? "default" : "pointer",
+                          cursor: locked ? "default" : "pointer",
                           background: on ? signal.blue : signal.cardRaised,
                           position: "relative", transition: "background .15s",
                         }}
