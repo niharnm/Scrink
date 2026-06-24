@@ -4,6 +4,7 @@ import { CSSProperties } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import DashboardView from "@/components/dashboard/DashboardView";
+import DeleteAccountButton from "@/components/dashboard/DeleteAccountButton";
 import { MOCK_DASHBOARD } from "@/lib/mock-dashboard";
 import { createClient } from "@/lib/supabase/client";
 import { signal } from "@/lib/signal";
@@ -28,7 +29,10 @@ export default function WaitlistDashboard({ email }: { email: string }) {
 
       <div style={topBar}>
         <Link href="/" style={topLink} className="wl-link">← back</Link>
-        <button onClick={signOut} style={topLink} className="wl-link">sign out</button>
+        <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+          <DeleteAccountButton />
+          <button onClick={signOut} style={topLink} className="wl-link">sign out</button>
+        </div>
       </div>
 
       <div style={overlay}>
