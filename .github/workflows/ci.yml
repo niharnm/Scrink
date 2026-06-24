@@ -1,0 +1,32 @@
+name: CI
+
+# Typecheck + lint the monorepo on every PR to main (and on main itself). This is
+# a deterministic gate that needs no secrets — make it a required status check in
+# the main branch ruleset so type errors can't merge. Vercel's deployment check
+# covers the full Next.js build separately.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    name: typecheck & lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Reads the pinned version from package.json "packageManager" (pnpm@9.15.4).
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm typecheck
+
+      - run: pnpm lint

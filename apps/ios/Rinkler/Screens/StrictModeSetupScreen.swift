@@ -51,16 +51,32 @@ struct StrictModeSetupScreen: View {
 
                     group("TOTAL LOCKDOWN") {
                         VStack(alignment: .leading, spacing: 8) {
-                            Toggle(isOn: $lockAppRemoval) {
-                                Text("Block deleting apps")
-                                    .font(RinklerFonts.sans(15, .medium))
-                                    .foregroundStyle(RinklerColors.signalText)
+                            // App-removal blocking is enforced by the Family Controls
+                            // shield, which only does anything once Screen Time access
+                            // is granted. Until then the toggle is a no-op, so don't
+                            // present it as an armable capability — show how to enable it.
+                            if screenTime.isAuthorized {
+                                Toggle(isOn: $lockAppRemoval) {
+                                    Text("Block deleting apps")
+                                        .font(RinklerFonts.sans(15, .medium))
+                                        .foregroundStyle(RinklerColors.signalText)
+                                }
+                                .tint(RinklerColors.signalBlue)
+                                Text("Stops you deleting any app on your phone — Rinkler included — until the window's up.")
+                                    .font(RinklerFonts.sans(12, .regular))
+                                    .foregroundStyle(RinklerColors.signalTextDim)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            } else {
+                                Text("Blocking app deletion needs Screen Time access. Until you grant it, Strict Mode can't stop you deleting apps — it only locks Rinkler's own controls and keeps the feed filter on.")
+                                    .font(RinklerFonts.sans(12, .regular))
+                                    .foregroundStyle(RinklerColors.signalTextDim)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                Button { Task { await screenTime.requestAccess() } } label: {
+                                    Text("Grant Screen Time access")
+                                        .font(RinklerFonts.sans(14, .semibold))
+                                        .foregroundStyle(RinklerColors.signalBlue)
+                                }
                             }
-                            .tint(RinklerColors.signalBlue)
-                            Text("Stops you deleting any app on your phone — Rinkler included — until the window's up. Kicks in once you grant Screen Time access.")
-                                .font(RinklerFonts.sans(12, .regular))
-                                .foregroundStyle(RinklerColors.signalTextDim)
-                                .fixedSize(horizontal: false, vertical: true)
                         }
                         .padding(RinklerSpacing.md)
                         .frame(maxWidth: .infinity, alignment: .leading)
