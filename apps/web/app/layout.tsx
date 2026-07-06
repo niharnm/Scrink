@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     template: "%s · Rinkler",
   },
   description:
-    "Rinkler quietly cuts the endless feed inside Instagram, TikTok and YouTube on your device — you keep your DMs, search and posts, and lose the infinite scroll. Private by design. Drops July 10.",
+    "Rinkler quietly cuts the endless feed inside Instagram, TikTok and YouTube on your device — you keep your DMs, search and posts, and lose the infinite scroll. Private by design. Drops August 10.",
   applicationName: "Rinkler",
   keywords: [
     "screen time app",
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     siteName: "Rinkler",
     title: "Rinkler — kill the endless scroll, not your whole phone",
     description:
-      "cuts the endless feed inside your social apps, keeps the parts you actually use. private by design. drops july 10.",
+      "cuts the endless feed inside your social apps, keeps the parts you actually use. private by design. drops august 10.",
   },
   twitter: {
     card: "summary_large_image",
