@@ -213,7 +213,7 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
         <Reveal>
           <section style={{ ...section, paddingTop: "clamp(80px, 13vh, 160px)", paddingBottom: "clamp(80px, 13vh, 160px)" }}>
             <h2 style={{ ...h2, fontSize: "clamp(34px, 6vw, 64px)" }}>lets get your nights back.</h2>
-            <p style={{ ...lede, marginTop: 18 }}>Rinkler drops July 10. grab early access and win back your life.</p>
+            <p style={{ ...lede, marginTop: 18 }}>Rinkler drops August 10. grab early access and win back your life.</p>
             <div style={{ ...ctaRow, marginTop: 32 }}>
               <Link href={ctaHref} style={lightBtn} className="light-btn">{ctaLabel}</Link>
             </div>
