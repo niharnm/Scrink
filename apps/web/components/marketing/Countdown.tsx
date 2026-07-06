@@ -4,7 +4,7 @@ import { useEffect, useState, CSSProperties } from "react";
 import { signal } from "@/lib/signal";
 
 // App release target.
-const TARGET = new Date("2026-07-10T00:00:00").getTime();
+const TARGET = new Date("2026-08-10T00:00:00").getTime();
 
 export default function Countdown() {
   const [diff, setDiff] = useState<number | null>(null);
