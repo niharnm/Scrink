@@ -15,14 +15,16 @@ export async function POST() {
   }
 
   const supabase = await createClient();
-  const { data: claimsData, error: authError } =
-    await supabase.auth.getClaims();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
-  if (authError || !claimsData?.claims) {
+  if (authError || !user) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  const userId = claimsData.claims.sub as string;
+  const userId = user.id;
   if (!isAdminUser(userId)) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }

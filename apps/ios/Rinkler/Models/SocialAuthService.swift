@@ -9,9 +9,9 @@ import UIKit
 /// - **Apple** — native `SignInWithAppleButton`. We generate a random nonce,
 ///   send its SHA-256 to Apple, then hand the raw nonce + identity token to
 ///   Supabase's `id_token` grant.
-/// - **Google** — `ASWebAuthenticationSession` against Supabase's OAuth
-///   `authorize` endpoint, returning to the app's `rinkler://` callback. No extra
-///   SDK dependency required.
+/// - **Google** — PKCE through `ASWebAuthenticationSession` against Supabase's
+///   OAuth `authorize` endpoint, returning a one-time code to the app's
+///   `rinkler://` callback. No extra SDK dependency required.
 ///
 /// Both paths end with a Supabase session persisted to the keychain; the caller
 /// then refreshes `AuthStore` from that stored session.
@@ -75,9 +75,12 @@ final class SocialAuthService {
 
     func signInWithGoogle() async -> Bool {
         errorMessage = nil
+        let codeVerifier = Self.randomNonce(length: 64)
+        let codeChallenge = Self.pkceChallenge(for: codeVerifier)
         guard let authURL = SupabaseAuthClient.shared.oauthAuthorizeURL(
             provider: "google",
-            redirectTo: "\(callbackScheme)://auth-callback"
+            redirectTo: "\(callbackScheme)://auth-callback",
+            codeChallenge: codeChallenge
         ) else {
             errorMessage = "Google sign-in isn't configured yet."
             return false
@@ -87,7 +90,10 @@ final class SocialAuthService {
         defer { isLoading = false }
         do {
             let callback = try await startWebAuth(url: authURL)
-            _ = try SupabaseAuthClient.shared.completeOAuth(callbackURL: callback)
+            _ = try await SupabaseAuthClient.shared.completeOAuth(
+                callbackURL: callback,
+                codeVerifier: codeVerifier
+            )
             return true
         } catch let error as ASWebAuthenticationSessionError where error.code == .canceledLogin {
             return false
@@ -139,6 +145,14 @@ final class SocialAuthService {
 
     private static func sha256(_ input: String) -> String {
         SHA256.hash(data: Data(input.utf8)).map { String(format: "%02x", $0) }.joined()
+    }
+
+    private static func pkceChallenge(for verifier: String) -> String {
+        Data(SHA256.hash(data: Data(verifier.utf8)))
+            .base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "=", with: "")
     }
 }
 

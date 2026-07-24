@@ -28,8 +28,8 @@ export default function AppShowcase() {
       <h2 style={h2}>a setup that already gets you.</h2>
       <p style={lede}>
         a quick personalized onboarding asks what pulls you in and when, then
-        builds your whole Focus System before you change a single thing. your
-        rules, your sessions, your blocks, all ready to go.
+        builds a local Focus System. reliable whole-app shields and experimental
+        network filters stay clearly separate.
       </p>
 
       <div style={row} className="phones">
@@ -59,16 +59,16 @@ function TodayScreen() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
-        <div style={kicker}>TODAY</div>
-        <div style={{ fontSize: 19, fontWeight: 700, color: app.text, letterSpacing: "-0.01em" }}>Your setup</div>
+        <div style={kicker}>PROTECTION</div>
+        <div style={{ fontSize: 19, fontWeight: 700, color: app.text, letterSpacing: "-0.01em" }}>Active</div>
       </div>
 
       <div style={card}>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <ScoreRing value={0.62} center={<><div style={{ fontFamily: signal.mono, fontSize: 20, color: app.text }}>62</div><div style={{ fontSize: 8, color: app.dim, letterSpacing: 1 }}>SIGNAL</div></>} />
           <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: app.text }}>Scroll Control</div>
-            <div style={{ fontSize: 11, color: app.dim, lineHeight: 1.4, marginTop: 3 }}>Your system is armed. Start a session to push it up.</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: app.text }}>Screen Time connected</div>
+            <div style={{ fontSize: 11, color: app.dim, lineHeight: 1.4, marginTop: 3 }}>Whole-app shields are available. Network filters remain experimental.</div>
           </div>
         </div>
       </div>
@@ -104,10 +104,11 @@ function AppsScreen() {
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
         <div style={{ fontSize: 19, fontWeight: 700, color: app.text }}>Apps</div>
-        <div style={{ fontSize: 11, color: app.dim, marginTop: 2 }}>Keep the useful parts. Kill the infinite scroll.</div>
+        <div style={{ fontSize: 11, color: app.dim, marginTop: 2 }}>Know what each control can actually enforce.</div>
       </div>
-      <AppCard name="Instagram" blocked="Reels & Explore video" kept={["DMs", "Camera", "Posting", "Search"]} />
-      <AppCard name="TikTok" blocked="For You feed" kept={["Messages", "Search", "Profile"]} />
+      <AppCard name="Whole apps" blocked="Reliable Screen Time shield" kept={["Blocks the full selected app"]} />
+      <AppCard name="Instagram" blocked="Reels network filter · experimental" kept={["May affect other Instagram features"]} />
+      <AppCard name="TikTok" blocked="Feed network filter · experimental" kept={["May affect most of TikTok"]} />
     </div>
   );
 }
@@ -118,12 +119,6 @@ function OnboardingScreen() {
   const traps = [
     { t: "Instagram Reels", on: true },
     { t: "TikTok For You", on: true },
-    { t: "YouTube Shorts", on: false },
-    { t: "Instagram Explore", on: false },
-    { t: "Reddit Home Feed", on: true },
-    { t: "Snapchat Spotlight", on: false },
-    { t: "X / Twitter Feed", on: false },
-    { t: "Something else", on: false },
   ];
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12, height: "100%" }}>
@@ -135,7 +130,7 @@ function OnboardingScreen() {
         <span style={{ fontSize: 11, color: app.dim }}>Skip</span>
       </div>
       <div style={{ fontSize: 18, fontWeight: 700, color: app.text, lineHeight: 1.15, marginTop: 2 }}>Which parts pull you in the most?</div>
-      <div style={{ fontSize: 11.5, color: app.dim, lineHeight: 1.4 }}>Pick all that apply. These are the surfaces we&apos;ll cut.</div>
+      <div style={{ fontSize: 11.5, color: app.dim, lineHeight: 1.4 }}>These are experimental and require physical-device testing.</div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 2 }}>
         {traps.map((c) => (
           <div

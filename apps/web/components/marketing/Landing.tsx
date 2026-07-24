@@ -66,7 +66,7 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
               <img src="/rinkler-mark.png" alt="" width={40} height={40} style={{ display: "block" }} />
               <span style={splashWord}>Rinkler</span>
             </div>
-            <p style={splashTag}>the app that kills the <EndlessScroll />, not your whole phone</p>
+            <p style={splashTag}>reliable whole-app blocking, with experimental <EndlessScroll /> filters</p>
 
             <div style={{ marginTop: "clamp(28px, 5vh, 52px)" }}>
               <div style={countLabel}>launching in</div>
@@ -92,9 +92,9 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
               <span style={{ color: signal.textFaint }}>the feed is.</span>
             </h1>
             <p style={{ ...lede, marginTop: 28 }}>
-              you sit down for a sec and somehow its 1am. Rinkler takes the Reels
-              and TikToks doing that to you, and leaves your DMs, search and
-              people alone.
+              you sit down for a sec and somehow its 1am. Rinkler reliably blocks
+              whole apps with Screen Time. Instagram and TikTok network filters
+              are experimental and may block more than the feed.
             </p>
             <div style={ctaRow}>
               <Link href={ctaHref} style={lightBtn} className="light-btn">{ctaLabel}</Link>
@@ -114,7 +114,7 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
         {/* Scalpel */}
         <Reveal>
           <section id="difference" style={section}>
-            <h2 style={h2}>it cuts the feed, not the whole app.</h2>
+            <h2 style={h2}>two kinds of protection. no pretending they are the same.</h2>
             <div style={{ ...compareGrid, marginTop: 36 }} className="compare">
               <div style={{ paddingRight: 32 }}>
                 <div style={colLabel}>blanket blockers</div>
@@ -126,7 +126,9 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
               </div>
             </div>
             <p style={{ ...statement, color: signal.text, marginTop: 30 }}>
-              block whole apps, or just the feeds inside them. its all yours.
+              whole-app blocking is reliable. feed filtering is experimental,
+              works only for instagram and tiktok right now, and may block more
+              than the feed.
             </p>
           </section>
         </Reveal>
@@ -184,7 +186,8 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
           <section style={section}>
             <h2 style={{ ...h2, maxWidth: 760 }}>its just you and your phone.</h2>
             <p style={{ ...lede, maxWidth: 600, marginTop: 18 }}>
-              it runs on your device. nothing gets saved, nothing gets sold. promise.
+              filtering runs on your device. If you sign in, account details and
+              traffic summaries can sync to your private dashboard. We do not sell them.
             </p>
             <Link href="/privacy" style={{ ...textBtn, display: "inline-block", marginTop: 24 }} className="text-btn">
               read the privacy policy →
@@ -284,27 +287,27 @@ function CompareRow({ text, good }: { text: string; good: boolean }) {
 }
 
 const compareBad = [
-  "blocks the whole app, DMs and all",
-  "you unlock it for one sec and fall right back in",
-  "guilt trips and lockouts you start to hate",
-  "deleted by friday",
+  "vague controls that look active but do nothing",
+  "feed-only promises from encrypted network traffic",
+  "unsupported apps shown as if they work",
+  "privacy copy that hides cloud metadata",
 ];
 const compareGood = [
-  "takes just the endless feed",
-  "your DMs, search and posts still work",
-  "no shame, ever, just whats real",
-  "you actually keep it around",
+  "reliable whole-app shields through Screen Time",
+  "experimental filters clearly labeled",
+  "unsupported feed controls stay unavailable",
+  "account and traffic sync explained up front",
 ];
 const howSteps = [
-  { title: "tell it about you", body: "a few quick questions and it builds your whole setup. you configure nothing." },
-  { title: "start whenever", body: "one tap, or let it run on a schedule so its already working when you forget." },
-  { title: "watch it add up", body: "real time back, a streak that grows, and zero lecture when you slip." },
+  { title: "pick reliable blocks", body: "choose whole apps for Screen Time to shield. those blocks do not pretend to be feed-only." },
+  { title: "test the experiments", body: "instagram reels and tiktok filtering need a signed physical iphone. schedules only change those filters while protection is already running." },
+  { title: "see what happened", body: "focused session time is measured. traffic blocks are counted, and any time-saved number is an estimate." },
 ];
 const stickFeatures = [
-  { tag: "friend control", title: "let a friend hold the keys", body: "hand someone a code and they set your limits from their own phone, for a window you pick. no second app to install, they just run it from rinkler.app/friend. you cant talk your way out of it." },
-  { tag: "strict mode", title: "lock it and mean it", body: "commit for a set stretch with no backing out in the app. the only way out is deleting rinkler entirely, so you wont cave at 1am." },
-  { tag: "automatic", title: "it reads the room", body: "hook up apple health and rinkler tightens your limits on its own when youre stressed or barely moved. it all stays on your phone and never gets sent anywhere." },
-  { tag: "ads + trackers", title: "less junk, everywhere", body: "while protections on, rinkler quietly cuts ads and trackers across your apps too, not just the feeds." },
+  { tag: "friend control", title: "let a friend hold the line", body: "privately choose the whole apps they may block, then hand them a time-boxed code. new choices arrive while rinkler is open; an applied screen time shield expires with the window." },
+  { tag: "strict mode", title: "lock controls in rinkler", body: "commit for a set stretch with no in-app way to weaken the controls. ios settings and deleting the app remain outside rinklers control." },
+  { tag: "automatic", title: "use local health signals", body: "with permission, rinkler can adjust experimental filter settings when it evaluates local health trends. protection still has to be running, and raw health data stays on your phone." },
+  { tag: "ads + trackers", title: "cut known junk hosts", body: "while the local vpn is running, rinkler can block a maintained list of known ad and tracker hosts. it is not a guarantee that every ad disappears." },
 ];
 
 /* ---------- styles ---------- */
