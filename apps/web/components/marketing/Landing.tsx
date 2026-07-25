@@ -66,7 +66,13 @@ export default function Landing({ loggedIn }: { loggedIn: boolean }) {
               <img src="/rinkler-mark.png" alt="" width={40} height={40} style={{ display: "block" }} />
               <span style={splashWord}>Rinkler</span>
             </div>
-            <p style={splashTag}>reliable whole-app blocking, with experimental <EndlessScroll /> filters</p>
+            <p style={splashTag}>
+              reliable whole-app blocking, with experimental{" "}
+              <span aria-hidden="true">
+                <EndlessScroll />
+              </span>{" "}
+              filters
+            </p>
 
             <div style={{ marginTop: "clamp(28px, 5vh, 52px)" }}>
               <div style={countLabel}>launching in</div>

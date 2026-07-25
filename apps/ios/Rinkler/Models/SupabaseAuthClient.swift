@@ -395,7 +395,7 @@ extension SupabaseAuthClient {
             URLQueryItem(name: "provider", value: provider),
             URLQueryItem(name: "redirect_to", value: redirectTo),
             URLQueryItem(name: "code_challenge", value: codeChallenge),
-            URLQueryItem(name: "code_challenge_method", value: "s256"),
+            URLQueryItem(name: "code_challenge_method", value: "S256"),
         ]
         return components.url
     }
