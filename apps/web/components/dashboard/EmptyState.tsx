@@ -85,7 +85,7 @@ export default function EmptyState() {
     gap: 8,
   };
 
-  const previews = ["Time saved", "Feeds blocked", "Top offenders", "Trends"];
+  const previews = ["Estimated time saved", "Blocked connections", "Top hosts", "Trends"];
 
   return (
     <div style={wrap}>
@@ -100,7 +100,7 @@ export default function EmptyState() {
       <div style={body}>
         Rinkler filters traffic on your device — so this dashboard fills in once
         your phone starts syncing. Open the app, start a Control Session, and
-        blocked feeds, time saved, and trends will show up right here.
+        connection blocks, estimated time saved, and trends will show up right here.
       </div>
 
       <div style={previewRow}>
@@ -123,7 +123,7 @@ export default function EmptyState() {
             boxShadow: `0 0 10px ${theme.colors.success}`,
           }}
         />
-        Protection runs on your phone — nothing leaves your device.
+        Filtering stays on your phone. Signed-in traffic summaries sync to this dashboard.
       </div>
     </div>
   );

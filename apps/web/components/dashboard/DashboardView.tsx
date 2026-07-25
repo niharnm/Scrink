@@ -125,7 +125,7 @@ export default function DashboardView({
         <div style={topRow}>
           <div>
             <div style={greeting}>Your Scroll Report</div>
-            <div style={subGreeting}>What Rinkler cut from your feed {rangeLabel}.</div>
+            <div style={subGreeting}>Tracked network activity {rangeLabel}.</div>
           </div>
           <DateRangeSelector value={range} onChange={onRangeChange} />
         </div>
@@ -142,7 +142,7 @@ export default function DashboardView({
                       {blocked.toLocaleString()}
                     </div>
                     <div style={{ fontFamily: theme.fonts.body, fontSize: 11, fontWeight: 600, color: theme.colors.white60, textTransform: "uppercase", letterSpacing: 1.2, marginTop: 2 }}>
-                      blocked
+                      blocked connections
                     </div>
                   </div>
                 </Ring>
@@ -151,13 +151,13 @@ export default function DashboardView({
                     {Math.round(interceptRate * 100)}% intercepted
                   </div>
                   <div style={{ fontFamily: theme.fonts.body, fontSize: 13.5, color: theme.colors.white60, lineHeight: 1.55, marginTop: 6 }}>
-                    of tracked requests {rangeLabel}. {allowed.toLocaleString()} useful ones let through.
+                    of tracked connection events {rangeLabel}. {allowed.toLocaleString()} completed without a filter block.
                   </div>
                 </div>
               </div>
 
               <div style={kpiGrid}>
-                <StatCard label="Time Saved" value={data.timeSaved} accent />
+                <StatCard label="Estimated Time Saved" value={data.timeSaved} accent />
                 <StatCard label="Peak Hours" value={data.peakHours} />
                 <StatCard label="Most Active" value={data.mostActive} />
                 <BandwidthCard totalBytesIn={data.totalBytesIn} totalBytesOut={data.totalBytesOut} />

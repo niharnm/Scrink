@@ -25,11 +25,11 @@ export const metadata: Metadata = {
   // Required so OG/Twitter image + canonical URLs resolve to absolute paths.
   metadataBase: new URL("https://rinkler.app"),
   title: {
-    default: "Rinkler — Keep the useful parts. Kill the infinite scroll.",
+    default: "Rinkler — Block distracting apps with Screen Time.",
     template: "%s · Rinkler",
   },
   description:
-    "Rinkler quietly cuts the endless feed inside Instagram, TikTok and YouTube on your device — you keep your DMs, search and posts, and lose the infinite scroll. Private by design. Drops August 10.",
+    "Rinkler reliably blocks selected whole apps with Screen Time. Optional Instagram and TikTok network filters are experimental and require physical-device testing.",
   applicationName: "Rinkler",
   keywords: [
     "screen time app",
@@ -46,14 +46,14 @@ export const metadata: Metadata = {
     type: "website",
     url: "https://rinkler.app",
     siteName: "Rinkler",
-    title: "Rinkler — kill the endless scroll, not your whole phone",
+    title: "Rinkler — whole-app blocking, with experimental feed filters",
     description:
-      "cuts the endless feed inside your social apps, keeps the parts you actually use. private by design. drops august 10.",
+      "reliable whole-app Screen Time blocking, plus experimental Instagram and TikTok network filters.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Rinkler — kill the endless scroll, not your whole phone",
-    description: "cuts the endless feed inside your social apps, keeps the parts you actually use.",
+    title: "Rinkler — whole-app blocking, with experimental feed filters",
+    description: "reliable whole-app Screen Time blocking, plus experimental Instagram and TikTok network filters.",
   },
   robots: { index: true, follow: true },
 };

@@ -6,7 +6,17 @@ import { signal } from "@/lib/signal";
 
 type Feature = { id: string; name: string; blurb: string };
 type App = { id: string; name: string; features: Feature[] };
-type Pairing = { pairing_id: string; owner_user_id: string; window_end: string };
+type Pairing = {
+  pairing_id: string;
+  owner_user_id: string;
+  window_end: string;
+  whole_app_control_enabled: boolean;
+  whole_app_selection_count: number;
+};
+
+const wholeAppsAppId = "screen_time";
+const approvedWholeAppsFeatureId = "approved_apps";
+const approvedWholeAppsKey = `${wholeAppsAppId}/${approvedWholeAppsFeatureId}`;
 
 export default function FriendController({ userId }: { userId: string; email: string }) {
   const supabase = useMemo(() => createClient(), []);
@@ -39,14 +49,19 @@ export default function FriendController({ userId }: { userId: string; email: st
         .eq("is_active", true)
         .limit(1)
         .maybeSingle();
-      if (packErr) setError("Couldn't load the app list — try refreshing.");
+      if (packErr) setError("Couldn't load the experimental filters — try refreshing.");
       const rawApps: App[] = Array.isArray(packRow?.pack?.apps) ? packRow!.pack.apps : [];
       const packApps: App[] = rawApps
         .map((a) => ({
           id: String(a?.id ?? ""),
           name: String(a?.name ?? ""),
           features: Array.isArray(a?.features)
-            ? a.features.map((f) => ({ id: String(f?.id ?? ""), name: String(f?.name ?? ""), blurb: String(f?.blurb ?? "") }))
+            ? a.features
+                .filter((f) =>
+                  (a?.id === "instagram" && f?.id === "reels") ||
+                  (a?.id === "tiktok" && f?.id === "fyp")
+                )
+                .map((f) => ({ id: String(f?.id ?? ""), name: String(f?.name ?? ""), blurb: String(f?.blurb ?? "") }))
             : [],
         }))
         .filter((a) => a.id && a.features.length > 0);
@@ -57,9 +72,18 @@ export default function FriendController({ userId }: { userId: string; email: st
         .from("friend_set_limits")
         .select("app_id,feature_id,enabled")
         .eq("pairing_id", p.pairing_id);
+      const supportedKeys = new Set(
+        packApps.flatMap((app) =>
+          app.features.map((feature) => `${app.id}/${feature.id}`)
+        )
+      );
+      if (p.whole_app_control_enabled) {
+        supportedKeys.add(approvedWholeAppsKey);
+      }
       const on = new Set<string>();
       (limits ?? []).forEach((l: { app_id: string; feature_id: string; enabled: boolean }) => {
-        if (l.enabled) on.add(`${l.app_id}/${l.feature_id}`);
+        const key = `${l.app_id}/${l.feature_id}`;
+        if (l.enabled && supportedKeys.has(key)) on.add(key);
       });
       setEnabled(on);
     },
@@ -72,7 +96,7 @@ export default function FriendController({ userId }: { userId: string; email: st
     (async () => {
       const { data } = await supabase
         .from("friend_pairings")
-        .select("id,owner_user_id,window_end")
+        .select("id,owner_user_id,window_end,whole_app_control_enabled,whole_app_selection_count")
         .eq("friend_user_id", userId)
         .eq("revoked", false)
         .gt("window_end", new Date().toISOString())
@@ -80,7 +104,13 @@ export default function FriendController({ userId }: { userId: string; email: st
         .limit(1)
         .maybeSingle();
       if (data?.id) {
-        const p: Pairing = { pairing_id: data.id, owner_user_id: data.owner_user_id, window_end: data.window_end };
+        const p: Pairing = {
+          pairing_id: data.id,
+          owner_user_id: data.owner_user_id,
+          window_end: data.window_end,
+          whole_app_control_enabled: data.whole_app_control_enabled,
+          whole_app_selection_count: data.whole_app_selection_count,
+        };
         setPairing(p);
         await loadAfterRedeem(p);
       }
@@ -129,9 +159,9 @@ export default function FriendController({ userId }: { userId: string; email: st
     }
   }
 
-  async function toggle(app: App, feature: Feature) {
+  async function toggle(appId: string, featureId: string) {
     if (!pairing || locked) return;
-    const key = `${app.id}/${feature.id}`;
+    const key = `${appId}/${featureId}`;
     const next = !enabled.has(key);
     // optimistic
     setEnabled((prev) => {
@@ -143,8 +173,8 @@ export default function FriendController({ userId }: { userId: string; email: st
       {
         pairing_id: pairing.pairing_id,
         owner_user_id: pairing.owner_user_id,
-        app_id: app.id,
-        feature_id: feature.id,
+        app_id: appId,
+        feature_id: featureId,
         enabled: next,
         set_by: userId,
         updated_at: new Date().toISOString(),
@@ -189,12 +219,12 @@ export default function FriendController({ userId }: { userId: string; email: st
         <div style={{ marginBottom: 24 }}>
           <div style={label}>FRIEND CONTROL</div>
           <h1 style={{ fontSize: 30, fontWeight: 800, margin: "4px 0 6px" }}>
-            {pairing ? "You're holding the keys" : "Control a friend's screen time"}
+            {pairing ? "Hold the line for them" : "Control a friend's limits"}
           </h1>
           <p style={{ color: signal.textDim, fontSize: 14, margin: 0, lineHeight: 1.5 }}>
             {pairing
-              ? "Flip on the feeds you want killed for them. They can't undo these until the window ends."
-              : "Enter the 6-digit code they generated in the Rinkler app. You'll get to tighten their limits for the window they set."}
+              ? "Block the whole-app set they approved, plus any supported experimental filters, until their window ends."
+              : "Enter the 6-digit code from their Rinkler app. They choose the apps and the time window first."}
           </p>
         </div>
 
@@ -230,7 +260,7 @@ export default function FriendController({ userId }: { userId: string; email: st
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>
-                <div style={label}>FEEDS KILLED</div>
+                <div style={label}>CONTROLS ON</div>
                 <div style={{ fontFamily: signal.mono, fontSize: 22, fontWeight: 600, color: signal.blue }}>
                   {enabled.size}
                 </div>
@@ -247,6 +277,41 @@ export default function FriendController({ userId }: { userId: string; email: st
               </p>
             ) : null}
 
+            {pairing.whole_app_control_enabled && (
+              <div style={{ ...card, marginBottom: 12 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16 }}>
+                  <div>
+                    <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 4 }}>Whole apps</div>
+                    <div style={{ fontSize: 12, color: signal.textDim, lineHeight: 1.45 }}>
+                      Block the {pairing.whole_app_selection_count} private selection
+                      {pairing.whole_app_selection_count === 1 ? "" : "s"} they approved on their iPhone.
+                      Apple keeps the app names hidden.
+                    </div>
+                    <div style={{ fontSize: 10, color: signal.success, marginTop: 5 }}>SCREEN TIME SHIELD</div>
+                  </div>
+                  <button
+                    onClick={() => toggle(wholeAppsAppId, approvedWholeAppsFeatureId)}
+                    disabled={locked}
+                    aria-label="Block their approved whole apps"
+                    aria-pressed={enabled.has(approvedWholeAppsKey)}
+                    style={{
+                      width: 52, height: 31, borderRadius: 16, border: "none", flexShrink: 0,
+                      cursor: locked ? "default" : "pointer",
+                      background: enabled.has(approvedWholeAppsKey) ? signal.blue : signal.cardRaised,
+                      position: "relative", transition: "background .15s",
+                    }}
+                  >
+                    <span style={{
+                      position: "absolute", top: 3,
+                      left: enabled.has(approvedWholeAppsKey) ? 24 : 3,
+                      width: 25, height: 25, borderRadius: "50%",
+                      background: "#fff", transition: "left .15s",
+                    }} />
+                  </button>
+                </div>
+              </div>
+            )}
+
             {apps.map((app) => (
               <div key={app.id} style={{ ...card, marginBottom: 12 }}>
                 <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 4 }}>{app.name}</div>
@@ -261,10 +326,12 @@ export default function FriendController({ userId }: { userId: string; email: st
                       <div style={{ paddingRight: 12 }}>
                         <div style={{ fontSize: 15, fontWeight: 500 }}>{f.name}</div>
                         <div style={{ fontSize: 12, color: signal.textDim }}>{f.blurb}</div>
+                        <div style={{ fontSize: 10, color: signal.blue, marginTop: 3 }}>EXPERIMENTAL</div>
                       </div>
                       <button
-                        onClick={() => toggle(app, f)}
+                        onClick={() => toggle(app.id, f.id)}
                         disabled={locked}
+                        aria-label={`Toggle ${app.name} ${f.name}`}
                         aria-pressed={on}
                         style={{
                           width: 52, height: 31, borderRadius: 16, border: "none", flexShrink: 0,
@@ -289,8 +356,9 @@ export default function FriendController({ userId }: { userId: string; email: st
         {error && <p style={{ color: signal.warning, fontSize: 13, marginTop: 12 }}>{error}</p>}
 
         <p style={{ color: signal.textFaint, fontSize: 12, marginTop: 20, lineHeight: 1.5 }}>
-          You can only add blocks, never loosen them, and only until the window ends. Their phone
-          applies your changes within a few seconds.
+          You can only control the private whole-app set they approved and supported experimental
+          filters. New choices sync about every five seconds while their Rinkler app is open.
+          Existing Screen Time shields lift automatically when the window ends.
         </p>
       </div>
     </div>

@@ -32,3 +32,4 @@ wg-soham.conf
 
 # Vendored/unrelated local experiments
 packages/canvas-mcp/
+.vercel

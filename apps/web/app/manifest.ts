@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Rinkler",
     short_name: "Rinkler",
-    description: "kill the endless scroll, not your whole phone.",
+    description: "block selected apps with Screen Time, with optional experimental network filters.",
     start_url: "/",
     display: "standalone",
     background_color: "#08080A",

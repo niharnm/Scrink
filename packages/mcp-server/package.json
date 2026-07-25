@@ -12,7 +12,7 @@
     "clean": "rm -rf dist .turbo node_modules"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.105.4",
+    "@supabase/supabase-js": "^2.110.8",
     "fastmcp": "^3.35.0",
     "zod": "^3.25.76"
   },

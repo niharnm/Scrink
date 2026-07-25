@@ -21,15 +21,18 @@ export function isAdminUser(userId: string | null | undefined): boolean {
 
 export function createAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const secretKey =
+    process.env.SUPABASE_SECRET_KEY ||
+    process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!url || !serviceRoleKey) {
+  if (!url || !secretKey) {
     return null;
   }
 
-  return createServiceClient(url, serviceRoleKey, {
+  return createServiceClient(url, secretKey, {
     auth: {
       autoRefreshToken: false,
+      detectSessionInUrl: false,
       persistSession: false,
     },
   });

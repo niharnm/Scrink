@@ -7,5 +7,12 @@
 -- default-privilege grants so their protection doesn't depend solely on RLS
 -- being left enabled (e.g. if RLS is ever disabled for debugging).
 
-revoke all on public.allowed_emails from anon, authenticated;
-revoke all on public.friend_redeem_attempts from anon, authenticated;
+do $$
+begin
+  if to_regclass('public.allowed_emails') is not null then
+    revoke all on public.allowed_emails from anon, authenticated;
+  end if;
+  if to_regclass('public.friend_redeem_attempts') is not null then
+    revoke all on public.friend_redeem_attempts from anon, authenticated;
+  end if;
+end $$;

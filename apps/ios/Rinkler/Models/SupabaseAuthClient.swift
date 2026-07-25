@@ -53,15 +53,45 @@ final class SupabaseAuthClient {
         bundle: Bundle = .main
     ) {
         if let urlString = bundle.infoDictionary?["SUPABASE_URL"] as? String,
-              let url = URL(string: urlString),
+              let url = URL(string: urlString.trimmingCharacters(in: .whitespacesAndNewlines)),
+              url.scheme?.lowercased() == "https",
+              url.host != nil,
+              url.user == nil,
+              url.password == nil,
+              url.query == nil,
+              url.fragment == nil,
               let key = bundle.infoDictionary?["SUPABASE_KEY"] as? String,
-              !key.isEmpty {
-            self.configuration = Configuration(baseURL: url, anonKey: key)
+              Self.isClientSafeAPIKey(key) {
+            self.configuration = Configuration(
+                baseURL: url,
+                anonKey: key.trimmingCharacters(in: .whitespacesAndNewlines)
+            )
         } else {
             self.configuration = nil
         }
 
         self.urlSession = urlSession
+    }
+
+    private static func isClientSafeAPIKey(_ rawKey: String) -> Bool {
+        let key = rawKey.trimmingCharacters(in: .whitespacesAndNewlines)
+        if key.hasPrefix("sb_publishable_") {
+            return true
+        }
+
+        // Legacy anon keys are JWTs. Decode only to distinguish their public
+        // "anon" role from a service-role JWT; Supabase still verifies the key.
+        let segments = key.split(separator: ".")
+        guard segments.count == 3 else { return false }
+        var base64 = String(segments[1])
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+        while base64.count % 4 != 0 { base64.append("=") }
+        guard let data = Data(base64Encoded: base64),
+              let claims = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return false
+        }
+        return claims["role"] as? String == "anon"
     }
 
     /// Emails a one-time login code. `createUser` defaults to true for the
@@ -351,10 +381,10 @@ extension SupabaseAuthClient {
         return session
     }
 
-    /// Builds the Supabase OAuth authorize URL for a provider (e.g. "google"),
-    /// driven through `ASWebAuthenticationSession`. `redirectTo` is the app's
-    /// custom-scheme callback (must be allow-listed in the Supabase dashboard).
-    func oauthAuthorizeURL(provider: String, redirectTo: String) -> URL? {
+    /// Builds the Supabase OAuth authorize URL for a provider (e.g. "google")
+    /// using PKCE. `redirectTo` is the app's custom-scheme callback (must be
+    /// allow-listed in the Supabase dashboard).
+    func oauthAuthorizeURL(provider: String, redirectTo: String, codeChallenge: String) -> URL? {
         guard let configuration else { return nil }
         let base = configuration.baseURL
             .appendingPathComponent("auth")
@@ -364,60 +394,71 @@ extension SupabaseAuthClient {
         components.queryItems = [
             URLQueryItem(name: "provider", value: provider),
             URLQueryItem(name: "redirect_to", value: redirectTo),
+            URLQueryItem(name: "code_challenge", value: codeChallenge),
+            URLQueryItem(name: "code_challenge_method", value: "S256"),
         ]
         return components.url
     }
 
-    /// Completes an OAuth implicit-flow redirect: parses the tokens from the
-    /// callback URL fragment, derives the user id/email from the JWT, and stores
-    /// the session.
-    func completeOAuth(callbackURL: URL) throws -> SupabaseAuthSession {
-        guard let fragment = URLComponents(url: callbackURL, resolvingAgainstBaseURL: false)?.fragment else {
+    /// Exchanges the short-lived OAuth callback code with the verifier that
+    /// created its PKCE challenge. Tokens are returned only in the encrypted
+    /// response body and never travel through the custom callback URL.
+    func completeOAuth(callbackURL: URL, codeVerifier: String) async throws -> SupabaseAuthSession {
+        guard callbackURL.scheme?.lowercased() == "rinkler",
+              callbackURL.host?.lowercased() == "auth-callback" else {
+            throw SupabaseAuthError.invalidResponse
+        }
+        guard (43...128).contains(codeVerifier.count),
+              codeVerifier.allSatisfy({ $0.isASCII && ($0.isLetter || $0.isNumber || "-._~".contains($0)) }),
+              let components = URLComponents(url: callbackURL, resolvingAgainstBaseURL: false) else {
             throw SupabaseAuthError.invalidResponse
         }
 
-        var params: [String: String] = [:]
-        for pair in fragment.split(separator: "&") {
-            let kv = pair.split(separator: "=", maxSplits: 1).map(String.init)
-            guard kv.count == 2 else { continue }
-            params[kv[0]] = kv[1].removingPercentEncoding ?? kv[1]
+        let queryItems = components.queryItems ?? []
+        if let error = queryItems.first(where: { $0.name == "error_description" })?.value
+            ?? queryItems.first(where: { $0.name == "error" })?.value {
+            throw SupabaseAuthError.requestFailed(error)
         }
 
-        if let error = params["error_description"] ?? params["error"] {
-            throw SupabaseAuthError.requestFailed(error.replacingOccurrences(of: "+", with: " "))
-        }
-        guard let accessToken = params["access_token"] else {
+        let authorizationCodes = queryItems
+            .filter { $0.name == "code" }
+            .compactMap(\.value)
+            .filter { !$0.isEmpty }
+        guard authorizationCodes.count == 1 else {
             throw SupabaseAuthError.invalidResponse
         }
 
-        let claims = Self.decodeJWTClaims(accessToken)
-        let expiresIn = params["expires_in"].flatMap { Int($0) }
+        var request = try authRequest(path: "token")
+        guard let tokenURL = request.url,
+              var tokenComponents = URLComponents(url: tokenURL, resolvingAgainstBaseURL: false) else {
+            throw SupabaseAuthError.invalidResponse
+        }
+        tokenComponents.queryItems = [URLQueryItem(name: "grant_type", value: "pkce")]
+        request.url = tokenComponents.url
+        request.httpMethod = "POST"
+        request.httpBody = try JSONEncoder().encode(
+            OAuthPKCEExchangeRequest(
+                authCode: authorizationCodes[0],
+                codeVerifier: codeVerifier
+            )
+        )
+
+        let response = try await send(request, decodeAs: VerifyOTPResponse.self)
+        guard let accessToken = response.accessToken,
+              let userID = response.user.id,
+              !userID.isEmpty else {
+            throw SupabaseAuthError.invalidResponse
+        }
         let session = SupabaseAuthSession(
             accessToken: accessToken,
-            refreshToken: params["refresh_token"],
-            expiresIn: expiresIn,
-            expiresAt: expiresIn.map { Date().addingTimeInterval(TimeInterval($0)) },
-            userID: (claims?["sub"] as? String) ?? "",
-            email: (claims?["email"] as? String) ?? ""
+            refreshToken: response.refreshToken,
+            expiresIn: response.expiresIn,
+            expiresAt: response.expiresIn.map { Date().addingTimeInterval(TimeInterval($0)) },
+            userID: userID,
+            email: response.user.email ?? ""
         )
         try saveSession(session)
         return session
-    }
-
-    /// Decodes the (unverified) payload claims of a JWT — used only to read the
-    /// `sub`/`email` for display; the token itself is what Supabase trusts.
-    private static func decodeJWTClaims(_ jwt: String) -> [String: Any]? {
-        let segments = jwt.split(separator: ".")
-        guard segments.count >= 2 else { return nil }
-        var base64 = String(segments[1])
-            .replacingOccurrences(of: "-", with: "+")
-            .replacingOccurrences(of: "_", with: "/")
-        while base64.count % 4 != 0 { base64.append("=") }
-        guard let data = Data(base64Encoded: base64),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            return nil
-        }
-        return json
     }
 }
 
@@ -430,6 +471,16 @@ private struct IDTokenRequest: Encodable {
         case provider
         case idToken = "id_token"
         case nonce
+    }
+}
+
+private struct OAuthPKCEExchangeRequest: Encodable {
+    let authCode: String
+    let codeVerifier: String
+
+    enum CodingKeys: String, CodingKey {
+        case authCode = "auth_code"
+        case codeVerifier = "code_verifier"
     }
 }
 

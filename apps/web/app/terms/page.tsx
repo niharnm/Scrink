@@ -73,8 +73,8 @@ const sections: { title: string; body: Block[] }[] = [
     title: "The short version",
     body: [
       [
-        "Rinkler is a personal focus tool that filters short-video feeds on your device. It helps you scroll less.",
-        "It's a digital-wellbeing tool, not a security product, and not a guarantee. It does its best to interrupt the feed, but it can't promise it catches everything.",
+        "Rinkler is a personal focus tool with reliable whole-app Screen Time shields and optional experimental network filters.",
+        "Instagram Reels and TikTok filtering are best-effort, require a physical-device test, and may affect more than the intended feed.",
         "Use it for yourself, don't abuse it, and you're responsible for your own device and choices.",
         "We provide it as-is, and we're not liable for indirect damages. These terms can change.",
       ],
@@ -83,7 +83,7 @@ const sections: { title: string; body: Block[] }[] = [
   {
     title: "What Rinkler is",
     body: [
-      "Rinkler runs an on-device filter that interrupts short-video traffic (like Instagram Reels and TikTok) based on rules you set. It's meant to help you spend less time scrolling. It is not antivirus, parental-control certification, or a content-security guarantee.",
+      "Rinkler can shield selected whole apps through Apple's Screen Time controls. Its separate Instagram and TikTok network filters inspect connection metadata on device and are experimental. Rinkler is not antivirus, parental-control certification, or a content-security guarantee.",
     ],
   },
   {
@@ -113,7 +113,7 @@ const sections: { title: string; body: Block[] }[] = [
   {
     title: "The filter is best-effort",
     body: [
-      "Rinkler works at the network level on your phone. It can reduce and interrupt short-video traffic, but it can't guarantee it blocks every feed, every time. Platforms change how they work, and some traffic may slip through. You understand that Rinkler is a tool to help you, not a promise, and you stay responsible for how you use your device.",
+      "Rinkler's network filters can reduce or interrupt Instagram and TikTok traffic, but they can't guarantee feed-only blocking. Platforms change, some traffic may slip through, and shared hosts can cause useful features to be interrupted. Whole-app Screen Time shields are the reliable option when Screen Time access is approved.",
     ],
   },
   {
