@@ -11,11 +11,12 @@ overrides:
   "@hono/node-server": ">=2.0.5 <3"
   axios: ">=1.18.0 <2"
   body-parser: ">=2.3.0 <3"
+  brace-expansion: "5.0.8"
   fast-uri: ">=3.1.4 <4"
   form-data: ">=4.0.6 <5"
   qs: ">=6.15.2 <7"
   esbuild: ">=0.28.1 <0.29"
-  js-yaml: ">=4.2.0 <5"
+  js-yaml: "4.3.0"
   sharp: ">=0.35.0 <0.36"
 
 # pnpm 11 blocks dependency lifecycle scripts unless they are reviewed here.
