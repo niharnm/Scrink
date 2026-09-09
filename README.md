@@ -1,4 +1,4 @@
-# Rinkler
+# Scrink
 
 Rinkler is an iOS network-filtering app for keeping useful app features available while blocking distracting traffic. The iOS app uses a local Network Extension tunnel and a Supabase-backed email OTP login flow.
 
