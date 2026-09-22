@@ -8,7 +8,5 @@ export default function robots(): MetadataRoute.Robots {
       // Keep the app/auth surface out of search results.
       disallow: ["/dashboard", "/api/", "/auth/", "/dev/"],
     },
-    sitemap: "https://rinkler.app/sitemap.xml",
-    host: "https://rinkler.app",
   };
 }

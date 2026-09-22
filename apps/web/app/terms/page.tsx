@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { signal } from "@/lib/signal";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Rinkler",
+  title: "Terms of Service",
   description: "The terms for using Rinkler.",
 };
 

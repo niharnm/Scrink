@@ -21,41 +21,17 @@ const geistMono = localFont({
   ],
 });
 
+// This site belongs to the Scrink iOS project. It must not claim the rinkler.app
+// domain, which serves a separate referral and loyalty product.
 export const metadata: Metadata = {
-  // Required so OG/Twitter image + canonical URLs resolve to absolute paths.
-  metadataBase: new URL("https://rinkler.app"),
   title: {
-    default: "Rinkler — Block distracting apps with Screen Time.",
-    template: "%s · Rinkler",
+    default: "Scrink — Block distracting apps with Screen Time.",
+    template: "%s · Scrink",
   },
   description:
-    "Rinkler reliably blocks selected whole apps with Screen Time. Optional Instagram and TikTok network filters are experimental and require physical-device testing.",
-  applicationName: "Rinkler",
-  keywords: [
-    "screen time app",
-    "block reels",
-    "block tiktok",
-    "stop doomscrolling",
-    "feed blocker",
-    "focus app",
-    "digital wellbeing",
-    "Rinkler",
-  ],
-  alternates: { canonical: "/" },
-  openGraph: {
-    type: "website",
-    url: "https://rinkler.app",
-    siteName: "Rinkler",
-    title: "Rinkler — whole-app blocking, with experimental feed filters",
-    description:
-      "reliable whole-app Screen Time blocking, plus experimental Instagram and TikTok network filters.",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Rinkler — whole-app blocking, with experimental feed filters",
-    description: "reliable whole-app Screen Time blocking, plus experimental Instagram and TikTok network filters.",
-  },
-  robots: { index: true, follow: true },
+    "Scrink blocks selected whole apps with Screen Time. Optional Instagram and TikTok network filters are experimental and require physical-device testing.",
+  applicationName: "Scrink",
+  robots: { index: false, follow: false },
 };
 
 export const viewport: Viewport = {
