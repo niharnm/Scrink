@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Rinkler",
-    short_name: "Rinkler",
+    name: "Scrink",
+    short_name: "Scrink",
     description: "block selected apps with Screen Time, with optional experimental network filters.",
     start_url: "/",
     display: "standalone",

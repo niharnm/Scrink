@@ -4,8 +4,8 @@ import type { Metadata } from "next";
 import { signal } from "@/lib/signal";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Rinkler",
-  description: "How Rinkler handles your data: on-device filtering, minimal metadata, no content, no selling.",
+  title: "Privacy Policy",
+  description: "How Scrink handles your data: on-device filtering, minimal metadata, no content, no selling.",
 };
 
 const CONTACT = "nihar.manchikalapudi@gmail.com";
