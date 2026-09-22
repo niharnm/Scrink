@@ -5,7 +5,7 @@ import { signal } from "@/lib/signal";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
-  description: "The terms for using Rinkler.",
+  description: "The terms for using Scrink.",
 };
 
 const CONTACT = "nihar.manchikalapudi@gmail.com";
