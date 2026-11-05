@@ -18,6 +18,12 @@ const wholeAppsAppId = "screen_time";
 const approvedWholeAppsFeatureId = "approved_apps";
 const approvedWholeAppsKey = `${wholeAppsAppId}/${approvedWholeAppsFeatureId}`;
 
+const CODE_LENGTH = 10;
+// Pairing codes are 10 characters (server-generated); strip spaces/dashes the
+// owner may have typed or pasted and uppercase for display.
+const normalizeCode = (raw: string) =>
+  raw.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, CODE_LENGTH);
+
 export default function FriendController({ userId }: { userId: string; email: string }) {
   const supabase = useMemo(() => createClient(), []);
 
@@ -141,7 +147,7 @@ export default function FriendController({ userId }: { userId: string; email: st
     setBusy(true);
     setError(null);
     try {
-      const clean = code.replace(/\D/g, "").slice(0, 6);
+      const clean = normalizeCode(code);
       const { data, error } = await supabase.rpc("redeem_pairing", { p_code: clean });
       if (error) throw error;
       const row = Array.isArray(data) ? data[0] : data;
@@ -224,7 +230,7 @@ export default function FriendController({ userId }: { userId: string; email: st
           <p style={{ color: signal.textDim, fontSize: 14, margin: 0, lineHeight: 1.5 }}>
             {pairing
               ? "Block the whole-app set they approved, plus any supported experimental filters, until their window ends."
-              : "Enter the 6-digit code from their Rinkler app. They choose the apps and the time window first."}
+              : "Enter the 10-character code from their Rinkler app. They choose the apps and the time window first."}
           </p>
         </div>
 
@@ -232,19 +238,21 @@ export default function FriendController({ userId }: { userId: string; email: st
           <div style={card}>
             <div style={{ ...label, marginBottom: 8 }}>THEIR CODE</div>
             <input
-              inputMode="numeric"
               value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-              placeholder="000000"
+              onChange={(e) => setCode(normalizeCode(e.target.value))}
+              autoCapitalize="characters"
+              autoComplete="off"
+              spellCheck={false}
+              placeholder="XXXXXXXXXX"
               style={{
                 width: "100%", boxSizing: "border-box", textAlign: "center",
-                fontFamily: signal.mono, fontSize: 30, letterSpacing: 8,
+                fontFamily: signal.mono, fontSize: 24, letterSpacing: 4,
                 padding: "14px 0", marginBottom: 14, color: signal.text,
                 background: signal.cardRaised, border: `1px solid ${signal.border}`, borderRadius: 12,
               }}
             />
-            <button style={{ ...primaryBtn, opacity: busy || code.length < 6 ? 0.5 : 1 }}
-              disabled={busy || code.length < 6} onClick={redeem}>
+            <button style={{ ...primaryBtn, opacity: busy || code.length < CODE_LENGTH ? 0.5 : 1 }}
+              disabled={busy || code.length < CODE_LENGTH} onClick={redeem}>
               {busy ? "Checking…" : "Unlock controls"}
             </button>
           </div>

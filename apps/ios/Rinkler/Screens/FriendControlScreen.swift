@@ -103,8 +103,10 @@ struct FriendControlScreen: View {
             Text("YOUR CODE")
                 .font(RinklerFonts.sans(12, .semibold)).tracking(2)
                 .foregroundStyle(RinklerColors.signalTextDim)
-            Text(spaced(friend.pairing?.code ?? "------"))
-                .font(RinklerFonts.mono(40, .medium))
+            Text(spaced(friend.pairing?.code ?? "----------"))
+                .font(RinklerFonts.mono(28, .medium))
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
                 .foregroundStyle(RinklerColors.signalText)
             Text("Have your friend open rinkler.app/friend and punch this in within 15 minutes. They'll get \(friend.windowRemainingLabel.isEmpty ? "the window" : "control until the window ends").")
                 .font(RinklerFonts.sans(13, .regular))
@@ -175,5 +177,9 @@ struct FriendControlScreen: View {
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 
-    private func spaced(_ s: String) -> String { s.map(String.init).joined(separator: " ") }
+    /// Groups the 10-character code as "ABCDE FGHJK" for easier reading aloud.
+    private func spaced(_ s: String) -> String {
+        guard s.count == 10 else { return s.map(String.init).joined(separator: " ") }
+        return "\(s.prefix(5)) \(s.suffix(5))"
+    }
 }

@@ -79,7 +79,9 @@ export async function POST() {
         },
         body: JSON.stringify({
           model: "gpt-5-mini",
-          max_tokens: 200,
+          // GPT-5 models take max_completion_tokens (max_tokens is rejected) and
+          // count hidden reasoning tokens against it, so leave headroom.
+          max_completion_tokens: 1000,
           messages: [
             {
               role: "system",
@@ -96,11 +98,20 @@ export async function POST() {
 
       if (llmRes.ok) {
         const llmData = await llmRes.json();
-        insightText = llmData.choices?.[0]?.message?.content || "";
+        insightText = (llmData.choices?.[0]?.message?.content || "").trim();
+        if (!insightText) {
+          console.error("generate-insight: OpenAI returned empty content; using fallback");
+          insightText = fallbackInsight(appStats, totalReqs, totalBlocked);
+        }
       } else {
+        const detail = await llmRes.text().catch(() => "");
+        console.error(
+          `generate-insight: OpenAI request failed (${llmRes.status}): ${detail.slice(0, 500)}`
+        );
         insightText = fallbackInsight(appStats, totalReqs, totalBlocked);
       }
-    } catch {
+    } catch (err) {
+      console.error("generate-insight: OpenAI request threw", err);
       insightText = fallbackInsight(appStats, totalReqs, totalBlocked);
     }
   } else {

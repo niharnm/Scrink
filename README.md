@@ -57,6 +57,12 @@ The web dashboard uses the same email-code Supabase auth flow as iOS. Configure 
 
 `ENABLE_DASHBOARD_ADMIN_TOOLS` and `NEXT_PUBLIC_ENABLE_DASHBOARD_ADMIN_TOOLS` default to `false`. Only enable them for trusted maintenance sessions because those endpoints run service-role rollups and domain classification.
 
+### Waitlist lock (server-side)
+
+`ENABLE_WAITLIST_LOCK=true` only gates the web UI. Real enforcement is the `public.hook_before_user_created` Auth hook, which rejects signups from any client when `public.waitlist_settings.lock_enabled` is true. After applying migrations, enable it once in the Supabase dashboard (Authentication > Hooks > Before User Created > Postgres function > `public.hook_before_user_created`). Turn the lock on with `update public.waitlist_settings set lock_enabled = true;` and approve people with `insert into public.allowed_emails(email) values ('x@y.com');`. `email_can_sign_in` is service-role only; the web app needs `SUPABASE_SECRET_KEY` (or `SUPABASE_SERVICE_ROLE_KEY`) for the lock check.
+
+SQL regression checks for the friend-control and waitlist hardening live in `supabase/tests/security_hardening.sql` (run against a disposable database).
+
 ## Protecting `main`
 
 `main` should only change through a merged pull request. After cloning, enable the tracked git hooks once:
