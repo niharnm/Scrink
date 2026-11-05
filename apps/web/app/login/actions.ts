@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import {
   getSupabasePublicConfig,
   missingSupabaseConfigMessage,
@@ -55,7 +56,18 @@ export async function requestEmailCode(prevState: unknown, formData: FormData) {
   // request a code. Existing users were grandfathered into the list by migration,
   // so flipping this on never locks out a current account.
   if (process.env.ENABLE_WAITLIST_LOCK === "true") {
-    const { data: allowed } = await supabase.rpc("email_can_sign_in", { p_email: email });
+    // email_can_sign_in is service-role only (it is an allowlist oracle for anon).
+    // The database also enforces the lock via the before_user_created auth hook.
+    const admin = createAdminClient();
+    if (!admin) {
+      console.error("requestEmailCode: waitlist lock enabled but admin client is not configured");
+      return { step: "email", email, error: "Sign-in is temporarily unavailable. Try again later." };
+    }
+    const { data: allowed, error: gateError } = await admin.rpc("email_can_sign_in", { p_email: email });
+    if (gateError) {
+      console.error("requestEmailCode: waitlist check failed", gateError.message);
+      return { step: "email", email, error: "Sign-in is temporarily unavailable. Try again later." };
+    }
     if (!allowed) {
       return {
         step: "email",
@@ -128,6 +140,24 @@ export async function verifyEmailCode(prevState: unknown, formData: FormData) {
       email,
       error: error.message,
     };
+  }
+
+  // Existing accounts skip the before_user_created hook, so re-check the
+  // allowlist here when the lock is on (same flag as the request step).
+  if (process.env.ENABLE_WAITLIST_LOCK === "true") {
+    const admin = createAdminClient();
+    const { data: allowed, error: gateError } = admin
+      ? await admin.rpc("email_can_sign_in", { p_email: email })
+      : { data: false, error: null };
+    if (gateError) console.error("verifyEmailCode: waitlist check failed", gateError.message);
+    if (!allowed) {
+      await supabase.auth.signOut();
+      return {
+        step: "email",
+        email,
+        error: "You're on the waitlist — we'll email you the moment your spot opens.",
+      };
+    }
   }
 
   revalidatePath("/", "layout");

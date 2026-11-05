@@ -49,27 +49,15 @@ final class FriendControlStore: ObservableObject {
     // MARK: - Actions
 
     func generateCode(windowHours: Int) async {
-        guard let uid = client.loadSession()?.userID else { error = "Sign in first."; return }
+        guard client.loadSession() != nil else { error = "Sign in first."; return }
         busy = true; defer { busy = false }
         do {
-            // Retire any code that's still pending for this owner, so we never
-            // leave an outstanding code the UI can't see and we satisfy the
-            // one-live-code-per-owner constraint before inserting the new row.
-            try await retirePendingCodes(ownerID: uid)
-
-            let code = String(format: "%06d", Int.random(in: 0...999_999))
-            var (req, _) = try await client.authenticatedRESTRequest(path: "friend_pairings", method: "POST")
-            req.setValue("return=representation", forHTTPHeaderField: "Prefer")
-            let now = Date()
-            let body: [String: Any] = [
-                "owner_user_id": uid,
-                "code": code,
-                "code_expires_at": Self.iso(now.addingTimeInterval(900)),     // 15 min to redeem
-                "window_end": Self.iso(now.addingTimeInterval(Double(windowHours) * 3600)),
-            ]
-            req.httpBody = try JSONSerialization.data(withJSONObject: body)
+            // The server generates the code (high-entropy, short-lived), retires
+            // any still-pending code for this owner, and stamps the window.
+            var (req, _) = try await client.authenticatedRESTRequest(path: "rpc/create_pairing", method: "POST")
+            req.httpBody = try JSONSerialization.data(withJSONObject: ["p_window_hours": windowHours])
             let (data, resp) = try await URLSession.shared.data(for: req)
-            guard (resp as? HTTPURLResponse)?.statusCode == 201 else { throw Self.httpError(data) }
+            guard (resp as? HTTPURLResponse)?.statusCode == 200 else { throw Self.httpError(data) }
             pairing = try decoder.decode([Pairing].self, from: data).first
             error = nil
             startTicker()
@@ -106,37 +94,16 @@ final class FriendControlStore: ObservableObject {
         guard let p = pairing else { return }
         busy = true; defer { busy = false }
         do {
-            var (req, _) = try await client.authenticatedRESTRequest(
-                path: "friend_pairings", method: "PATCH",
-                queryItems: [.init(name: "id", value: "eq.\(p.id)")])
-            // Stamp revoked_at so the friend has a real record that the window was
-            // ended early, not just a silent boolean flip.
-            req.httpBody = try JSONSerialization.data(withJSONObject: [
-                "revoked": true,
-                "revoked_at": Self.iso(Date()),
-            ])
-            _ = try await URLSession.shared.data(for: req)
+            // Revocation goes through a server function that sets revoked and
+            // revoked_at itself, so the audit record can't be edited client-side.
+            var (req, _) = try await client.authenticatedRESTRequest(path: "rpc/revoke_pairing", method: "POST")
+            req.httpBody = try JSONSerialization.data(withJSONObject: ["p_pairing_id": p.id])
+            let (data, resp) = try await URLSession.shared.data(for: req)
+            guard (resp as? HTTPURLResponse)?.statusCode == 200 else { throw Self.httpError(data) }
             restoreIfNeeded()
             pairing = nil
             ticker?.cancel(); ticker = nil
         } catch { self.error = friendly(error) }
-    }
-
-    /// Revoke every still-pending (unredeemed, not-revoked) code for this owner.
-    /// Best-effort: a failure here shouldn't block generating a fresh code.
-    private func retirePendingCodes(ownerID: String) async throws {
-        var (req, _) = try await client.authenticatedRESTRequest(
-            path: "friend_pairings", method: "PATCH",
-            queryItems: [
-                .init(name: "owner_user_id", value: "eq.\(ownerID)"),
-                .init(name: "redeemed_at", value: "is.null"),
-                .init(name: "revoked", value: "eq.false"),
-            ])
-        req.httpBody = try JSONSerialization.data(withJSONObject: [
-            "revoked": true,
-            "revoked_at": Self.iso(Date()),
-        ])
-        _ = try? await URLSession.shared.data(for: req)
     }
 
     /// Called on launch + foreground.
